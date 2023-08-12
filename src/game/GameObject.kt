@@ -21,4 +21,17 @@ open class GameObject {
     open fun draw(g: Graphics?) {}
 
     open fun onTick() {}
+
+    open fun isOut(): Boolean {
+        if (x < 0 || x > ground.width){
+            return true
+        }
+
+        if (y < 0 || y > ground.height){
+            return true
+        }
+
+        return false
+    }
+
 }

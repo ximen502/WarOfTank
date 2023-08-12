@@ -18,6 +18,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     private var renderThread: RenderThread? = null
 
+    private var darkAI: DarkAI? = null
+
+    private var ground: Ground//? = null
+
     //    var list = mutableListOf<GameObject>()
     //为解决ConcurrentModificationException，使用了如下的线程安全的容器类
     var list = CopyOnWriteArrayList<GameObject>()
@@ -30,7 +34,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         this.t = windowTitle
         createWindow()
 
-        var ground = Ground(w, h)
+        ground = Ground(w, h)
 
         input = Input()
         addKeyListener(input)
@@ -40,6 +44,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         sp.observer = this
         list.add(sp)
 
+        darkAI = DarkAI()
 
         tempImage = this.createImage(w, h)
         tempGraphics = tempImage?.graphics
@@ -47,6 +52,9 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         setFps(60)
         renderThread = RenderThread(this)
         renderThread?.start()
+
+        println("Title Height: ${insets.top}")
+
     }
 
     private fun createWindow() {
@@ -86,6 +94,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         }
 
         g?.drawImage(tempImage, 0, 0, null)
+
+        darkAI?.pushTank(ground, this)
     }
 
     override fun born(go: GameObject?) {
@@ -96,9 +106,9 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     override fun die(go: GameObject?) {
         println("die")
         for (gameObject in list) {
-            if (gameObject.id == go?.id){
+            if (gameObject.id == go?.id) {
                 list.remove(gameObject)
-                println("====")
+                println("founded====")
                 break
             }
         }

@@ -1,0 +1,220 @@
+package game
+
+import java.awt.Color
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.util.Random
+import kotlin.math.pow
+
+/**
+ * 坦克，根据给定的坐标绘制一个坦克的俯视图
+ * 矩形车身+圆形炮台+矩形炮筒
+ */
+class EnemyTank(ground: Ground) : AbstractTank() {
+//    private var speed = 2 * 2
+
+    //    private var input: Input
+    var observer: GOObserver? = null
+
+//    //炮弹初始位置坐标
+//    var shellsX = 0
+//    var shellsY = 0
+
+    private var r = Random()
+
+//    // 坦克前进的方向
+//    var direction = 0
+
+    companion object {
+        const val SIZE = 50
+    }
+
+    init {
+        x = 0
+        y = 80
+//        this.input = input
+        this.ground = ground
+        var d = r.nextInt(4)
+        direction = when (d) {
+            0 -> Shells.DIRECTION_NORTH
+            1 -> Shells.DIRECTION_SOUTH
+            2 -> Shells.DIRECTION_WEST
+            3 -> Shells.DIRECTION_EAST
+            else -> {
+                Shells.DIRECTION_EAST
+            }
+        }
+        direction = 2.0.pow(d.toDouble()).toInt()
+        times = 2
+    }
+
+    override fun draw(g: Graphics?) {
+        super.draw(g)
+        g?.color = Color.CYAN
+        drawTank(g)
+    }
+
+    override fun onTick() {
+        super.onTick()
+        //移动位置、发射炮弹、碰撞检测
+        //方向随机，碰到墙壁的处理、碰到队友的处理
+        when (direction) {
+            Shells.DIRECTION_NORTH -> {
+                // 撞墙处理
+                // 1创建方向list,size=4,
+                // 2当一个方向撞墙，移除这个方向，在剩下的方向中随机，
+                // 3如果新的方向还撞墙，重复步骤2，直到找到可以通行的方向(必然有可通行方向)
+                direction = adjustDirection(direction)
+                if (y <= Ground.TITLE_H) {
+                    y = Ground.TITLE_H
+                    transfer(0, 0)
+                } else {
+                    var yOffset = 0
+                    yOffset = if (y - Ground.TITLE_H < times * speed) {
+                        y - Ground.TITLE_H
+                    } else {
+                        -times * speed
+                    }
+                    transfer(0, yOffset)
+                }
+//                if (x < 0) {
+//
+//                } else if (x > ground.width) {
+//
+//                }
+//                if (y < 0) {
+//
+//                } else if (y > ground.height) {
+//
+//                }
+//                transfer(0, -1 * speed)
+            }
+
+            Shells.DIRECTION_SOUTH -> {
+                direction = adjustDirection(direction)
+//                transfer(0, 1 * speed)
+                if (y >= ground.height) {
+                    y = ground.height
+                    transfer(0, 0)
+                } else {
+                    var yOffset = 0
+                    yOffset = if (ground.height - Tank.SIZE - y < times * speed) {
+                        ground.height - Tank.SIZE - y
+                    } else {
+                        times * speed
+                    }
+                    transfer(0, yOffset)
+                }
+            }
+
+            Shells.DIRECTION_WEST -> {
+                direction = adjustDirection(direction)
+//                transfer(-1 * speed, 0)
+                if (x <= 0) {
+                    x = 0
+                    transfer(0, 0)
+                } else {
+                    var xOffset = 0
+                    //当前坐标与边界的距离不足一步(取决于速度)的距离
+                    xOffset = if (x < times * speed) {
+                        -x
+                    } else {
+                        -times * speed
+                    }
+                    transfer(xOffset, 0)
+                }
+            }
+
+            Shells.DIRECTION_EAST -> {
+                direction = adjustDirection(direction)
+//                transfer(1 * speed, 0)
+                if (x >= ground.width) {
+                    x = ground.width
+                    transfer(0, 0)
+                } else {
+                    var xOffset = 0
+                    //注意车身的尺寸不能忽略
+                    xOffset = if ((ground.width - Tank.SIZE - x) < (times * speed)) {
+                        ground.width - Tank.SIZE - x
+                    } else {
+                        times * speed
+                    }
+                    transfer(xOffset, 0)
+                }
+            }
+        }
+    }
+
+    override fun isOut(): Boolean {
+        if (x <= 0 || x + SIZE >= ground.width) {
+            return true
+        }
+
+        if (y <= Ground.TITLE_H || y + SIZE >= ground.height) {
+            return true
+        }
+
+        return false
+    }
+
+    /**
+     * 如果一个方向撞墙，直接在剩余的方向中随机选择一个方向，简单的进行处理
+     */
+    private fun adjustDirection(direction: Int): Int {
+        return if (isOut()) {
+            var str = logstr(direction)
+            //println("^-^ is out, dir is $direction, $str x is $x, y is $y")
+            var directionList = arrayListOf(
+                Shells.DIRECTION_NORTH,
+                Shells.DIRECTION_SOUTH,
+                Shells.DIRECTION_WEST,
+                Shells.DIRECTION_EAST
+            )
+            if (x <= 0) {
+                directionList.remove(Shells.DIRECTION_WEST)
+            }
+            if (x + SIZE >= ground.width) {
+                directionList.remove(Shells.DIRECTION_EAST)
+            }
+            if (y <= Ground.TITLE_H) {
+                directionList.remove(Shells.DIRECTION_NORTH)
+            }
+            if (y + SIZE > ground.height) {
+                directionList.remove(Shells.DIRECTION_SOUTH)
+            }
+
+            var index = r.nextInt(directionList.size)
+
+            logstr(directionList[index])
+            directionList[index]
+        } else {
+            //println("in the ground, dir is $direction, x is $x, y is $y")
+            direction
+        }
+    }
+
+    private fun logstr(d: Int) {
+        var str1 = ""
+        when (d) {
+            Shells.DIRECTION_NORTH -> {
+                str1 = "north"
+            }
+
+            Shells.DIRECTION_SOUTH -> {
+                str1 = "south"
+            }
+
+            Shells.DIRECTION_WEST -> {
+                str1 = "west"
+            }
+
+            Shells.DIRECTION_EAST -> {
+                str1 = "east"
+            }
+
+            else -> {
+            }
+        }
+        println("new dir is ${str1}")
+    }
+}
