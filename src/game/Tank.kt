@@ -1,14 +1,12 @@
 package game
 
+import java.applet.Applet
+import java.applet.AudioClip
 import java.awt.Color
 import java.awt.Graphics
-import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.Toolkit
 import java.awt.event.KeyEvent
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 
 /**
  * 坦克，根据给定的坐标绘制一个坦克的俯视图
@@ -20,6 +18,7 @@ class Tank(input: Input) : AbstractTank() {
     private var input: Input
 
     var observer: GOObserver? = null
+    var fireAC: AudioClip? = null
 
     companion object {
         const val SIZE = 50
@@ -30,6 +29,7 @@ class Tank(input: Input) : AbstractTank() {
         x = 100
         y = 100
         this.input = input
+        fireAC = Applet.newAudioClip(javaClass.getResource("./../Gunfire.wav"))
     }
 
     override fun draw(g: Graphics?) {
@@ -131,6 +131,7 @@ class Tank(input: Input) : AbstractTank() {
                 sh.direction = direction
                 shellsList.add(sh)
                 observer?.born(sh)
+                fireAC?.play()
             }
         }
 
