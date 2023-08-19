@@ -49,13 +49,11 @@ class EnemyTank(ground: Ground) : AbstractTank() {
     }
 
     override fun draw(g: Graphics?) {
-        super.draw(g)
         g?.color = Color.CYAN
         drawTank(g)
     }
 
     override fun onTick() {
-        super.onTick()
         //移动位置、发射炮弹、碰撞检测
         //方向随机，碰到墙壁的处理、碰到队友的处理
         when (direction) {

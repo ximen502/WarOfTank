@@ -29,17 +29,20 @@ class Tank(input: Input) : AbstractTank() {
         x = 100
         y = 100
         this.input = input
+//        println(javaClass.toString())
+//        var resource = javaClass.getResource("")
+//        println(resource)
+//        var resource2 = javaClass.getResource("./../Gunfire.wav")
+//        println(resource2)
         fireAC = Applet.newAudioClip(javaClass.getResource("./../Gunfire.wav"))
     }
 
     override fun draw(g: Graphics?) {
-        super.draw(g)
         g?.color = Color.YELLOW
         drawTank(g)
     }
 
     override fun onTick() {
-        super.onTick()
         if (input.getKeyDown(KeyEvent.VK_LEFT) == true) {
             direction = Shells.DIRECTION_WEST
             if (x <= 0) {

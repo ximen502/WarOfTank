@@ -4,13 +4,14 @@ import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.event.KeyEvent
 import java.util.*
+import javax.imageio.ImageIO
 
 /**
  * 抽象的坦克类，一些公共行为或属性抽取
  *
  * @author ximen502
  */
-open class AbstractTank : GameObject() {
+abstract class AbstractTank : GameObject() {
 
     // 坦克前进的方向
     protected var direction = 0

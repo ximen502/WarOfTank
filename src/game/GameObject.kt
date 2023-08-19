@@ -2,7 +2,7 @@ package game
 
 import java.awt.Graphics
 
-open class GameObject {
+abstract class GameObject {
     var id = 0L
     var x: Int = 0
     var y: Int = 0
@@ -18,9 +18,9 @@ open class GameObject {
         this.y += yOffset
     }
 
-    open fun draw(g: Graphics?) {}
+    abstract fun draw(g: Graphics?)
 
-    open fun onTick() {}
+    abstract fun onTick()
 
     open fun isOut(): Boolean {
         if (x < 0 || x > ground.width){

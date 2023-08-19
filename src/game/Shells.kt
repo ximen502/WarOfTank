@@ -18,7 +18,6 @@ class Shells : GameObject() {
     }
 
     override fun draw(g: Graphics?) {
-        super.draw(g)
         var g2 = g as Graphics2D
 //        g2.fillRect(x, y, 20, 20)
         // 炮弹直径
@@ -27,7 +26,6 @@ class Shells : GameObject() {
     }
 
     override fun onTick() {
-        super.onTick()
         when (direction) {
             DIRECTION_NORTH -> transfer(0, -speed)
             DIRECTION_SOUTH -> transfer(0, speed)
