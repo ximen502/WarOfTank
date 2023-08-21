@@ -14,7 +14,7 @@ import javax.imageio.ImageIO
 abstract class AbstractTank : GameObject() {
 
     // 坦克前进的方向
-    protected var direction = 0
+    var direction = 0
 
     // 炮弹初始位置坐标
     protected var shellsX = 0

@@ -213,6 +213,6 @@ class EnemyTank(ground: Ground) : AbstractTank() {
             else -> {
             }
         }
-        println("new dir is ${str1}")
+        //println("new dir is ${str1}")
     }
 }

@@ -41,7 +41,7 @@ class Input : KeyListener {
                 // do nothing
             }
         }
-        println("-----------------------${e?.keyCode}")
+        println("-----------------------")//${e?.keyCode}
     }
 
     fun getKeyDown(keyCode: Int): Boolean? {

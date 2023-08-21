@@ -6,6 +6,10 @@ abstract class GameObject {
     var id = 0L
     var x: Int = 0
     var y: Int = 0
+
+    var w: Int = 0
+    var h: Int = 0
+
     open var ground: Ground = Ground(0, 0)
 
     fun setPosition(x: Int, y: Int) {

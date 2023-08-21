@@ -24,9 +24,13 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     private var ground: Ground//? = null
 
+    private var player: Tank
+
     //    var list = mutableListOf<GameObject>()
     //为解决ConcurrentModificationException，使用了如下的线程安全的容器类
     var list = CopyOnWriteArrayList<GameObject>()
+    // 瓦片地图容器
+    var tileList = mutableListOf<Brick>()
 
     private var input: Input
 
@@ -44,10 +48,12 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         initMap()
 
-        var sp = Tank(input)
-        sp.ground = ground
-        sp.observer = this
-        list.add(sp)
+        player = Tank(input)
+        player.w = 50
+        player.h = 50
+        player.ground = ground
+        player.observer = this
+        list.add(player)
 
         darkAI = DarkAI()
 
@@ -88,34 +94,114 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 //        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 //        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 //        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        val mapArray = Array(15) { ByteArray(19) }
-        for (i in mapArray.indices) {
-            if (i in 6..8) {
-                continue
-            }
-            if (i == 14){
-                continue
-            }
-            for (j in mapArray[i].indices) {
-                if (i == 0) {
-                    mapArray[i][j] = 0
-                } else {
-                    if (j % 2 == 0) {
-                        mapArray[i][j] = 1
+        // test map
+        val mapArray = arrayOf(
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        )
 
-                        var brick = Brick()
-                        brick.x = 50 * j
-                        brick.y = 50 * i
-                        brick.ground = ground
-                        list.add(brick)
-                    }
+        for (i in mapArray.indices) {
+            for (j in mapArray[i].indices) {
+                if (mapArray[i][j].toInt() == 1) {
+                    var brick = Brick()
+                    brick.x = 50 * j
+                    brick.y = 50 * i
+                    brick.w = 50
+                    brick.h = 50
+                    brick.ground = ground
+                    list.add(brick)
+                    tileList.add(brick)
                 }
             }
-
         }
+
+        // good map
+//        val mapArray = Array(15) { ByteArray(19) }
+//        for (i in mapArray.indices) {
+//            if (i in 6..8) {
+//                break
+//                //continue
+//            }
+//            if (i == 14){
+//                continue
+//            }
+//            for (j in mapArray[i].indices) {
+//                if (i == 0) {
+//                    mapArray[i][j] = 0
+//                } else {
+//                    if (j % 2 == 0) {
+//                        mapArray[i][j] = 1
+//
+//                        var brick = Brick()
+//                        brick.x = 50 * j
+//                        brick.y = 50 * i
+//                        brick.ground = ground
+//                        list.add(brick)
+//                    }
+//                }
+//            }
+//
+//        }
         for (i in mapArray.indices) {
             println(Arrays.toString(mapArray[i]))
         }
+    }
+
+    private fun detectCollision() {
+        tileList.forEachIndexed { index, tile ->
+            val tcx = tile.x + tile.w / 2
+            val pcx = player.x + player.w / 2
+            val tpwhalf = (tile.w + player.w) / 2
+
+            val tcy = tile.y + tile.h / 2
+            val pcy = player.y + player.h / 2
+            val tphhalf = (tile.h + player.h) / 2
+
+            if (Math.abs(tcx - pcx) <= tpwhalf && Math.abs(tcy - pcy) <= tphhalf) {
+                println("--碰撞--${index}")
+                when (player.direction) {
+                    Shells.DIRECTION_NORTH -> {
+                        println("上面撞墙了，边界坐标y:${tile.y + tile.h}")
+                    }
+                    Shells.DIRECTION_SOUTH -> {
+                        println("下面撞墙了，边界坐标y:${tile.y}")
+                    }
+                    Shells.DIRECTION_WEST -> {
+                        println("左面撞墙了，边界坐标x:${tile.x + tile.w}")
+                    }
+                    Shells.DIRECTION_EAST -> {
+                        println("右面撞墙了，边界坐标x:${tile.x}")
+                    }
+                    else -> {}
+                }
+            }
+        }
+//        for (tile in tileList) {
+//            val tcx = tile.x + tile.w / 2
+//            val pcx = player.x + player.w / 2
+//            val tpwhalf = (tile.w + player.w) / 2
+//
+//            val tcy = tile.y + tile.h / 2
+//            val pcy = player.y + player.h / 2
+//            val tphhalf = (tile.h + player.h) / 2
+//
+//            if (Math.abs(tcx - pcx) <= tpwhalf && Math.abs(tcy - pcy) <= tphhalf) {
+//                println("--碰撞${tile}")
+//            }
+//        }
     }
 
     private fun createWindow() {
@@ -156,9 +242,22 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             gameObject.onTick()
         }
 
+        //////////////////方便调试的网格线
+        var color = tempGraphics?.color
+        tempGraphics?.color = Color.GRAY
+        for (i in 0 until 19) {
+            tempGraphics?.drawLine(50 * i, 0, 50 * i, 750)
+            for (j in 0 until 15) {
+                tempGraphics?.drawLine(0, 50 * j, 19 * 50, 50 * j)
+            }
+        }
+        tempGraphics?.color = color
+        ///////////////////end方便调试的网格线
         g?.drawImage(tempImage, 0, 0, null)
 
         darkAI?.pushTank(ground, this)
+
+        detectCollision()
     }
 
     override fun born(go: GameObject?) {
