@@ -39,6 +39,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         ground = Ground(w, h)
 
         input = Input()
+        input.frame = this@GameWindow
         addKeyListener(input)
 
         initMap()
