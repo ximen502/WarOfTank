@@ -12,23 +12,26 @@ import java.awt.event.KeyEvent
  * 坦克，根据给定的坐标绘制一个坦克的俯视图
  * 矩形车身+圆形炮台+矩形炮筒
  */
-class Tank(input: Input) : AbstractTank() {
+class Tank(input: Input, ground: Ground) : AbstractTank() {
     private var image: Image = Toolkit.getDefaultToolkit().createImage("image/Snow.png")
 
     private var input: Input
 
     var observer: GOObserver? = null
     var fireAC: AudioClip? = null
+    val mapArray = CP.mapArray
 
     companion object {
         const val SIZE = 50
     }
 
     init {
+        this.ground = ground
         println("w:${ground.width}")
-        x = 100
-        y = 100
+        x = ground.width / 2 - (SIZE * 2.5f).toInt()
+        y = ground.height - SIZE
         this.input = input
+        times = 2
 //        println(javaClass.toString())
 //        var resource = javaClass.getResource("")
 //        println(resource)
@@ -45,84 +48,115 @@ class Tank(input: Input) : AbstractTank() {
     override fun onTick() {
         if (input.getKeyDown(KeyEvent.VK_LEFT) == true) {
             direction = Shells.DIRECTION_WEST
-            if (x <= 0) {
-                x = 0
-                transfer(0, 0)
-            } else {
-                var xOffset = 0
-                //当前坐标与边界的距离不足一步(取决于速度)的距离
-                xOffset = if (x < times * speed) {
-                    -x
+            var xGrid = x / SIZE
+            var yGrid = y / SIZE
+            var xNext = if (xGrid - 1 <= 0) 0 else xGrid - 1
+
+            //println("x:$xGrid, y:$yGrid, next xGrid:${xNext} :${mapArray[yGrid][xNext]}")
+            if (mapArray[yGrid][xNext].toInt() == 1) {
+                if (x <= xGrid * SIZE) {
+                    x = xGrid * SIZE
+                    transfer(0, 0)
                 } else {
-                    -times * speed
+                    var xOffset = (-times * speed).toInt()
+                    transfer(xOffset, 0)
                 }
-                transfer(xOffset, 0)
+            } else {
+                if (x <= 0) {
+                    x = 0
+                    transfer(0, 0)
+                } else {
+                    var xOffset = (-times * speed).toInt()
+                    transfer(xOffset, 0)
+                }
             }
         } else if (input.getKeyDown(KeyEvent.VK_RIGHT) == true) {
             direction = Shells.DIRECTION_EAST
-//            println("x:$x")
-            if (x >= ground.width) {
-                x = ground.width
-                transfer(0, 0)
-            } else {
-                var xOffset = 0
-                //注意车身的尺寸不能忽略
-                xOffset = if ((ground.width - SIZE - x) < (times * speed)) {
-                    ground.width - SIZE - x
-                } else {
-                    times * speed
+            var xGrid = x / SIZE
+            var yGrid = y / SIZE
+            var xNext = if (xGrid + 1 >= CP.C - 1) CP.C - 1 else xGrid + 1
+
+            //println("x:$xGrid, y:$yGrid, next xGrid:${xNext} :${mapArray[yGrid][xNext]}")
+            if (mapArray[yGrid][xNext].toInt() == 1) {
+                if (x >= xGrid * SIZE/*x + SIZE >= xNext * SIZE*/) {
+                    println("111")
+                    x = xGrid * SIZE
+                    transfer(0, 0)
+                } else {//测试发现没执行，然而程序逻辑正常
+                    println("222")
+                    var xOffset = (times * speed).toInt()
+                    transfer(xOffset, 0)
                 }
-                transfer(xOffset, 0)
+            } else {
+                if (x + SIZE >= ground.width) {
+                    println("333")
+                    x = ground.width - SIZE
+                    transfer(0, 0)
+                } else {
+                    println("444")
+                    var xOffset = (times * speed).toInt()
+                    transfer(xOffset, 0)
+                }
             }
-//            println("x=:$x")
         } else if (input.getKeyDown(KeyEvent.VK_UP) == true) {
             direction = Shells.DIRECTION_NORTH
-            if (y <= Ground.TITLE_H) {
-                y = Ground.TITLE_H
-                transfer(0, 0)
-            } else {
-                var yOffset = 0
-                yOffset = if (y - Ground.TITLE_H < times * speed) {
-                    y - Ground.TITLE_H
+            var xGrid = x / SIZE
+            var yGrid = y / SIZE
+            var yNext = if (yGrid - 1 <= 0) 0 else yGrid - 1
+
+            println(mapArray[yGrid].contentToString())
+            println("x:$xGrid, y:$yGrid, next yGrid:${yNext} :${mapArray[yNext][xGrid]}")
+            if (mapArray[yNext][xGrid].toInt() == 1) {
+                if (y <= yGrid * SIZE) {
+                    println("up111")
+                    y = yGrid * SIZE
+                    transfer(0, 0)
                 } else {
-                    -times * speed
+                    println("up222")
+                    var yOffset = (-times * speed).toInt()
+                    transfer(0, yOffset)
                 }
-                transfer(0, yOffset)
+            } else {
+                if (y <= Ground.TITLE_H) {
+                    println("up333")
+                    y = Ground.TITLE_H
+                    transfer(0, 0)
+                } else {
+                    println("up444")
+                    var yOffset = (-times * speed).toInt()
+                    transfer(0, yOffset)
+                }
             }
         } else if (input.getKeyDown(KeyEvent.VK_DOWN) == true) {
             direction = Shells.DIRECTION_SOUTH
-            if (y >= ground.height) {
-                y = ground.height
-                transfer(0, 0)
-            } else {
-                var yOffset = 0
-                yOffset = if (ground.height - SIZE - y < times * speed) {
-                    ground.height - SIZE - y
-                } else {
-                    times * speed
+            var xGrid = x / SIZE
+            var yGrid = y / SIZE
+            var yNext = if (yGrid + 1 >= CP.R - 1) CP.R - 1 else yGrid + 1
+
+            //println(mapArray[yGrid].contentToString())
+            //println("x:$xGrid, y:$yGrid, next yGrid:${yNext} :${mapArray[yNext][xGrid]}")
+            if (mapArray[yNext][xGrid].toInt() == 1) {
+                if (y + SIZE >= yGrid * SIZE) {
+                    println("down111")
+                    y = yGrid * SIZE
+                    transfer(0, 0)
+                } else {// 可以去掉，不影响逻辑
+                    println("down222")
+                    var yOffset = (times * speed).toInt()
+                    transfer(0, yOffset)
                 }
-                transfer(0, yOffset)
+            } else {
+                if (y + SIZE >= ground.height) {
+                    println("down333")
+                    y = ground.height - SIZE
+                    transfer(0, 0)
+                } else {
+                    println("down444")
+                    var yOffset = (times * speed).toInt()
+                    transfer(0, yOffset)
+                }
             }
         }
-
-//        when (direction) {
-//            Shells.DIRECTION_WEST -> {
-//            }
-//
-//            Shells.DIRECTION_EAST -> {
-//
-//            }
-//
-//            Shells.DIRECTION_NORTH -> {
-//
-//            }
-//
-//            Shells.DIRECTION_SOUTH -> {
-//
-//            }
-//
-//            else -> {}
-//        }
 
         //shells born
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {

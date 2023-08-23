@@ -45,7 +45,7 @@ class EnemyTank(ground: Ground) : AbstractTank() {
             }
         }
         direction = 2.0.pow(d.toDouble()).toInt()
-        times = 2
+        times = 1
     }
 
     override fun draw(g: Graphics?) {
@@ -71,7 +71,7 @@ class EnemyTank(ground: Ground) : AbstractTank() {
                     yOffset = if (y - Ground.TITLE_H < times * speed) {
                         y - Ground.TITLE_H
                     } else {
-                        -times * speed
+                        (-times * speed).toInt()
                     }
                     transfer(0, yOffset)
                 }
@@ -99,7 +99,7 @@ class EnemyTank(ground: Ground) : AbstractTank() {
                     yOffset = if (ground.height - Tank.SIZE - y < times * speed) {
                         ground.height - Tank.SIZE - y
                     } else {
-                        times * speed
+                        (times * speed).toInt()
                     }
                     transfer(0, yOffset)
                 }
@@ -117,7 +117,7 @@ class EnemyTank(ground: Ground) : AbstractTank() {
                     xOffset = if (x < times * speed) {
                         -x
                     } else {
-                        -times * speed
+                        (-times * speed).toInt()
                     }
                     transfer(xOffset, 0)
                 }
@@ -135,7 +135,7 @@ class EnemyTank(ground: Ground) : AbstractTank() {
                     xOffset = if ((ground.width - Tank.SIZE - x) < (times * speed)) {
                         ground.width - Tank.SIZE - x
                     } else {
-                        times * speed
+                        (times * speed).toInt()
                     }
                     transfer(xOffset, 0)
                 }

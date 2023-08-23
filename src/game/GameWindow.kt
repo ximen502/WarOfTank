@@ -48,10 +48,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         initMap()
 
-        player = Tank(input)
+        player = Tank(input, ground)
         player.w = 50
         player.h = 50
-        player.ground = ground
+        //player.ground = ground
         player.observer = this
         list.add(player)
 
@@ -95,23 +95,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 //        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 //        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         // test map
-        val mapArray = arrayOf(
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-        )
+        val mapArray = CP.mapArray
 
         for (i in mapArray.indices) {
             for (j in mapArray[i].indices) {
@@ -129,7 +113,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         }
 
         // good map
-//        val mapArray = Array(15) { ByteArray(19) }
+//        val mapArray = Array(CP.R) { ByteArray(CP.C) }
 //        for (i in mapArray.indices) {
 //            if (i in 6..8) {
 //                break
@@ -155,9 +139,9 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 //            }
 //
 //        }
-        for (i in mapArray.indices) {
-            println(Arrays.toString(mapArray[i]))
-        }
+//        for (i in mapArray.indices) {
+//            println(Arrays.toString(mapArray[i]))
+//        }
     }
 
     private fun detectCollision() {
@@ -170,24 +154,24 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             val pcy = player.y + player.h / 2
             val tphhalf = (tile.h + player.h) / 2
 
-            if (Math.abs(tcx - pcx) <= tpwhalf && Math.abs(tcy - pcy) <= tphhalf) {
-                println("--碰撞--${index}")
-                when (player.direction) {
-                    Shells.DIRECTION_NORTH -> {
-                        println("上面撞墙了，边界坐标y:${tile.y + tile.h}")
-                    }
-                    Shells.DIRECTION_SOUTH -> {
-                        println("下面撞墙了，边界坐标y:${tile.y}")
-                    }
-                    Shells.DIRECTION_WEST -> {
-                        println("左面撞墙了，边界坐标x:${tile.x + tile.w}")
-                    }
-                    Shells.DIRECTION_EAST -> {
-                        println("右面撞墙了，边界坐标x:${tile.x}")
-                    }
-                    else -> {}
-                }
-            }
+//            if (Math.abs(tcx - pcx) <= tpwhalf && Math.abs(tcy - pcy) <= tphhalf) {
+//                println("--碰撞--${index}")
+//                when (player.direction) {
+//                    Shells.DIRECTION_NORTH -> {
+//                        println("上面撞墙了，边界坐标y:${tile.y + tile.h}")
+//                    }
+//                    Shells.DIRECTION_SOUTH -> {
+//                        println("下面撞墙了，边界坐标y:${tile.y}")
+//                    }
+//                    Shells.DIRECTION_WEST -> {
+//                        println("左面撞墙了，边界坐标x:${tile.x + tile.w}")
+//                    }
+//                    Shells.DIRECTION_EAST -> {
+//                        println("右面撞墙了，边界坐标x:${tile.x}")
+//                    }
+//                    else -> {}
+//                }
+//            }
         }
 //        for (tile in tileList) {
 //            val tcx = tile.x + tile.w / 2
@@ -245,10 +229,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         //////////////////方便调试的网格线
         var color = tempGraphics?.color
         tempGraphics?.color = Color.GRAY
-        for (i in 0 until 19) {
-            tempGraphics?.drawLine(50 * i, 0, 50 * i, 750)
-            for (j in 0 until 15) {
-                tempGraphics?.drawLine(0, 50 * j, 19 * 50, 50 * j)
+        for (i in 0 until CP.C) {
+            tempGraphics?.drawLine(50 * i, 0, 50 * i, h)
+            for (j in 0 until CP.R) {
+                tempGraphics?.drawLine(0, 50 * j, w, 50 * j)
             }
         }
         tempGraphics?.color = color
@@ -257,7 +241,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         darkAI?.pushTank(ground, this)
 
-        detectCollision()
+        //detectCollision()
     }
 
     override fun born(go: GameObject?) {

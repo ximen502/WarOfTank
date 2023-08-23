@@ -20,7 +20,7 @@ abstract class AbstractTank : GameObject() {
     protected var shellsX = 0
     protected var shellsY = 0
 
-    protected var speed = 2
+    protected var speed = 2.5
     //炮弹速度倍数
     protected var times = 4
     // 炮弹容器
