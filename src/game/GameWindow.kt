@@ -1,10 +1,10 @@
 package game
 
 import game.map.Brick
+import game.map.Iron
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
-import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.swing.JFrame
 
@@ -30,7 +30,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     //为解决ConcurrentModificationException，使用了如下的线程安全的容器类
     var list = CopyOnWriteArrayList<GameObject>()
     // 瓦片地图容器
-    var tileList = mutableListOf<Brick>()
+    var tileList = mutableListOf<GameObject>()
 
     private var input: Input
 
@@ -99,7 +99,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         for (i in mapArray.indices) {
             for (j in mapArray[i].indices) {
-                if (mapArray[i][j].toInt() == 1) {
+                val tile = mapArray[i][j].toInt()
+                if (tile == 1) {
                     var brick = Brick()
                     brick.x = 50 * j
                     brick.y = 50 * i
@@ -108,6 +109,15 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     brick.ground = ground
                     list.add(brick)
                     tileList.add(brick)
+                } else if (tile == 2) {
+                    var iron = Iron()
+                    iron.x = 50 * j
+                    iron.y = 50 * i
+                    iron.w = 50
+                    iron.h = 50
+                    iron.ground = ground
+                    list.add(iron)
+                    tileList.add(iron)
                 }
             }
         }

@@ -13,6 +13,9 @@ import javax.imageio.ImageIO
  */
 abstract class AbstractTank : GameObject() {
 
+    companion object {
+        const val SIZE = CP.SIZE
+    }
     // 坦克前进的方向
     var direction = 0
 
@@ -29,12 +32,12 @@ abstract class AbstractTank : GameObject() {
     protected fun drawTank(g: Graphics?) {
         var g2 = g as Graphics2D
 
-        val offset = Tank.SIZE / 2
+        val offset = SIZE / 2
         //车身
-        g2?.drawRect(x /*- offset*/, y /*- offset*/, Tank.SIZE, Tank.SIZE)
+        g2?.drawRect(x /*- offset*/, y /*- offset*/, SIZE, SIZE)
         //炮台
         var offsetOval = offset / 2
-        var sizeOval = Tank.SIZE / 2
+        var sizeOval = SIZE / 2
         g2?.drawOval(x + offsetOval, y + offsetOval, sizeOval, sizeOval)
 
         //炮筒(需要根据行走方向调整指向)

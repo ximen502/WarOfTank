@@ -16,18 +16,7 @@ class EnemyTank(ground: Ground) : AbstractTank() {
     //    private var input: Input
     var observer: GOObserver? = null
 
-//    //炮弹初始位置坐标
-//    var shellsX = 0
-//    var shellsY = 0
-
     private var r = Random()
-
-//    // 坦克前进的方向
-//    var direction = 0
-
-    companion object {
-        const val SIZE = 50
-    }
 
     init {
         x = 0
@@ -75,17 +64,6 @@ class EnemyTank(ground: Ground) : AbstractTank() {
                     }
                     transfer(0, yOffset)
                 }
-//                if (x < 0) {
-//
-//                } else if (x > ground.width) {
-//
-//                }
-//                if (y < 0) {
-//
-//                } else if (y > ground.height) {
-//
-//                }
-//                transfer(0, -1 * speed)
             }
 
             Shells.DIRECTION_SOUTH -> {
@@ -96,8 +74,8 @@ class EnemyTank(ground: Ground) : AbstractTank() {
                     transfer(0, 0)
                 } else {
                     var yOffset = 0
-                    yOffset = if (ground.height - Tank.SIZE - y < times * speed) {
-                        ground.height - Tank.SIZE - y
+                    yOffset = if (ground.height - SIZE - y < times * speed) {
+                        ground.height - SIZE - y
                     } else {
                         (times * speed).toInt()
                     }
@@ -132,8 +110,8 @@ class EnemyTank(ground: Ground) : AbstractTank() {
                 } else {
                     var xOffset = 0
                     //注意车身的尺寸不能忽略
-                    xOffset = if ((ground.width - Tank.SIZE - x) < (times * speed)) {
-                        ground.width - Tank.SIZE - x
+                    xOffset = if ((ground.width - SIZE - x) < (times * speed)) {
+                        ground.width - SIZE - x
                     } else {
                         (times * speed).toInt()
                     }

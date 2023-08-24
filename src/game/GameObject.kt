@@ -10,6 +10,16 @@ abstract class GameObject {
     var w: Int = 0
     var h: Int = 0
 
+    var cx = 0
+        get() = x + w / 2
+    var cy = 0
+        get() = y + h / 2
+
+    var maxX = 0
+        get() = x + w
+    var maxY = 0
+        get() = y + h
+
     open var ground: Ground = Ground(0, 0)
 
     fun setPosition(x: Int, y: Int) {
