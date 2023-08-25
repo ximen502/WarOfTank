@@ -2,6 +2,9 @@ package game.map
 
 import game.GameObject
 import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.Image
+import javax.imageio.ImageIO
 
 /**
  * @Class Grass
@@ -11,11 +14,23 @@ import java.awt.Graphics
  * @Version 1.0
  */
 class Grass : GameObject() {
+    //1.实现草地绘制
+    //2.确定全局地图的样貌
+    //3.根据全局样貌进行地图初始化
+    var grass: Image? = null
+
+    init {
+        val path = javaClass.getResource("../image/grass.png")
+        println(path)
+        grass = ImageIO.read(path)
+    }
+
     override fun draw(g: Graphics?) {
-        TODO("Not yet implemented")
+        val g2 = g as Graphics2D
+        g2.drawImage(grass, x, y, null)
     }
 
     override fun onTick() {
-        TODO("Not yet implemented")
+
     }
 }

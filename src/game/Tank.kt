@@ -56,7 +56,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             var mod = y % SIZE
             println("mod:$mod")
             if (mod == 0) {//1
-                if (mapArray[yGrid][xNext].toInt() == 1) {
+                if (mapArray[yGrid][xNext].toInt() in 1..3) {
                     if (x <= xGrid * SIZE) {
                         x = xGrid * SIZE
                         transfer(0, 0)
@@ -77,7 +77,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                 val yCur = mapArray[yGrid][xNext].toInt()
                 val yNext = mapArray[yGrid + 1][xNext].toInt()
                 println("yCur:$yCur, yNext:$yNext")
-                if (yCur == 1 || yNext == 1) {
+                if (yCur in 1..3 || yNext in 1..3) {
                     if (x <= xGrid * SIZE) {
                         x = xGrid * SIZE
                         transfer(0, 0)
@@ -110,7 +110,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             println("mod:$mod")
             if (mod == 0) {//1
                 //println("x:$xGrid, y:$yGrid, next xGrid:${xNext} :${mapArray[yGrid][xNext]}")
-                if (mapArray[yGrid][xNext].toInt() == 1) {
+                if (mapArray[yGrid][xNext].toInt() in 1..3) {
                     if (x >= xGrid * SIZE) {
                         //println("r111")
                         x = xGrid * SIZE
@@ -135,7 +135,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                 val yCur = mapArray[yGrid][xNext].toInt()
                 val yNext = mapArray[yGrid + 1][xNext].toInt()
                 println("yCur:$yCur, yNext:$yNext")
-                if (yCur == 1 || yNext == 1) {
+                if (yCur in 1..3 || yNext in 1..3) {
                     if (x >= xGrid * SIZE) {
                         //println("r111")
                         x = xGrid * SIZE
@@ -171,7 +171,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             println("x:$xGrid, y:$yGrid, next yGrid:${yNext} :${mapArray[yNext][xGrid]}")
             var mod = x % SIZE
             if (mod == 0) {//1
-                if (mapArray[yNext][xGrid].toInt() == 1) {
+                if (mapArray[yNext][xGrid].toInt() in 1..3) {
                     if (y <= yGrid * SIZE) {
                         //println("up111")
                         y = yGrid * SIZE
@@ -193,7 +193,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                     }
                 }
             } else {//2
-                if (mapArray[yNext][xGrid].toInt() == 1 || mapArray[yNext][xGrid + 1].toInt() == 1) {
+                if (mapArray[yNext][xGrid].toInt() in 1..3 || mapArray[yNext][xGrid + 1].toInt() in 1..3) {
                     if (y <= yGrid * SIZE) {
                         //println("up111")
                         y = yGrid * SIZE
@@ -229,7 +229,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             println("x:$xGrid, y:$yGrid, next yGrid:${yNext} :${mapArray[yNext][xGrid]}")
             var mod = x % SIZE
             if (mod == 0) {//1
-                if (mapArray[yNext][xGrid].toInt() == 1) {
+                if (mapArray[yNext][xGrid].toInt() in 1..3) {
                     if (y + SIZE >= yGrid * SIZE) {
                         //println("down111")
                         y = yGrid * SIZE
@@ -251,7 +251,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                     }
                 }
             } else {//2
-                if (mapArray[yNext][xGrid].toInt() == 1 || mapArray[yNext][xGrid + 1].toInt() == 1) {
+                if (mapArray[yNext][xGrid].toInt() in 1..3 || mapArray[yNext][xGrid + 1].toInt() in 1..3) {
                     if (y + SIZE >= yGrid * SIZE) {
                         //println("down111")
                         y = yGrid * SIZE

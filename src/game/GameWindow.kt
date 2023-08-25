@@ -1,7 +1,9 @@
 package game
 
 import game.map.Brick
+import game.map.Grass
 import game.map.Iron
+import game.map.River
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
@@ -118,6 +120,24 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     iron.ground = ground
                     list.add(iron)
                     tileList.add(iron)
+                } else if (tile == 3) {
+                    var river = River()
+                    river.x = 50 * j
+                    river.y = 50 * i
+                    river.w = 50
+                    river.h = 50
+                    river.ground = ground
+                    list.add(river)
+                    tileList.add(river)
+                } else if (tile == 4) {
+                    var grass = Grass()
+                    grass.x = 50 * j
+                    grass.y = 50 * i
+                    grass.w = 50
+                    grass.h = 50
+                    grass.ground = ground
+                    list.add(grass)
+                    tileList.add(grass)
                 }
             }
         }
