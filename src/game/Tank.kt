@@ -21,11 +21,16 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
     var fireAC: AudioClip? = null
     val mapArray = CP.mapArray
 
+    //炮弹缓存
+    val shells = Shells()
     init {
         this.ground = ground
         println("w:${ground.width}")
         x = ground.width / 2 - (SIZE * 2.5f).toInt()
         y = ground.height - SIZE
+        direction = Shells.DIRECTION_NORTH
+        shellsX = cx - ptRadius / 2
+        shellsY = cy - ptLength
         this.input = input
         times = 2
 //        println(javaClass.toString())
@@ -279,7 +284,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {
             //println("control is press")
             if (shellsList.isEmpty()) {
-                var sh = Shells()
+                var sh = shells
                 sh.id = System.currentTimeMillis()
                 sh.setPosition(shellsX, shellsY)
                 sh.direction = direction

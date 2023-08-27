@@ -19,6 +19,11 @@ abstract class AbstractTank : GameObject() {
     // 坦克前进的方向
     var direction = 0
 
+    //炮筒(需要根据行走方向调整指向)
+    val ptRadius = 6
+    val ptLength = 36
+    val arc = 2
+
     // 炮弹初始位置坐标
     protected var shellsX = 0
     protected var shellsY = 0
@@ -40,11 +45,7 @@ abstract class AbstractTank : GameObject() {
         var sizeOval = SIZE / 2
         g2?.drawOval(x + offsetOval, y + offsetOval, sizeOval, sizeOval)
 
-        //炮筒(需要根据行走方向调整指向)
-        var ptRadius = 6
-        var ptLength = 36
-        var arc = 2
-
+        //炮筒
         if (direction == Shells.DIRECTION_WEST) {
             shellsX = x + offset - ptLength
             shellsY = y + offset - ptRadius / 2
