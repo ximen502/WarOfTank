@@ -30,5 +30,16 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
             thread = Thread(this, "[RenderThread]")
             thread?.start()
         }
+
+//        var timer = Timer(16) {
+//            println("timer start rendering")
+//            while (!exited) {
+//                _gameWindow?.repaint()
+////                sleep(interval)
+//            }
+//            println("timer stop rendering")
+//            _gameWindow?.exit()
+//        };
+//        timer.start()
     }
 }

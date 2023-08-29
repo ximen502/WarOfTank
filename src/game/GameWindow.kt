@@ -98,11 +98,12 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 //        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         // test map
         val mapArray = CP.mapArray
+        val tileArray = CP.tileArray
 
         for (i in mapArray.indices) {
             for (j in mapArray[i].indices) {
                 val tile = mapArray[i][j].toInt()
-                if (tile == 1) {
+                if (tile == CP.TILE_BRICK) {
                     var brick = Brick()
                     brick.x = 50 * j
                     brick.y = 50 * i
@@ -111,7 +112,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     brick.ground = ground
                     list.add(brick)
                     tileList.add(brick)
-                } else if (tile == 2) {
+                    tileArray[i][j] = brick
+                } else if (tile == CP.TILE_IRON) {
                     var iron = Iron()
                     iron.x = 50 * j
                     iron.y = 50 * i
@@ -120,7 +122,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     iron.ground = ground
                     list.add(iron)
                     tileList.add(iron)
-                } else if (tile == 3) {
+                    tileArray[i][j] = iron
+                } else if (tile == CP.TILE_RIVER) {
                     var river = River()
                     river.x = 50 * j
                     river.y = 50 * i
@@ -129,7 +132,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     river.ground = ground
                     list.add(river)
                     tileList.add(river)
-                } else if (tile == 4) {
+                    tileArray[i][j] = river
+                } else if (tile == CP.TILE_GRASS) {
                     var grass = Grass()
                     grass.x = 50 * j
                     grass.y = 50 * i
@@ -138,6 +142,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     grass.ground = ground
                     list.add(grass)
                     tileList.add(grass)
+                    tileArray[i][j] = grass
                 }
             }
         }
@@ -175,14 +180,14 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     }
 
     private fun detectCollision() {
-        tileList.forEachIndexed { index, tile ->
-            val tcx = tile.x + tile.w / 2
-            val pcx = player.x + player.w / 2
-            val tpwhalf = (tile.w + player.w) / 2
-
-            val tcy = tile.y + tile.h / 2
-            val pcy = player.y + player.h / 2
-            val tphhalf = (tile.h + player.h) / 2
+//        tileList.forEachIndexed { index, tile ->
+//            val tcx = tile.x + tile.w / 2
+//            val pcx = player.x + player.w / 2
+//            val tpwhalf = (tile.w + player.w) / 2
+//
+//            val tcy = tile.y + tile.h / 2
+//            val pcy = player.y + player.h / 2
+//            val tphhalf = (tile.h + player.h) / 2
 
 //            if (Math.abs(tcx - pcx) <= tpwhalf && Math.abs(tcy - pcy) <= tphhalf) {
 //                println("--碰撞--${index}")
@@ -202,7 +207,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 //                    else -> {}
 //                }
 //            }
-        }
+//        }
 //        for (tile in tileList) {
 //            val tcx = tile.x + tile.w / 2
 //            val pcx = player.x + player.w / 2
