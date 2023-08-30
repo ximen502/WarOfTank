@@ -2,10 +2,7 @@ package game
 
 import java.applet.Applet
 import java.applet.AudioClip
-import java.awt.Color
-import java.awt.Graphics
-import java.awt.Image
-import java.awt.Toolkit
+import java.awt.*
 import java.awt.event.KeyEvent
 
 /**
@@ -28,9 +25,12 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
         println("w:${ground.width}")
         x = ground.width / 2 - (SIZE * 2.5f).toInt()
         y = ground.height - SIZE
-        direction = Shells.DIRECTION_NORTH
-        shellsX = cx - ptRadius / 2
+        w = SIZE
+        h = SIZE
+        shellsX = cx - shells.w / 2
         shellsY = cy - ptLength
+        direction = Shells.DIRECTION_NORTH
+        //println("tank x:$x, y:$y, cx:$cx, cy:$cy, shells x:$shellsX, y:$shellsY")
         this.input = input
         times = 2
 //        println(javaClass.toString())
@@ -100,6 +100,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                     }
                 }
             }
+            //炮弹初始位置
+            shellsX = cx - ptLength
+            shellsY = cy - shells.h / 2
         } else if (input.getKeyDown(KeyEvent.VK_RIGHT) == true) {
             direction = Shells.DIRECTION_EAST
             var xGrid = x / SIZE
@@ -162,6 +165,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                     }
                 }
             }
+            //炮弹初始位置
+            shellsX = cx + ptLength
+            shellsY = cy - shells.h / 2
         } else if (input.getKeyDown(KeyEvent.VK_UP) == true) {
             direction = Shells.DIRECTION_NORTH
             var xGrid = x / SIZE
@@ -220,6 +226,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                     }
                 }
             }
+            //炮弹初始位置
+            shellsX = cx - shells.w / 2
+            shellsY = cy - ptLength
         } else if (input.getKeyDown(KeyEvent.VK_DOWN) == true) {
             direction = Shells.DIRECTION_SOUTH
             var xGrid = x / SIZE
@@ -278,16 +287,21 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                     }
                 }
             }
+            //炮弹初始位置
+            shellsX = cx - shells.w / 2
+            shellsY = cy + ptLength
         }
 
         //shells born
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {
-            //println("control is press")
+            println("control is press, fire in the hole. shellsList size:${shellsList.size}")
             if (shellsList.isEmpty()) {
                 var sh = shells
                 sh.id = System.currentTimeMillis()
+                sh.observer = observer
                 sh.setPosition(shellsX, shellsY)
                 sh.direction = direction
+                sh.isDestroyed = false
                 shellsList.add(sh)
                 observer?.born(sh)
                 fireAC?.play()
@@ -298,17 +312,44 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
         var iterator = shellsList.iterator()
         while (iterator.hasNext()) {
             var next = iterator.next()
-            if (next.x > ground.width || next.x < 0) {
-                observer?.die(next)
-                println("out xx")
-                iterator.remove()
-            }
+//            if (next.x > ground.width || next.x < 0) {
+//                observer?.die(next)
+//                println("out xx")
+//                iterator.remove()
+//            }
+//
+//            if (next.y > ground.height || next.y < 0) {
+//                observer?.die(next)
+//                println("out yy")
+//                iterator.remove()
+//            }
 
-            if (next.y > ground.height || next.y < 0) {
-                observer?.die(next)
-                println("out yy")
+            if (next.isDestroyed) {
+//                observer?.die(next)
+//                println("collision")
                 iterator.remove()
             }
         }
+    }
+
+    override fun drawTank(g: Graphics?) {
+        var g2 = g as Graphics2D
+
+        //车身
+        g2?.drawRect(x, y, SIZE, SIZE)
+        //炮台
+        g2?.drawOval(x + ptOffset, y + ptOffset, halfSize, halfSize)
+
+        //炮筒
+        if (direction == Shells.DIRECTION_WEST) {
+            g2?.fillRoundRect(cx - ptLength, cy - ptRadius / 2, ptLength, ptRadius, arc, arc)
+        } else if (direction == Shells.DIRECTION_EAST) {
+            g2?.fillRoundRect(cx, cy - ptRadius / 2, ptLength, ptRadius, arc, arc)
+        } else if (direction == Shells.DIRECTION_NORTH) {
+            g2?.fillRoundRect(cx - ptRadius / 2, cy - ptLength, ptRadius, ptLength, arc, arc)
+        } else if (direction == Shells.DIRECTION_SOUTH) {
+            g2?.fillRoundRect(cx - ptRadius / 2, cy, ptRadius, ptLength, arc, arc)
+        }
+
     }
 }

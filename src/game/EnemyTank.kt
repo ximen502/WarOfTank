@@ -193,4 +193,41 @@ class EnemyTank(ground: Ground) : AbstractTank() {
         }
         //println("new dir is ${str1}")
     }
+
+    override fun drawTank(g: Graphics?) {
+        var g2 = g as Graphics2D
+
+        val offset = SIZE / 2
+        //车身
+        g2?.drawRect(x /*- offset*/, y /*- offset*/, SIZE, SIZE)
+        //炮台
+        var offsetOval = offset / 2
+        var sizeOval = SIZE / 2
+        g2?.drawOval(x + offsetOval, y + offsetOval, sizeOval, sizeOval)
+
+        //炮筒(需要根据行走方向调整指向)
+        var ptRadius = 6
+        var ptLength = 36
+        var arc = 2
+
+        if (direction == Shells.DIRECTION_WEST) {
+            shellsX = x + offset - ptLength
+            shellsY = y + offset - ptRadius / 2
+            g2?.fillRoundRect(x + offset - ptLength, y + offset - ptRadius / 2, ptLength, ptRadius, arc, arc)
+        } else if (direction == Shells.DIRECTION_EAST) {
+            shellsX = x + offset + ptLength
+            shellsY = y + offset - ptRadius / 2
+            g2?.fillRoundRect(x + offset, y + offset - ptRadius / 2, ptLength, ptRadius, arc, arc)
+        } else if (direction == Shells.DIRECTION_NORTH) {
+            shellsX = x + offset - ptRadius / 2
+            shellsY = y + offset - ptLength
+            g2?.fillRoundRect(x + offset - ptRadius / 2, y + offset - ptLength, ptRadius, ptLength, arc, arc)
+        } else if (direction == Shells.DIRECTION_SOUTH) {
+            shellsX = x + offset - ptRadius / 2
+            shellsY = y + offset + ptLength
+            g2?.fillRoundRect(x + offset - ptRadius / 2, y + offset, ptRadius, ptLength, arc, arc)
+        }
+
+    }
+
 }

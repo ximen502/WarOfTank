@@ -105,16 +105,19 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 val tile = mapArray[i][j].toInt()
                 if (tile == CP.TILE_BRICK) {
                     var brick = Brick()
+                    brick.id = (i shl 8 or j).toLong()
                     brick.x = 50 * j
                     brick.y = 50 * i
                     brick.w = 50
                     brick.h = 50
                     brick.ground = ground
+                    brick.observer = this
                     list.add(brick)
                     tileList.add(brick)
                     tileArray[i][j] = brick
                 } else if (tile == CP.TILE_IRON) {
                     var iron = Iron()
+                    iron.id = (i shl 8 or j).toLong()
                     iron.x = 50 * j
                     iron.y = 50 * i
                     iron.w = 50
@@ -125,6 +128,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     tileArray[i][j] = iron
                 } else if (tile == CP.TILE_RIVER) {
                     var river = River()
+                    river.id = (i shl 8 or j).toLong()
                     river.x = 50 * j
                     river.y = 50 * i
                     river.w = 50
@@ -135,6 +139,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     tileArray[i][j] = river
                 } else if (tile == CP.TILE_GRASS) {
                     var grass = Grass()
+                    grass.id = (i shl 8 or j).toLong()
                     grass.x = 50 * j
                     grass.y = 50 * i
                     grass.w = 50
@@ -257,6 +262,9 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         clear(tempGraphics)
 
         for (gameObject in list) {
+//            if (gameObject.isDestroyed) {
+//                continue
+//            }
             gameObject.draw(tempGraphics)
             gameObject.onTick()
         }
@@ -283,13 +291,32 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         println("born")
         list.add(go!!)
     }
-
+    fun ok() {
+        val a = 15
+        val b = 19
+        val c = a shl 8 or b
+        println(c)
+        println(Integer.toHexString(c))
+        val d: Int
+        val e: Int
+        d = c shr 8
+        e = c and 0x000000ff
+        println(d)
+        println(e)
+    }
     override fun die(go: GameObject?) {
-        println("die")
+        println("die ${go?.javaClass.toString()}")
         for (gameObject in list) {
             if (gameObject.id == go?.id) {
                 list.remove(gameObject)
                 println("founded====")
+                // 将砖块和铁块从地图上去掉
+                if (go is Brick || go is Iron) {
+                    var i = (go!!.id shr 8).toInt()
+                    var j = (go!!.id and 0x00000000000000ff).toInt()
+                    CP.mapArray[i][j] = 0
+                    CP.tileArray[i][j] = null
+                }
                 break
             }
         }

@@ -20,6 +20,8 @@ abstract class GameObject {
     var maxY = 0
         get() = y + h
 
+    var isDestroyed = false
+
     open var ground: Ground = Ground(0, 0)
 
     fun setPosition(x: Int, y: Int) {
