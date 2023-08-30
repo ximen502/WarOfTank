@@ -291,19 +291,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         println("born")
         list.add(go!!)
     }
-    fun ok() {
-        val a = 15
-        val b = 19
-        val c = a shl 8 or b
-        println(c)
-        println(Integer.toHexString(c))
-        val d: Int
-        val e: Int
-        d = c shr 8
-        e = c and 0x000000ff
-        println(d)
-        println(e)
-    }
+
     override fun die(go: GameObject?) {
         println("die ${go?.javaClass.toString()}")
         for (gameObject in list) {
@@ -312,8 +300,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 println("founded====")
                 // 将砖块和铁块从地图上去掉
                 if (go is Brick || go is Iron) {
-                    var i = (go!!.id shr 8).toInt()
-                    var j = (go!!.id and 0x00000000000000ff).toInt()
+                    var i = (go.id shr 8).toInt()
+                    var j = (go.id and 0x00000000000000ff).toInt()
                     CP.mapArray[i][j] = 0
                     CP.tileArray[i][j] = null
                 }

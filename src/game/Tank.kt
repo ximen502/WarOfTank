@@ -294,11 +294,12 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
 
         //shells born
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {
-            println("control is press, fire in the hole. shellsList size:${shellsList.size}")
+            println("control is pressed, fire in the hole. shellsList size:${shellsList.size}")
             if (shellsList.isEmpty()) {
                 var sh = shells
                 sh.id = System.currentTimeMillis()
                 sh.observer = observer
+                sh.ground = ground
                 sh.setPosition(shellsX, shellsY)
                 sh.direction = direction
                 sh.isDestroyed = false
@@ -312,21 +313,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
         var iterator = shellsList.iterator()
         while (iterator.hasNext()) {
             var next = iterator.next()
-//            if (next.x > ground.width || next.x < 0) {
-//                observer?.die(next)
-//                println("out xx")
-//                iterator.remove()
-//            }
-//
-//            if (next.y > ground.height || next.y < 0) {
-//                observer?.die(next)
-//                println("out yy")
-//                iterator.remove()
-//            }
-
             if (next.isDestroyed) {
-//                observer?.die(next)
-//                println("collision")
                 iterator.remove()
             }
         }
