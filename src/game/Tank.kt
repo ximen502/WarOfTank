@@ -4,6 +4,9 @@ import java.applet.Applet
 import java.applet.AudioClip
 import java.awt.*
 import java.awt.event.KeyEvent
+import java.awt.geom.AffineTransform
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 
 /**
  * 坦克，根据给定的坐标绘制一个坦克的俯视图
@@ -17,9 +20,21 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
     var observer: GOObserver? = null
     var fireAC: AudioClip? = null
     val mapArray = CP.mapArray
+    var img: BufferedImage
+    var imgX = 0
+    var imgY = 0
+    var transform = AffineTransform()
+    var angle = 0.0
+    companion object {
+        val ANGLE_0 = Math.toRadians(0.0)
+        val ANGLE_90 = Math.toRadians(90.0)
+        val ANGLE_180 = Math.toRadians(180.0)
+        val ANGLE_270 = Math.toRadians(270.0)
+    }
 
     //炮弹缓存
     val shells = Shells()
+
     init {
         this.ground = ground
         println("w:${ground.width}")
@@ -28,7 +43,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
         w = SIZE
         h = SIZE
         shellsX = cx - shells.w / 2
-        shellsY = cy - ptLength
+        shellsY = cy
         direction = Shells.DIRECTION_NORTH
         //println("tank x:$x, y:$y, cx:$cx, cy:$cy, shells x:$shellsX, y:$shellsY")
         this.input = input
@@ -36,7 +51,11 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
 //        println(javaClass.toString())
 //        var resource = javaClass.getResource("")
 //        println(resource)
-//        var resource2 = javaClass.getResource("./../Gunfire.wav")
+        var tankPath = javaClass.getResource("image/tank.png")
+        println(tankPath)
+        img = ImageIO.read(tankPath)
+        imgX = (w - img.width) / 2
+        imgY = (h - img.height) / 2
 //        println(resource2)
         fireAC = Applet.newAudioClip(javaClass.getResource("./../Gunfire.wav"))
     }
@@ -49,6 +68,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
     override fun onTick() {
         if (input.getKeyDown(KeyEvent.VK_LEFT) == true) {
             direction = Shells.DIRECTION_WEST
+            angle = ANGLE_270
             var xGrid = x / SIZE
             var yGrid = y / SIZE
             var xNext = if (xGrid - 1 <= 0) 0 else xGrid - 1
@@ -101,10 +121,11 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                 }
             }
             //炮弹初始位置
-            shellsX = cx - ptLength
+            shellsX = cx
             shellsY = cy - shells.h / 2
         } else if (input.getKeyDown(KeyEvent.VK_RIGHT) == true) {
             direction = Shells.DIRECTION_EAST
+            angle = ANGLE_90
             var xGrid = x / SIZE
             var yGrid = y / SIZE
             var xNext = if (xGrid + 1 >= CP.C - 1) CP.C - 1 else xGrid + 1
@@ -166,10 +187,11 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                 }
             }
             //炮弹初始位置
-            shellsX = cx + ptLength
+            shellsX = cx
             shellsY = cy - shells.h / 2
         } else if (input.getKeyDown(KeyEvent.VK_UP) == true) {
             direction = Shells.DIRECTION_NORTH
+            angle = ANGLE_0
             var xGrid = x / SIZE
             var yGrid = y / SIZE
             var yNext = if (yGrid - 1 <= 0) 0 else yGrid - 1
@@ -228,9 +250,10 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             }
             //炮弹初始位置
             shellsX = cx - shells.w / 2
-            shellsY = cy - ptLength
+            shellsY = cy
         } else if (input.getKeyDown(KeyEvent.VK_DOWN) == true) {
             direction = Shells.DIRECTION_SOUTH
+            angle = ANGLE_180
             var xGrid = x / SIZE
             var yGrid = y / SIZE
             var yNext = if (yGrid + 1 >= CP.R - 1) CP.R - 1 else yGrid + 1
@@ -289,8 +312,16 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             }
             //炮弹初始位置
             shellsX = cx - shells.w / 2
-            shellsY = cy + ptLength
+            shellsY = cy
         }
+
+        //根据方向决定坦克的朝向
+        //val transform = AffineTransform()
+        // 重置状态，避免每次新建对象
+        transform.setToIdentity()
+        transform.translate((x + imgX + img.width / 2).toDouble(), (y + imgY + img.height / 2).toDouble())
+        transform.rotate(angle)
+        transform.translate((-img.width / 2).toDouble(), (-img.height / 2).toDouble())
 
         //shells born
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {
@@ -321,6 +352,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
 
     override fun drawTank(g: Graphics?) {
         var g2 = g as Graphics2D
+//        g2.drawImage(img, transform, null)
 
         //车身
         g2?.drawRect(x, y, SIZE, SIZE)
