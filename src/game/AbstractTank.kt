@@ -13,6 +13,7 @@ abstract class AbstractTank : GameObject() {
 
     companion object {
         const val SIZE = CP.SIZE
+        const val TANK_SIZE = CP.TANK_SIZE
     }
     // 坦克前进的方向
     var direction = 0
@@ -28,7 +29,7 @@ abstract class AbstractTank : GameObject() {
     protected var shellsX = 0
     protected var shellsY = 0
 
-    protected var speed = 2.5
+    protected var speed = 1
     //炮弹速度倍数
     protected var times = 4
     // 炮弹容器

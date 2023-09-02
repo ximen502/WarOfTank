@@ -6,6 +6,8 @@ object CP {
 
     const val SIZE = 50
 
+    const val TANK_SIZE = 50
+
     const val TILE_BRICK = 1
     const val TILE_IRON = 2
     const val TILE_RIVER = 3

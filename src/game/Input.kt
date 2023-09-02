@@ -9,6 +9,8 @@ class Input : KeyListener {
     private var keyMap: HashMap<Int, Boolean>
     private val KEY_COUNT = 300
     //private var keyTyped: Int = 0
+    var b = 0L
+    var e = 0L
     var frame: JFrame? = null
     init {
         keyMap = HashMap(KEY_COUNT)
@@ -26,15 +28,37 @@ class Input : KeyListener {
     override fun keyPressed(e: KeyEvent?) {
         e?.keyCode?.let { keyMap.put(it, true) }
 //        println("pre")
+        b = System.currentTimeMillis()
+        //println("b:$b")
     }
+//    b:1693630215235
+//    e:1693630215314
+//    end-begin:-1693630215235
+//    y:700, maxY:740
+//    mod:0
+//    end-begin:-1693630215235
+//    y:700, maxY:740
+//    mod:0
+//    end-begin:-1693630215235
+//    y:700, maxY:740
+//    mod:0
+//    end-begin:-1693630215235
+//    y:700, maxY:740
+//    mod:0
+//    end-begin:-1693630215235
+//    y:700, maxY:740
+//    mod:0
+//    -----------------------
 
     override fun keyReleased(e: KeyEvent?) {
         e?.keyCode?.let { keyMap.put(it, false) }
+        //this.e = System.currentTimeMillis()
+        //println("e:${this.e}")
 //        println("rel")
         if (e?.keyCode == 27) { // Esc
             var option =
                 JOptionPane.showConfirmDialog(frame, "确认要退出吗", "游戏提示", JOptionPane.YES_NO_OPTION)
-            println("op:$option")
+            //println("op:$option")
             if (option == 0) { // yes
                 System.exit(1)
             } else if (option == 1) { // no
@@ -56,4 +80,6 @@ class Input : KeyListener {
 //        //j's unicode code
 //        return keyTyped == 74 || keyTyped == 106
 //    }
+
+    //fun be() = e - b
 }

@@ -45,9 +45,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
         shellsX = cx - shells.w / 2
         shellsY = cy
         direction = Shells.DIRECTION_NORTH
-        //println("tank x:$x, y:$y, cx:$cx, cy:$cy, shells x:$shellsX, y:$shellsY")
+        println("tank born position x:$x, y:$y, cx:$cx, cy:$cy, shells x:$shellsX, y:$shellsY")
         this.input = input
-        times = 2
+        times = 5
 //        println(javaClass.toString())
 //        var resource = javaClass.getResource("")
 //        println(resource)
@@ -67,6 +67,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
 
     override fun onTick() {
         if (input.getKeyDown(KeyEvent.VK_LEFT) == true) {
+            //println("end-begin:${input.be()}")
             direction = Shells.DIRECTION_WEST
             angle = ANGLE_270
             var xGrid = x / SIZE
@@ -124,6 +125,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             shellsX = cx
             shellsY = cy - shells.h / 2
         } else if (input.getKeyDown(KeyEvent.VK_RIGHT) == true) {
+            //println("end-begin:${input.be()}")
             direction = Shells.DIRECTION_EAST
             angle = ANGLE_90
             var xGrid = x / SIZE
@@ -190,6 +192,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             shellsX = cx
             shellsY = cy - shells.h / 2
         } else if (input.getKeyDown(KeyEvent.VK_UP) == true) {
+            //println("end-begin:${input.be()}")
             direction = Shells.DIRECTION_NORTH
             angle = ANGLE_0
             var xGrid = x / SIZE
@@ -200,27 +203,38 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             // 分2种情况，判断x有没有跨网格
             // 1.没有跨网格
             // 2.有跨网格
-            println(mapArray[yGrid].contentToString())
-            println("x:$xGrid, y:$yGrid, next yGrid:${yNext} :${mapArray[yNext][xGrid]}")
+//            println(mapArray[yGrid].contentToString())
+            println("tank x:$x, y:$y")
+            println("xGrid:$xGrid, yGrid:$yGrid, next yGrid:${yNext} :${mapArray[yNext][xGrid]}")
             var mod = x % SIZE
             if (mod == 0) {//1
                 if (mapArray[yNext][xGrid].toInt() in 1..3) {
+                    //20230902神奇的现象，如果times=3,speed=1，这个if就无法阻挡坦克但是times=2就可以，很神奇
+//                    //println("坦克与砖块的距离：${y - yGrid * SIZE}， 坦克的速度：${times * speed}")
+//                    var step = 0
+//                    //当坦克与前方砖块的距离不足走一步的速度的时候，需要特殊处理，否则坦克又跑到砖块上去了。
+//                    if (y - yGrid * SIZE < times * speed) {
+//                        //println("*********************")
+//                        step = y - yGrid * SIZE
+//                    } else {
+//                        step = (times * speed).toInt()
+//                    }
                     if (y <= yGrid * SIZE) {
-                        //println("up111")
+                        println("up111")
                         y = yGrid * SIZE
                         transfer(0, 0)
                     } else {
-                        //println("up222")
-                        var yOffset = (-times * speed).toInt()
+                        println("up222")
+                        var yOffset = /*-step*/(-times * speed).toInt()
                         transfer(0, yOffset)
                     }
                 } else {
                     if (y <= Ground.TITLE_H) {
-                        //println("up333")
+                        println("up333")
                         y = Ground.TITLE_H
                         transfer(0, 0)
                     } else {
-                        //println("up444")
+                        println("up444")
                         var yOffset = (-times * speed).toInt()
                         transfer(0, yOffset)
                     }
@@ -252,6 +266,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             shellsX = cx - shells.w / 2
             shellsY = cy
         } else if (input.getKeyDown(KeyEvent.VK_DOWN) == true) {
+            //println("end-begin:${input.be()}")
             direction = Shells.DIRECTION_SOUTH
             angle = ANGLE_180
             var xGrid = x / SIZE
