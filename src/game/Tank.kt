@@ -38,10 +38,10 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
     init {
         this.ground = ground
         println("w:${ground.width}")
-        x = ground.width / 2 - (SIZE * 2.5f).toInt()
-        y = ground.height - SIZE
-        w = SIZE
-        h = SIZE
+        x = ground.width / 2 - (SIZE * 2.5f).toInt()/* + (SIZE - TANK_SIZE)/2*/
+        y = ground.height - SIZE/* + (SIZE - TANK_SIZE)/2*/
+        w = TANK_SIZE
+        h = TANK_SIZE
         shellsX = cx - shells.w / 2
         shellsY = cy
         direction = Shells.DIRECTION_NORTH
@@ -152,9 +152,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                         transfer(xOffset, 0)
                     }
                 } else {
-                    if (x + SIZE >= ground.width) {
+                    if (x + TANK_SIZE >= ground.width) {
                         //println("r333")
-                        x = ground.width - SIZE
+                        x = ground.width - TANK_SIZE
                         transfer(0, 0)
                     } else {
                         //println("r444")
@@ -163,6 +163,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                     }
                 }
             } else {//2
+                println("yGrid:$yGrid, xNext:$xNext, yGrid+1:${yGrid+1}")
                 val yCur = mapArray[yGrid][xNext].toInt()
                 val yNext = mapArray[yGrid + 1][xNext].toInt()
                 println("yCur:$yCur, yNext:$yNext")
@@ -177,9 +178,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                         transfer(xOffset, 0)
                     }
                 } else {
-                    if (x + SIZE >= ground.width) {
+                    if (x + TANK_SIZE >= ground.width) {
                         //println("r333")
-                        x = ground.width - SIZE
+                        x = ground.width - TANK_SIZE
                         transfer(0, 0)
                     } else {
                         //println("r444")
@@ -282,7 +283,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
             var mod = x % SIZE
             if (mod == 0) {//1
                 if (mapArray[yNext][xGrid].toInt() in 1..3) {
-                    if (y + SIZE >= yGrid * SIZE) {
+                    if (y + TANK_SIZE >= yGrid * SIZE) {
                         //println("down111")
                         y = yGrid * SIZE
                         transfer(0, 0)
@@ -292,9 +293,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                         transfer(0, yOffset)
                     }
                 } else {
-                    if (y + SIZE >= ground.height) {
+                    if (y + TANK_SIZE >= ground.height) {
                         //println("down333")
-                        y = ground.height - SIZE
+                        y = ground.height - TANK_SIZE
                         transfer(0, 0)
                     } else {
                         //println("down444")
@@ -304,7 +305,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                 }
             } else {//2
                 if (mapArray[yNext][xGrid].toInt() in 1..3 || mapArray[yNext][xGrid + 1].toInt() in 1..3) {
-                    if (y + SIZE >= yGrid * SIZE) {
+                    if (y + TANK_SIZE >= yGrid * SIZE) {
                         //println("down111")
                         y = yGrid * SIZE
                         transfer(0, 0)
@@ -314,9 +315,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
                         transfer(0, yOffset)
                     }
                 } else {
-                    if (y + SIZE >= ground.height) {
+                    if (y + TANK_SIZE >= ground.height) {
                         //println("down333")
-                        y = ground.height - SIZE
+                        y = ground.height - TANK_SIZE
                         transfer(0, 0)
                     } else {
                         //println("down444")
@@ -367,23 +368,23 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
 
     override fun drawTank(g: Graphics?) {
         var g2 = g as Graphics2D
-//        g2.drawImage(img, transform, null)
+        g2.drawImage(img, transform, null)
 
-        //车身
-        g2?.drawRect(x, y, SIZE, SIZE)
-        //炮台
-        g2?.drawOval(x + ptOffset, y + ptOffset, halfSize, halfSize)
-
-        //炮筒
-        if (direction == Shells.DIRECTION_WEST) {
-            g2?.fillRoundRect(cx - ptLength, cy - ptRadius / 2, ptLength, ptRadius, arc, arc)
-        } else if (direction == Shells.DIRECTION_EAST) {
-            g2?.fillRoundRect(cx, cy - ptRadius / 2, ptLength, ptRadius, arc, arc)
-        } else if (direction == Shells.DIRECTION_NORTH) {
-            g2?.fillRoundRect(cx - ptRadius / 2, cy - ptLength, ptRadius, ptLength, arc, arc)
-        } else if (direction == Shells.DIRECTION_SOUTH) {
-            g2?.fillRoundRect(cx - ptRadius / 2, cy, ptRadius, ptLength, arc, arc)
-        }
+//        //车身
+//        g2?.drawRect(x, y, TANK_SIZE, TANK_SIZE)
+//        //炮台
+//        g2?.drawOval(x + ptOffset, y + ptOffset, halfSize, halfSize)
+//
+//        //炮筒
+//        if (direction == Shells.DIRECTION_WEST) {
+//            g2?.fillRoundRect(cx - ptLength, cy - ptRadius / 2, ptLength, ptRadius, arc, arc)
+//        } else if (direction == Shells.DIRECTION_EAST) {
+//            g2?.fillRoundRect(cx, cy - ptRadius / 2, ptLength, ptRadius, arc, arc)
+//        } else if (direction == Shells.DIRECTION_NORTH) {
+//            g2?.fillRoundRect(cx - ptRadius / 2, cy - ptLength, ptRadius, ptLength, arc, arc)
+//        } else if (direction == Shells.DIRECTION_SOUTH) {
+//            g2?.fillRoundRect(cx - ptRadius / 2, cy, ptRadius, ptLength, arc, arc)
+//        }
 
     }
 }

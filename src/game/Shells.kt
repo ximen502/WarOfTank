@@ -21,6 +21,8 @@ class Shells : GameObject() {
     val SIZE = CP.SIZE
     var doCollision = false
     var observer: GOObserver? = null
+    //缓存
+    var hit = Hit()
 
     companion object {
         const val DIRECTION_EAST = 1
@@ -59,6 +61,13 @@ class Shells : GameObject() {
                     println("炮弹x:$x, y:$y, $w, $h")
                     println("brick x:${brick!!.x}, y:${brick!!.y}, w:${brick!!.w}, h:${brick!!.h}brickCX:$bcx, brickCY:$bcy")
                     if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
+                        //增加击中爆破效果
+                        hit.reset()
+                        hit.observer = observer
+                        hit.x = x - w / 2
+                        hit.y = y - h
+                        observer?.born(hit)
+
                         println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickCX:$bcx, brickCY:$bcy")
                         //通知砖块碰撞消息
                         brick!!.shells = this
@@ -112,6 +121,12 @@ class Shells : GameObject() {
                     println("炮弹x:$x, y:$y, $w, $h")
                     println("brick x:${brick!!.x}, y:${brick!!.y}, w:${brick!!.w}, h:${brick!!.h}brickCX:$bcx, brickCY:$bcy")
                     if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
+                        //增加击中爆破效果
+                        hit.reset()
+                        hit.observer = observer
+                        hit.x = x - w / 2
+                        hit.y = y - h
+                        observer?.born(hit)
                         println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickCX:$bcx, brickCY:$bcy")
                         //通知砖块碰撞消息
                         brick!!.shells = this
@@ -166,6 +181,12 @@ class Shells : GameObject() {
                     println("炮弹x:$x, y:$y, $w, $h")
                     println("brick x:${brick!!.x}, y:${brick!!.y}, w:${brick!!.w}, h:${brick!!.h}brickCX:$bcx, brickCY:$bcy")
                     if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
+                        //增加击中爆破效果
+                        hit.reset()
+                        hit.observer = observer
+                        hit.x = x - w / 2
+                        hit.y = y - h
+                        observer?.born(hit)
                         println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickCX:$bcx, brickCY:$bcy")
                         //通知砖块碰撞消息
                         brick!!.shells = this
@@ -219,6 +240,12 @@ class Shells : GameObject() {
                     println("炮弹x:$x, y:$y, $w, $h")
                     println("brick x:${brick!!.x}, y:${brick!!.y}, w:${brick!!.w}, h:${brick!!.h}brickCX:$bcx, brickCY:$bcy")
                     if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
+                        //增加击中爆破效果
+                        hit.reset()
+                        hit.observer = observer
+                        hit.x = x - w / 2
+                        hit.y = y - h
+                        observer?.born(hit)
                         println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickCX:$bcx, brickCY:$bcy")
                         //通知砖块碰撞消息
                         brick!!.shells = this

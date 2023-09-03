@@ -284,17 +284,17 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         }
 
         //行列指示器
-        tempGraphics?.color = Color.ORANGE
-        for (i in 0 until CP.R) {
-            for (j in 0 until CP.C) {
-                if (j == 0) {
-                    tempGraphics?.drawString("$i", 0, SIZE * i + 35)
-                }
-                if (i == 0) {
-                    tempGraphics?.drawString("$j", SIZE * j,  50)
-                }
-            }
-        }
+//        tempGraphics?.color = Color.ORANGE
+//        for (i in 0 until CP.R) {
+//            for (j in 0 until CP.C) {
+//                if (j == 0) {
+//                    tempGraphics?.drawString("$i", 0, SIZE * i + 35)
+//                }
+//                if (i == 0) {
+//                    tempGraphics?.drawString("$j", SIZE * j,  50)
+//                }
+//            }
+//        }
         tempGraphics?.color = color
         ///////////////////end方便调试的网格线
         g?.drawImage(tempImage, 0, 0, null)

@@ -19,11 +19,11 @@ abstract class AbstractTank : GameObject() {
     var direction = 0
 
     //炮筒(需要根据行走方向调整指向)
-    val ptRadius = 6
-    val ptLength = 36
+    val ptRadius = 4
+    val ptLength = 25
     val arc = 2
-    val halfSize = SIZE / 2
-    var ptOffset = halfSize / 2
+    val halfSize = TANK_SIZE / 2
+    var ptOffset = TANK_SIZE / 4
 
     // 炮弹初始位置坐标
     protected var shellsX = 0

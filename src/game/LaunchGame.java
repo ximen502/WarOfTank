@@ -1,6 +1,7 @@
 package game;
 
 import javax.swing.SwingUtilities;
+import java.awt.*;
 
 public class LaunchGame {
     public static void main(String[] args) {
