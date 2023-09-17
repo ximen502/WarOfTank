@@ -52,6 +52,7 @@ class Shells : GameObject() {
     init {
         w = d
         h = d
+        level = LEVEL3//TODO(测试消除钢铁的炮弹)
     }
 
     override fun draw(g: Graphics?) {
@@ -254,7 +255,7 @@ class Shells : GameObject() {
             hit.y = y - h
             observer?.born(hit)
 
-            println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickCX:$bcx, brickCY:$bcy")
+            println("--碰撞--炮弹击中了砖块/钢铁 炮弹x:$x, y:$y, brickCX:$bcx, brickCY:$bcy")
             //通知砖块碰撞消息
             brick?.shells = this
             iron?.shells = this

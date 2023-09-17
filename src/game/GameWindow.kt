@@ -125,6 +125,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     iron.w = SIZE
                     iron.h = SIZE
                     iron.ground = ground
+                    iron.observer = this
                     list.add(iron)
                     tileList.add(iron)
                     tileArray[i][j] = iron
