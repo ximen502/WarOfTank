@@ -1,6 +1,7 @@
 package game.map
 
 import game.GameObject
+import game.Shells
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.Image
@@ -18,7 +19,7 @@ class Iron : GameObject() {
     //2.确定全局地图的样貌
     //3.根据全局样貌进行地图初始化
     var iron: Image? = null
-
+    var shells: Shells? = null
     init {
         val path = javaClass.getResource("../image/iron.png")
         println(path)
