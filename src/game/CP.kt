@@ -1,10 +1,12 @@
 package game
 
 object CP {
-    const val R = 15
-    const val C = 19
+    const val R = 15// + 2
+    const val C = 19// + 2
 
     const val SIZE = 50
+
+    const val SIZE_M = 25
 
     const val TANK_SIZE = 50
 
@@ -12,8 +14,10 @@ object CP {
     const val TILE_IRON = 2
     const val TILE_RIVER = 3
     const val TILE_GRASS = 4
+    const val TILE_SNOW = 5
+    const val TILE_EAGLE = 6
 
-    val mapArray = arrayOf(
+    val mapArray = Map.map/*arrayOf(
         byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -29,9 +33,9 @@ object CP {
         byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-    )
+    )*/
 
-    var tileArray = arrayOf(
+    var tileArray = Map.tile/*arrayOf(
         arrayOf<GameObject?>(
             null,
             null,
@@ -347,5 +351,5 @@ object CP {
             null,
             null
         )
-    )
+    )*/
 }

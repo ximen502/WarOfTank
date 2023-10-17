@@ -26,7 +26,7 @@ class Brick : GameObject() {
     var observer: GOObserver? = null
 
     init {
-        val path = javaClass.getResource("../image/wood.png")
+        val path = javaClass.getResource("../image/wood_m.png")
         println(path)
         img = ImageIO.read(path)
     }

@@ -28,6 +28,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     private var player: Tank
 
+    var showLine = true //
+
     //    var list = mutableListOf<GameObject>()
     //为解决ConcurrentModificationException，使用了如下的线程安全的容器类
     var list = CopyOnWriteArrayList<GameObject>()
@@ -37,6 +39,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     private var input: Input
     private val SIZE = CP.SIZE
+    private val SIZE_M = CP.SIZE_M
 
     init {
         this.w = width
@@ -102,16 +105,23 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         val mapArray = CP.mapArray
         val tileArray = CP.tileArray
 
+        // 4个方格代表的一个瓦片（河流、草地、基地...），每个元素存储二维数组的横纵坐标
+        val four: MutableList<Int> = ArrayList()
+        for (i in four.indices) {
+            four[i] = -1
+        }
+
         for (i in mapArray.indices) {
             for (j in mapArray[i].indices) {
                 val tile = mapArray[i][j].toInt()
+                println("tile:$tile")
                 if (tile == CP.TILE_BRICK) {
                     var brick = Brick()
                     brick.id = (i shl 8 or j).toLong()
-                    brick.x = SIZE * j
-                    brick.y = SIZE * i
-                    brick.w = SIZE
-                    brick.h = SIZE
+                    brick.x = SIZE_M * j
+                    brick.y = SIZE_M * i
+                    brick.w = SIZE_M
+                    brick.h = SIZE_M
                     brick.ground = ground
                     brick.observer = this
                     list.add(brick)
@@ -120,10 +130,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 } else if (tile == CP.TILE_IRON) {
                     var iron = Iron()
                     iron.id = (i shl 8 or j).toLong()
-                    iron.x = SIZE * j
-                    iron.y = SIZE * i
-                    iron.w = SIZE
-                    iron.h = SIZE
+                    iron.x = SIZE_M * j
+                    iron.y = SIZE_M * i
+                    iron.w = SIZE_M
+                    iron.h = SIZE_M
                     iron.ground = ground
                     iron.observer = this
                     list.add(iron)
@@ -141,16 +151,37 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     tileList.add(river)
                     tileArray[i][j] = river
                 } else if (tile == CP.TILE_GRASS) {
+                    var rowCol = i shl 8 or j
+                    //如果包含就不再处理，防止每个小格绘制4个瓦片
+                    if (four.contains(rowCol)) {
+                        continue
+                    }
+
                     var grass = Grass()
                     grass.id = (i shl 8 or j).toLong()
-                    grass.x = SIZE * j
-                    grass.y = SIZE * i
+                    grass.x = SIZE_M * j
+                    grass.y = SIZE_M * i
                     grass.w = SIZE
                     grass.h = SIZE
                     grass.ground = ground
                     list.add(grass)
                     tileList.add(grass)
                     tileArray[i][j] = grass
+
+                    four.add(0, rowCol)
+                    //判断其他3个小格是不是同样是这个瓦片数值(小心数组下标越界)
+                    if (mapArray[i][j + 1].toInt() == CP.TILE_GRASS) {
+                        var rc = i shl 8 or (j + 1)
+                        four.add(1, rc)
+                    }
+                    if (mapArray[i + 1][j].toInt() == CP.TILE_GRASS) {
+                        var rc = (i + 1) shl 8 or j
+                        four.add(2, rc)
+                    }
+                    if (mapArray[i + 1][j + 1].toInt() == CP.TILE_GRASS) {
+                        var rc = (i + 1) shl 8 or (j + 1)
+                        four.add(3, rc)
+                    }
                 }
             }
         }
@@ -234,7 +265,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     private fun createWindow() {
         setSize(w, h)
         title = t
-//        isUndecorated = true
+        isUndecorated = true
         isVisible = true
         setLocationRelativeTo(null)
         defaultCloseOperation = EXIT_ON_CLOSE
@@ -273,18 +304,19 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         }
 
         //////////////////方便调试的网格线
-        var color = tempGraphics?.color
-        tempGraphics?.color = Color.GRAY
-        for (i in 0 until CP.R) {
+        if (showLine) {
+            var color = tempGraphics?.color
             tempGraphics?.color = Color.GRAY
-            tempGraphics?.drawLine(0, SIZE * i, w, SIZE * i)
-        }
-        for (j in 0 until CP.C) {
-            tempGraphics?.color = Color.GRAY
-            tempGraphics?.drawLine(SIZE * j, 0, SIZE * j, h)
-        }
+            for (i in 0 until CP.R * 2) {
+                tempGraphics?.color = Color.GRAY
+                tempGraphics?.drawLine(0, CP.SIZE_M * i, w, CP.SIZE_M * i)
+            }
+            for (j in 0 until CP.C * 2) {
+                tempGraphics?.color = Color.GRAY
+                tempGraphics?.drawLine(CP.SIZE_M * j, 0, CP.SIZE_M * j, h)
+            }
 
-        //行列指示器
+            //行列指示器
 //        tempGraphics?.color = Color.ORANGE
 //        for (i in 0 until CP.R) {
 //            for (j in 0 until CP.C) {
@@ -296,7 +328,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 //                }
 //            }
 //        }
-        tempGraphics?.color = color
+            tempGraphics?.color = color
+        }
         ///////////////////end方便调试的网格线
         g?.drawImage(tempImage, 0, 0, null)
 
