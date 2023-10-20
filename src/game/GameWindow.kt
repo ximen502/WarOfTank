@@ -1,9 +1,6 @@
 package game
 
-import game.map.Brick
-import game.map.Grass
-import game.map.Iron
-import game.map.River
+import game.map.*
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
@@ -179,6 +176,38 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                         four.add(2, rc)
                     }
                     if (mapArray[i + 1][j + 1].toInt() == CP.TILE_GRASS) {
+                        var rc = (i + 1) shl 8 or (j + 1)
+                        four.add(3, rc)
+                    }
+                } else if (tile == CP.TILE_EAGLE) {
+                    var rowCol = i shl 8 or j
+                    //如果包含就不再处理，防止每个小格绘制4个瓦片
+                    if (four.contains(rowCol)) {
+                        continue
+                    }
+
+                    var eagle = Eagle()
+                    eagle.id = (i shl 8 or j).toLong()
+                    eagle.x = SIZE_M * j
+                    eagle.y = SIZE_M * i
+                    eagle.w = SIZE
+                    eagle.h = SIZE
+                    eagle.ground = ground
+                    list.add(eagle)
+                    tileList.add(eagle)
+                    tileArray[i][j] = eagle
+
+                    four.add(0, rowCol)
+                    //判断其他3个小格是不是同样是这个瓦片数值(小心数组下标越界)
+                    if (mapArray[i][j + 1].toInt() == CP.TILE_EAGLE) {
+                        var rc = i shl 8 or (j + 1)
+                        four.add(1, rc)
+                    }
+                    if (mapArray[i + 1][j].toInt() == CP.TILE_EAGLE) {
+                        var rc = (i + 1) shl 8 or j
+                        four.add(2, rc)
+                    }
+                    if (mapArray[i + 1][j + 1].toInt() == CP.TILE_EAGLE) {
                         var rc = (i + 1) shl 8 or (j + 1)
                         four.add(3, rc)
                     }
