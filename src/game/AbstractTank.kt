@@ -13,6 +13,7 @@ abstract class AbstractTank : GameObject() {
 
     companion object {
         const val SIZE = CP.SIZE
+        const val SIZE_M = CP.SIZE_M
         const val TANK_SIZE = CP.TANK_SIZE
     }
     // 坦克前进的方向
@@ -34,6 +35,11 @@ abstract class AbstractTank : GameObject() {
     protected var times = 4
     // 炮弹容器
     var shellsList: ArrayList<Shells> = ArrayList()
+
+    // 在网格中的行
+    var row = 0
+    // 在网格中的列
+    var col = 0
 
     abstract fun drawTank(g: Graphics?)
 

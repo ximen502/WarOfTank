@@ -23,7 +23,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     private var ground: Ground//? = null
 
-    private var player: Tank
+    private var player: Tank//? = null
 
     var showLine = true //
 
@@ -55,9 +55,15 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         player = Tank(input, ground)
         player.w = CP.TANK_SIZE
         player.h = CP.TANK_SIZE
-        //player.ground = ground
+        player.x = w / 2 - SIZE_M * 5 + (SIZE - CP.TANK_SIZE) / 2
+        player.y = h - SIZE_M * 2 + (SIZE - CP.TANK_SIZE) / 2
+        player.row = player.x / SIZE_M
+        player.col = player.y / SIZE_M
+        println("row:${player.row}, col:${player.col}")
         player.observer = this
         list.add(player)
+
+        input.moveListener = player
 
         darkAI = DarkAI()
 
@@ -108,6 +114,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             four[i] = -1
         }
 
+        //i行j列
         for (i in mapArray.indices) {
             for (j in mapArray[i].indices) {
                 val tile = mapArray[i][j].toInt()
@@ -165,20 +172,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     tileList.add(grass)
                     tileArray[i][j] = grass
 
-                    four.add(0, rowCol)
-                    //判断其他3个小格是不是同样是这个瓦片数值(小心数组下标越界)
-                    if (mapArray[i][j + 1].toInt() == CP.TILE_GRASS) {
-                        var rc = i shl 8 or (j + 1)
-                        four.add(1, rc)
-                    }
-                    if (mapArray[i + 1][j].toInt() == CP.TILE_GRASS) {
-                        var rc = (i + 1) shl 8 or j
-                        four.add(2, rc)
-                    }
-                    if (mapArray[i + 1][j + 1].toInt() == CP.TILE_GRASS) {
-                        var rc = (i + 1) shl 8 or (j + 1)
-                        four.add(3, rc)
-                    }
+                    four2One(four, rowCol, mapArray, i, j, CP.TILE_GRASS)
                 } else if (tile == CP.TILE_EAGLE) {
                     var rowCol = i shl 8 or j
                     //如果包含就不再处理，防止每个小格绘制4个瓦片
@@ -197,21 +191,31 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     tileList.add(eagle)
                     tileArray[i][j] = eagle
 
-                    four.add(0, rowCol)
-                    //判断其他3个小格是不是同样是这个瓦片数值(小心数组下标越界)
-                    if (mapArray[i][j + 1].toInt() == CP.TILE_EAGLE) {
-                        var rc = i shl 8 or (j + 1)
-                        four.add(1, rc)
+                    four2One(four, rowCol, mapArray, i, j, CP.TILE_EAGLE)
+                } /*else if (tile == CP.TILE_P1) {
+                    var rowCol = i shl 8 or j
+                    //如果包含就不再处理，防止每个小格绘制4个瓦片
+                    if (four.contains(rowCol)) {
+                        continue
                     }
-                    if (mapArray[i + 1][j].toInt() == CP.TILE_EAGLE) {
-                        var rc = (i + 1) shl 8 or j
-                        four.add(2, rc)
+
+                    player = Tank(input, ground)
+                    player?.let {
+                        it.row = i
+                        it.col = j
+                        it.x = j * CP.SIZE_M
+                        it.y = i * CP.SIZE_M
+                        it.w = CP.TANK_SIZE
+                        it.h = CP.TANK_SIZE
+                        //it.ground = ground
+                        it.observer = this
                     }
-                    if (mapArray[i + 1][j + 1].toInt() == CP.TILE_EAGLE) {
-                        var rc = (i + 1) shl 8 or (j + 1)
-                        four.add(3, rc)
-                    }
-                }
+                    list.add(player)
+
+                    input.moveListener = player
+
+                    four2One(four, rowCol, mapArray, i, j, CP.TILE_P1)
+                }*/
             }
         }
 
@@ -245,6 +249,34 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 //        for (i in mapArray.indices) {
 //            println(Arrays.toString(mapArray[i]))
 //        }
+    }
+
+    /**
+     * 4个方格代表一个完整瓦片或游戏物品的情况
+     * 这个每个小方格25*25，共同组成一个50*50的瓦片
+     */
+    private fun four2One(
+        four: MutableList<Int>,
+        rowCol: Int,
+        mapArray: Array<ByteArray>,
+        i: Int,
+        j: Int,
+        tile:Int
+    ) {
+        four.add(0, rowCol)
+        //判断其他3个小格是不是同样是这个瓦片数值(小心数组下标越界)
+        if (mapArray[i][j + 1].toInt() == tile) {
+            var rc = i shl 8 or (j + 1)
+            four.add(1, rc)
+        }
+        if (mapArray[i + 1][j].toInt() == tile) {
+            var rc = (i + 1) shl 8 or j
+            four.add(2, rc)
+        }
+        if (mapArray[i + 1][j + 1].toInt() == tile) {
+            var rc = (i + 1) shl 8 or (j + 1)
+            four.add(3, rc)
+        }
     }
 
     private fun detectCollision() {

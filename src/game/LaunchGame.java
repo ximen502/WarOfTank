@@ -1,14 +1,13 @@
 package game;
 
 import javax.swing.SwingUtilities;
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 
 public class LaunchGame {
     public static void main(String[] args) {
         Runnable runnable = () -> {
-            GameWindow gameWindow = new GameWindow(CP.C * CP.SIZE, CP.R * CP.SIZE, "坦克大战[ximen502]");
+            GameWindow gameWindow = new GameWindow(CP.C * CP.SIZE_M, CP.R * CP.SIZE_M, "坦克大战[ximen502]");
             gameWindow.setShowLine(false);
         };
         SwingUtilities.invokeLater(runnable);

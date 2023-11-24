@@ -12,6 +12,7 @@ class Input : KeyListener {
     var b = 0L
     var e = 0L
     var frame: JFrame? = null
+    var moveListener: MoveListener? = null
     init {
         keyMap = HashMap(KEY_COUNT)
         for (i in 0..KEY_COUNT) {
@@ -27,35 +28,34 @@ class Input : KeyListener {
 
     override fun keyPressed(e: KeyEvent?) {
         e?.keyCode?.let { keyMap.put(it, true) }
-//        println("pre")
+        println("key pressed:${e?.keyCode}")
         b = System.currentTimeMillis()
         //println("b:$b")
+        if (e?.keyCode == KeyEvent.VK_UP) {
+            moveListener?.begin(KeyEvent.VK_UP)
+        } else if (e?.keyCode == KeyEvent.VK_DOWN) {
+            moveListener?.begin(KeyEvent.VK_DOWN)
+        } else if (e?.keyCode == KeyEvent.VK_LEFT) {
+            moveListener?.begin(KeyEvent.VK_LEFT)
+        } else if (e?.keyCode == KeyEvent.VK_RIGHT) {
+            moveListener?.begin(KeyEvent.VK_RIGHT)
+        }
     }
-//    b:1693630215235
-//    e:1693630215314
-//    end-begin:-1693630215235
-//    y:700, maxY:740
-//    mod:0
-//    end-begin:-1693630215235
-//    y:700, maxY:740
-//    mod:0
-//    end-begin:-1693630215235
-//    y:700, maxY:740
-//    mod:0
-//    end-begin:-1693630215235
-//    y:700, maxY:740
-//    mod:0
-//    end-begin:-1693630215235
-//    y:700, maxY:740
-//    mod:0
-//    -----------------------
 
     override fun keyReleased(e: KeyEvent?) {
         e?.keyCode?.let { keyMap.put(it, false) }
         //this.e = System.currentTimeMillis()
         //println("e:${this.e}")
 //        println("rel")
-        if (e?.keyCode == 27) { // Esc
+        if (e?.keyCode == KeyEvent.VK_UP) {
+            moveListener?.end(KeyEvent.VK_UP)
+        } else if (e?.keyCode == KeyEvent.VK_DOWN) {
+            moveListener?.end(KeyEvent.VK_DOWN)
+        } else if (e?.keyCode == KeyEvent.VK_LEFT) {
+            moveListener?.end(KeyEvent.VK_LEFT)
+        } else if (e?.keyCode == KeyEvent.VK_RIGHT) {
+            moveListener?.end(KeyEvent.VK_RIGHT)
+        } else if (e?.keyCode == 27) { // Esc
             var option =
                 JOptionPane.showConfirmDialog(frame, "确认要退出吗", "游戏提示", JOptionPane.YES_NO_OPTION)
             //println("op:$option")
@@ -65,7 +65,7 @@ class Input : KeyListener {
                 // do nothing
             }
         }
-        println("-----------------------")//${e?.keyCode}
+        println("key release:${e?.keyCode}-----------------------")//${e?.keyCode}
     }
 
     fun getKeyDown(keyCode: Int): Boolean? {

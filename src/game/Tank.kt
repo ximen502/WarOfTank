@@ -4,7 +4,6 @@ import java.applet.Applet
 import java.applet.AudioClip
 import java.awt.*
 import java.awt.event.KeyEvent
-import java.awt.geom.AffineTransform
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
@@ -12,7 +11,7 @@ import javax.imageio.ImageIO
  * 坦克，根据给定的坐标绘制一个坦克的俯视图
  * 矩形车身+圆形炮台+矩形炮筒
  */
-class Tank(input: Input, ground: Ground) : AbstractTank() {
+class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     private var image: Image = Toolkit.getDefaultToolkit().createImage("image/Snow.png")
 
     private var input: Input
@@ -20,11 +19,18 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
     var observer: GOObserver? = null
     var fireAC: AudioClip? = null
     val mapArray = CP.mapArray
-    var img: BufferedImage
+    var imgN: BufferedImage
+    var imgS: BufferedImage
+    var imgW: BufferedImage
+    var imgE: BufferedImage
     var imgX = 0
     var imgY = 0
-    var transform = AffineTransform()
-    var angle = 0.0
+    // 方便记录遇到障碍物后4个方向的边界
+    var west = -1
+    var east = -1
+    var north = -1
+    var south = -1
+
     companion object {
         val ANGLE_0 = Math.toRadians(0.0)
         val ANGLE_90 = Math.toRadians(90.0)
@@ -38,8 +44,8 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
     init {
         this.ground = ground
         println("w:${ground.width}")
-        x = ground.width / 2 - (SIZE * 2.5f).toInt()/* + (SIZE - TANK_SIZE)/2*/
-        y = ground.height - SIZE/* + (SIZE - TANK_SIZE)/2*/
+        x = ground.width / 2 - (SIZE * 2.5).toInt() + (SIZE - CP.TANK_SIZE) / 2
+        y = ground.height - SIZE + (SIZE - CP.TANK_SIZE) / 2
         w = TANK_SIZE
         h = TANK_SIZE
         shellsX = cx - shells.w / 2
@@ -51,11 +57,15 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
 //        println(javaClass.toString())
 //        var resource = javaClass.getResource("")
 //        println(resource)
-        var tankPath = javaClass.getResource("image/tank.png")
-        println(tankPath)
-        img = ImageIO.read(tankPath)
-        imgX = (w - img.width) / 2
-        imgY = (h - img.height) / 2
+//        var tankPath = javaClass.getResource("image/tank.png")
+//        println(tankPath)
+//        img = ImageIO.read(tankPath)
+        imgN = ImageIO.read(javaClass.getResource("image/tkn.png"))
+        imgS = ImageIO.read(javaClass.getResource("image/tks.png"))
+        imgW = ImageIO.read(javaClass.getResource("image/tkw.png"))
+        imgE = ImageIO.read(javaClass.getResource("image/tke.png"))
+//        imgX = (w - img.width) / 2
+//        imgY = (h - img.height) / 2
 //        println(resource2)
         fireAC = Applet.newAudioClip(javaClass.getResource("./../Gunfire.wav"))
     }
@@ -66,279 +76,6 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
     }
 
     override fun onTick() {
-        if (input.getKeyDown(KeyEvent.VK_LEFT) == true) {
-            //println("end-begin:${input.be()}")
-            direction = Shells.DIRECTION_WEST
-            angle = ANGLE_270
-            var xGrid = x / SIZE
-            var yGrid = y / SIZE
-            var xNext = if (xGrid - 1 <= 0) 0 else xGrid - 1
-
-            //前进方向有没有障碍物
-            // 分2种情况，判断y有没有跨网格
-            // 1.没有跨网格
-            // 2.有跨网格
-            println("y:$y, maxY:$maxY")
-            var mod = y % SIZE
-            println("mod:$mod")
-            if (mod == 0) {//1
-                if (mapArray[yGrid][xNext].toInt() in 1..3) {
-                    if (x <= xGrid * SIZE) {
-                        x = xGrid * SIZE
-                        transfer(0, 0)
-                    } else {
-                        var xOffset = (-times * speed).toInt()
-                        transfer(xOffset, 0)
-                    }
-                } else {
-                    if (x <= 0) {
-                        x = 0
-                        transfer(0, 0)
-                    } else {
-                        var xOffset = (-times * speed).toInt()
-                        transfer(xOffset, 0)
-                    }
-                }
-            } else {//2
-                val yCur = mapArray[yGrid][xNext].toInt()
-                val yNext = mapArray[yGrid + 1][xNext].toInt()
-                println("yCur:$yCur, yNext:$yNext")
-                if (yCur in 1..3 || yNext in 1..3) {
-                    if (x <= xGrid * SIZE) {
-                        x = xGrid * SIZE
-                        transfer(0, 0)
-                    } else {
-                        var xOffset = (-times * speed).toInt()
-                        transfer(xOffset, 0)
-                    }
-                } else {
-                    if (x <= 0) {
-                        x = 0
-                        transfer(0, 0)
-                    } else {
-                        var xOffset = (-times * speed).toInt()
-                        transfer(xOffset, 0)
-                    }
-                }
-            }
-            //炮弹初始位置
-            shellsX = cx
-            shellsY = cy - shells.h / 2
-        } else if (input.getKeyDown(KeyEvent.VK_RIGHT) == true) {
-            //println("end-begin:${input.be()}")
-            direction = Shells.DIRECTION_EAST
-            angle = ANGLE_90
-            var xGrid = x / SIZE
-            var yGrid = y / SIZE
-            var xNext = if (xGrid + 1 >= CP.C - 1) CP.C - 1 else xGrid + 1
-
-            //前进方向有没有障碍物
-            // 分2种情况，判断y有没有跨网格
-            // 1.没有跨网格
-            // 2.有跨网格
-            println("y:$y, maxY:$maxY")
-            var mod = y % SIZE
-            println("mod:$mod")
-            if (mod == 0) {//1
-                //println("x:$xGrid, y:$yGrid, next xGrid:${xNext} :${mapArray[yGrid][xNext]}")
-                if (mapArray[yGrid][xNext].toInt() in 1..3) {
-                    if (x >= xGrid * SIZE) {
-                        //println("r111")
-                        x = xGrid * SIZE
-                        transfer(0, 0)
-                    } else {//测试发现没执行，然而程序逻辑正常
-                        //println("r222")
-                        var xOffset = (times * speed).toInt()
-                        transfer(xOffset, 0)
-                    }
-                } else {
-                    if (x + TANK_SIZE >= ground.width) {
-                        //println("r333")
-                        x = ground.width - TANK_SIZE
-                        transfer(0, 0)
-                    } else {
-                        //println("r444")
-                        var xOffset = (times * speed).toInt()
-                        transfer(xOffset, 0)
-                    }
-                }
-            } else {//2
-                println("yGrid:$yGrid, xNext:$xNext, yGrid+1:${yGrid+1}")
-                val yCur = mapArray[yGrid][xNext].toInt()
-                val yNext = mapArray[yGrid + 1][xNext].toInt()
-                println("yCur:$yCur, yNext:$yNext")
-                if (yCur in 1..3 || yNext in 1..3) {
-                    if (x >= xGrid * SIZE) {
-                        //println("r111")
-                        x = xGrid * SIZE
-                        transfer(0, 0)
-                    } else {//测试发现没执行，然而程序逻辑正常
-                        //println("r222")
-                        var xOffset = (times * speed).toInt()
-                        transfer(xOffset, 0)
-                    }
-                } else {
-                    if (x + TANK_SIZE >= ground.width) {
-                        //println("r333")
-                        x = ground.width - TANK_SIZE
-                        transfer(0, 0)
-                    } else {
-                        //println("r444")
-                        var xOffset = (times * speed).toInt()
-                        transfer(xOffset, 0)
-                    }
-                }
-            }
-            //炮弹初始位置
-            shellsX = cx
-            shellsY = cy - shells.h / 2
-        } else if (input.getKeyDown(KeyEvent.VK_UP) == true) {
-            //println("end-begin:${input.be()}")
-            direction = Shells.DIRECTION_NORTH
-            angle = ANGLE_0
-            var xGrid = x / SIZE
-            var yGrid = y / SIZE
-            var yNext = if (yGrid - 1 <= 0) 0 else yGrid - 1
-
-            //前进方向有没有障碍物
-            // 分2种情况，判断x有没有跨网格
-            // 1.没有跨网格
-            // 2.有跨网格
-//            println(mapArray[yGrid].contentToString())
-            println("tank x:$x, y:$y")
-            println("xGrid:$xGrid, yGrid:$yGrid, next yGrid:${yNext} :${mapArray[yNext][xGrid]}")
-            var mod = x % SIZE
-            if (mod == 0) {//1
-                if (mapArray[yNext][xGrid].toInt() in 1..3) {
-                    //20230902神奇的现象，如果times=3,speed=1，这个if就无法阻挡坦克但是times=2就可以，很神奇
-//                    //println("坦克与砖块的距离：${y - yGrid * SIZE}， 坦克的速度：${times * speed}")
-//                    var step = 0
-//                    //当坦克与前方砖块的距离不足走一步的速度的时候，需要特殊处理，否则坦克又跑到砖块上去了。
-//                    if (y - yGrid * SIZE < times * speed) {
-//                        //println("*********************")
-//                        step = y - yGrid * SIZE
-//                    } else {
-//                        step = (times * speed).toInt()
-//                    }
-                    if (y <= yGrid * SIZE) {
-                        println("up111")
-                        y = yGrid * SIZE
-                        transfer(0, 0)
-                    } else {
-                        println("up222")
-                        var yOffset = /*-step*/(-times * speed).toInt()
-                        transfer(0, yOffset)
-                    }
-                } else {
-                    if (y <= Ground.TITLE_H) {
-                        println("up333")
-                        y = Ground.TITLE_H
-                        transfer(0, 0)
-                    } else {
-                        println("up444")
-                        var yOffset = (-times * speed).toInt()
-                        transfer(0, yOffset)
-                    }
-                }
-            } else {//2
-                if (mapArray[yNext][xGrid].toInt() in 1..3 || mapArray[yNext][xGrid + 1].toInt() in 1..3) {
-                    if (y <= yGrid * SIZE) {
-                        //println("up111")
-                        y = yGrid * SIZE
-                        transfer(0, 0)
-                    } else {
-                        //println("up222")
-                        var yOffset = (-times * speed).toInt()
-                        transfer(0, yOffset)
-                    }
-                } else {
-                    if (y <= Ground.TITLE_H) {
-                        //println("up333")
-                        y = Ground.TITLE_H
-                        transfer(0, 0)
-                    } else {
-                        //println("up444")
-                        var yOffset = (-times * speed).toInt()
-                        transfer(0, yOffset)
-                    }
-                }
-            }
-            //炮弹初始位置
-            shellsX = cx - shells.w / 2
-            shellsY = cy
-        } else if (input.getKeyDown(KeyEvent.VK_DOWN) == true) {
-            //println("end-begin:${input.be()}")
-            direction = Shells.DIRECTION_SOUTH
-            angle = ANGLE_180
-            var xGrid = x / SIZE
-            var yGrid = y / SIZE
-            var yNext = if (yGrid + 1 >= CP.R - 1) CP.R - 1 else yGrid + 1
-
-            //前进方向有没有障碍物
-            // 分2种情况，判断x有没有跨网格
-            // 1.没有跨网格
-            // 2.有跨网格
-            println(mapArray[yGrid].contentToString())
-            println("x:$xGrid, y:$yGrid, next yGrid:${yNext} :${mapArray[yNext][xGrid]}")
-            var mod = x % SIZE
-            if (mod == 0) {//1
-                if (mapArray[yNext][xGrid].toInt() in 1..3) {
-                    if (y + TANK_SIZE >= yGrid * SIZE) {
-                        //println("down111")
-                        y = yGrid * SIZE
-                        transfer(0, 0)
-                    } else {// 可以去掉，不影响逻辑
-                        //println("down222")
-                        var yOffset = (times * speed).toInt()
-                        transfer(0, yOffset)
-                    }
-                } else {
-                    if (y + TANK_SIZE >= ground.height) {
-                        //println("down333")
-                        y = ground.height - TANK_SIZE
-                        transfer(0, 0)
-                    } else {
-                        //println("down444")
-                        var yOffset = (times * speed).toInt()
-                        transfer(0, yOffset)
-                    }
-                }
-            } else {//2
-                if (mapArray[yNext][xGrid].toInt() in 1..3 || mapArray[yNext][xGrid + 1].toInt() in 1..3) {
-                    if (y + TANK_SIZE >= yGrid * SIZE) {
-                        //println("down111")
-                        y = yGrid * SIZE
-                        transfer(0, 0)
-                    } else {// 可以去掉，不影响逻辑
-                        //println("down222")
-                        var yOffset = (times * speed).toInt()
-                        transfer(0, yOffset)
-                    }
-                } else {
-                    if (y + TANK_SIZE >= ground.height) {
-                        //println("down333")
-                        y = ground.height - TANK_SIZE
-                        transfer(0, 0)
-                    } else {
-                        //println("down444")
-                        var yOffset = (times * speed).toInt()
-                        transfer(0, yOffset)
-                    }
-                }
-            }
-            //炮弹初始位置
-            shellsX = cx - shells.w / 2
-            shellsY = cy
-        }
-
-        //根据方向决定坦克的朝向
-        //val transform = AffineTransform()
-        // 重置状态，避免每次新建对象
-        transform.setToIdentity()
-        transform.translate((x + imgX + img.width / 2).toDouble(), (y + imgY + img.height / 2).toDouble())
-        transform.rotate(angle)
-        transform.translate((-img.width / 2).toDouble(), (-img.height / 2).toDouble())
-
         //shells born
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {
             println("control is pressed, fire in the hole. shellsList size:${shellsList.size}")
@@ -368,23 +105,244 @@ class Tank(input: Input, ground: Ground) : AbstractTank() {
 
     override fun drawTank(g: Graphics?) {
         var g2 = g as Graphics2D
-        g2.drawImage(img, transform, null)
 
-//        //车身
-//        g2?.drawRect(x, y, TANK_SIZE, TANK_SIZE)
-//        //炮台
-//        g2?.drawOval(x + ptOffset, y + ptOffset, halfSize, halfSize)
-//
-//        //炮筒
-//        if (direction == Shells.DIRECTION_WEST) {
-//            g2?.fillRoundRect(cx - ptLength, cy - ptRadius / 2, ptLength, ptRadius, arc, arc)
-//        } else if (direction == Shells.DIRECTION_EAST) {
-//            g2?.fillRoundRect(cx, cy - ptRadius / 2, ptLength, ptRadius, arc, arc)
-//        } else if (direction == Shells.DIRECTION_NORTH) {
-//            g2?.fillRoundRect(cx - ptRadius / 2, cy - ptLength, ptRadius, ptLength, arc, arc)
-//        } else if (direction == Shells.DIRECTION_SOUTH) {
-//            g2?.fillRoundRect(cx - ptRadius / 2, cy, ptRadius, ptLength, arc, arc)
-//        }
+        if (direction == Shells.DIRECTION_WEST) {
+            g2.drawImage(imgW, x, y, null)
+        } else if (direction == Shells.DIRECTION_EAST) {
+            g2.drawImage(imgE, x, y, null)
+        } else if (direction == Shells.DIRECTION_NORTH) {
+            g2.drawImage(imgN, x, y, null)
+        } else if (direction == Shells.DIRECTION_SOUTH) {
+            g2.drawImage(imgS, x, y, null)
+        }
+
+    }
+
+    /**
+     * 相当于keyPressed(key)
+     */
+    override fun begin(key: Int) {
+        println("begin:${key}")
+        when (key) {
+            KeyEvent.VK_UP -> {
+                /*************************************************
+                 * 地图瓦片进一步缩小为1/4。坦克能不能前进的条件如下
+                 * 能：空地；可以通过的瓦片(草地、雪地)；没有抵达游戏窗口边界；
+                 * 不能：不可通过的瓦片(砖头、钢铁、河流)；抵达游戏窗口边界；
+                 * ***********************************************/
+                println("old direction:" + this.direction)
+                if (this.direction == Shells.DIRECTION_NORTH) {
+                    println("直行")
+                } else {
+                    //拐弯就只改变一下方向，不需要移动
+                    println("拐弯了")
+                    this.direction = Shells.DIRECTION_NORTH
+                    return
+                }
+                this.direction = Shells.DIRECTION_NORTH
+
+                row = y / SIZE_M
+                col = x / SIZE_M
+                println("move up row:$row, col:$col, x:$x, y:$y")
+                //没有抵达边界并且前方可通行
+                if (row > 0) {
+                    if ((mapArray[row - 1][col].toInt() == 0
+                                || mapArray[row - 1][col].toInt() == CP.TILE_GRASS
+                                || mapArray[row - 1][col].toInt() == CP.TILE_SNOW)
+                        && (mapArray[row - 1][col + 1].toInt() == 0
+                                || mapArray[row - 1][col + 1].toInt() == CP.TILE_GRASS
+                                || mapArray[row - 1][col + 1].toInt() == CP.TILE_SNOW)
+                    ) {
+                        println("up222")
+                        var yOffset = -times * speed
+                        transfer(0, yOffset)
+                    } else {
+                        //逻辑不太好处理，需要多加一个网格的高度，务必注意，困扰我好久
+                        north = (row - 1) * SIZE_M + SIZE_M
+                        println("发现障碍物row:${row-1}, north:$north")
+                        if (y > north + (SIZE - TANK_SIZE) / 2) {
+                            var yOffset = -times * speed
+                            transfer(0, yOffset)
+                            println("1-1 y:$y")
+                        } else {
+                            y = north + (SIZE - TANK_SIZE) / 2
+                            transfer(0, 0)
+                            println("1-2 y:$y")
+                        }
+                    }
+                } else if (row == 0) {
+                    if (y > 0 + (SIZE - TANK_SIZE) / 2) {
+                        var yOffset = -times * speed
+                        transfer(0, yOffset)
+                    } else {
+                        y = 0 + (SIZE - TANK_SIZE) / 2
+                        transfer(0, 0)
+                    }
+                }
+                println("move over new x:$x, y:$y")
+                //炮弹初始位置
+                shellsX = cx - shells.w / 2
+                shellsY = cy
+            }
+
+            KeyEvent.VK_DOWN -> {
+                println("old direction:" + this.direction)
+                if (this.direction == Shells.DIRECTION_SOUTH) {
+                    println("直行")
+                } else {
+                    //拐弯就只改变一下方向，不需要移动
+                    println("拐弯了")
+                    this.direction = Shells.DIRECTION_SOUTH
+                    return
+                }
+                this.direction = Shells.DIRECTION_SOUTH
+                row = y / SIZE_M
+                col = x / SIZE_M
+                println("move down row:$row, col:$col, x:$x, y:$y")
+                //没有抵达边界并且前方可通行
+                if (row < CP.R - 2) {
+                    if ((mapArray[row + 2][col].toInt() == 0
+                                || mapArray[row + 2][col].toInt() == CP.TILE_GRASS
+                                || mapArray[row + 2][col].toInt() == CP.TILE_SNOW)
+                        && (mapArray[row + 2][col + 1].toInt() == 0
+                                || mapArray[row + 2][col + 1].toInt() == CP.TILE_GRASS
+                                || mapArray[row + 2][col + 1].toInt() == CP.TILE_SNOW)){
+                        var yOffset = times * speed
+                        transfer(0, yOffset)
+                    } else {
+                        south = (row + 2) * SIZE_M
+                        if (y < south - TANK_SIZE - (SIZE - TANK_SIZE) / 2) {
+                            var yOffset = times * speed
+                            transfer(0, yOffset)
+                        } else {
+                            y = south - TANK_SIZE - (SIZE - TANK_SIZE) / 2
+                            transfer(0, 0)
+                        }
+                    }
+
+                } else if(row == CP.R - 2) {
+                    if (y < ground.height - TANK_SIZE - (SIZE - TANK_SIZE) / 2) {
+                        var yOffset = times * speed
+                        transfer(0, yOffset)
+                    } else {
+                        y = ground.height - TANK_SIZE - (SIZE - TANK_SIZE) / 2
+                        transfer(0, 0)
+                    }
+                }
+                //炮弹初始位置
+                shellsX = cx - shells.w / 2
+                shellsY = cy
+            }
+
+            KeyEvent.VK_LEFT -> {
+                println("old direction:" + this.direction)
+                if (this.direction == Shells.DIRECTION_WEST) {
+                    println("直行")
+                } else {
+                    //拐弯就只改变一下方向，不需要移动
+                    println("拐弯了")
+                    this.direction = Shells.DIRECTION_WEST
+                    return
+                }
+                this.direction = Shells.DIRECTION_WEST
+
+                row = y / SIZE_M
+                col = x / SIZE_M
+                println("move left row:$row, col:$col, x:$x, y:$y")
+                //没有抵达边界并且前方可通行
+                if (col > 0) {
+                    if ((mapArray[row][col-1].toInt() == 0
+                                || mapArray[row][col - 1].toInt() == CP.TILE_GRASS
+                                || mapArray[row][col - 1].toInt() == CP.TILE_SNOW)
+                        && (mapArray[row + 1][col - 1].toInt() == 0
+                                || mapArray[row + 1][col - 1].toInt() == CP.TILE_GRASS
+                                || mapArray[row + 1][col - 1].toInt() == CP.TILE_SNOW)
+                    ) {
+                        var xOffset = -times * speed
+                        transfer(xOffset, 0)
+                    } else {//遇到障碍物
+                        west = (col - 1) * SIZE_M + SIZE_M
+                        if (x > west + (SIZE - TANK_SIZE) / 2) {
+                            var xOffset = -times * speed
+                            transfer(xOffset, 0)
+                        } else {
+                            x = west + (SIZE - TANK_SIZE) / 2
+                            transfer(0, 0)
+                        }
+                    }
+                } else if (col == 0) {
+                    if (x > 0 + (SIZE - TANK_SIZE) / 2) {
+                        var xOffset = -times * speed
+                        transfer(xOffset, 0)
+                    } else {
+                        x = 0 + (SIZE - TANK_SIZE) / 2
+                        transfer(0, 0)
+                    }
+                }
+                println("move over new x:$x, y:$y")
+
+                //炮弹初始位置
+                shellsX = cx
+                shellsY = cy - shells.h / 2
+            }
+
+            KeyEvent.VK_RIGHT -> {
+                println("old direction:" + this.direction)
+                if (this.direction == Shells.DIRECTION_EAST) {
+                    println("直行")
+                } else {
+                    //拐弯就只改变一下方向，不需要移动
+                    println("拐弯了")
+                    this.direction = Shells.DIRECTION_EAST
+                    return
+                }
+                this.direction = Shells.DIRECTION_EAST
+
+                row = y / SIZE_M
+                col = x / SIZE_M
+                println("move right row:$row, col:$col, x:$x, y:$y")
+
+                //没有抵达边界并且前方可通行
+                if (col < CP.C - 2) {
+                    if ((mapArray[row][col + 2].toInt() == 0
+                                || mapArray[row][col + 2].toInt() == CP.TILE_GRASS
+                                || mapArray[row][col + 2].toInt() == CP.TILE_SNOW)
+                        && (mapArray[row + 1][col + 2].toInt() == 0
+                                || mapArray[row + 1][col + 2].toInt() == CP.TILE_GRASS
+                                || mapArray[row + 1][col + 2].toInt() == CP.TILE_SNOW)){
+                        var xOffset = times * speed
+                        transfer(xOffset, 0)
+                    } else {//有障碍物
+                        //记住这个障碍物的边界，到达边界再停止
+                        east = (col + 2) * SIZE_M
+                        if (x < east - TANK_SIZE - (SIZE - TANK_SIZE) / 2) {
+                            var xOffset = times * speed
+                            transfer(xOffset, 0)
+                        } else {
+                            x = east - TANK_SIZE - (SIZE - TANK_SIZE) / 2
+                            transfer(0, 0)
+                        }
+                    }
+
+                } else if(col == CP.C - 2) {//抵达边界
+                    if (x < ground.width - TANK_SIZE - (SIZE - TANK_SIZE) / 2) {
+                        var xOffset = times * speed
+                        transfer(xOffset, 0)
+                    } else {
+                        x = ground.width - TANK_SIZE - (SIZE - TANK_SIZE) / 2
+                        transfer(0, 0)
+                    }
+                }
+                println("move over new x:$x, y:$y")
+                //炮弹初始位置
+                shellsX = cx
+                shellsY = cy - shells.h / 2
+            }
+        }
+    }
+
+    override fun end(direction: Int) {
+        println("end")
 
     }
 }
