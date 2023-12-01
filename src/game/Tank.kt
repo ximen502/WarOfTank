@@ -135,7 +135,14 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                     println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了")
+                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
+                    if (this.direction == Shells.DIRECTION_WEST) {
+                        //将x坐标重新进行设置，以对齐拐弯后的网格线
+                        x = x / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+                    } else if (this.direction == Shells.DIRECTION_EAST) {
+                        x = x / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+                    }
                     this.direction = Shells.DIRECTION_NORTH
                     return
                 }
@@ -191,7 +198,14 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                     println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了")
+                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
+                    if (this.direction == Shells.DIRECTION_WEST) {
+                        //将x坐标重新进行设置，以对齐拐弯后的网格线
+                        x = x / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+                    } else if (this.direction == Shells.DIRECTION_EAST) {
+                        x = x / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+                    }
                     this.direction = Shells.DIRECTION_SOUTH
                     return
                 }
@@ -240,7 +254,14 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                     println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了")
+                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
+                    if (this.direction == Shells.DIRECTION_NORTH) {
+                        //将y坐标重新进行设置，以对齐拐弯后的网格线
+                        y = y / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+                    } else if (this.direction == Shells.DIRECTION_SOUTH) {
+                        y = y / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+                    }
                     this.direction = Shells.DIRECTION_WEST
                     return
                 }
@@ -292,7 +313,14 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                     println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了")
+                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
+                    if (this.direction == Shells.DIRECTION_NORTH) {
+                        //将y坐标重新进行设置，以对齐拐弯后的网格线
+                        y = y / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+                    } else if (this.direction == Shells.DIRECTION_SOUTH) {
+                        y = y / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+                    }
                     this.direction = Shells.DIRECTION_EAST
                     return
                 }

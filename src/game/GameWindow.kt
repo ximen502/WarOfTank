@@ -4,6 +4,8 @@ import game.map.*
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
+import java.io.*
+import java.net.URISyntaxException
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.swing.JFrame
 
@@ -104,8 +106,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 //        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 //        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 //        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        // 尝试从地图文件读取地图
         // test map
         val mapArray = CP.mapArray
+//        val mapArray = Map().readBMapFromFile()
         val tileArray = CP.tileArray
 
         // 4个方格代表的一个瓦片（河流、草地、基地...），每个元素存储二维数组的横纵坐标

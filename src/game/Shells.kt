@@ -5,6 +5,8 @@ import game.map.Iron
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 import kotlin.math.abs
 
 /**
@@ -27,12 +29,16 @@ class Shells : GameObject() {
     //3.级别2，速度快，火力升级，2发消灭胖子坦克，消除2层砖块，无法破坏铁块
     //4.级别3，速度块，火力升级，2发消灭胖子坦克，消除2层砖块，可以破块铁块
     //道具星星，吃1个lv1，吃2个lv2，吃3个lv3
-    var times = 2
+    var times = 1
 
     val d = 10
     val SIZE = CP.SIZE
     var doCollision = false
     var observer: GOObserver? = null
+    var imageN:BufferedImage
+    var imageS:BufferedImage
+    var imageW:BufferedImage
+    var imageE:BufferedImage
 
     //缓存
     var hit = Hit()
@@ -53,6 +59,12 @@ class Shells : GameObject() {
         w = d
         h = d
         level = LEVEL1
+        val path = javaClass.getResource("image/shn.png")
+        println("shells path:$path")
+        imageN = ImageIO.read(path)
+        imageS = ImageIO.read(javaClass.getResource("image/shs.png"))
+        imageW = ImageIO.read(javaClass.getResource("image/shw.png"))
+        imageE = ImageIO.read(javaClass.getResource("image/she.png"))
     }
 
     override fun draw(g: Graphics?) {
@@ -60,8 +72,27 @@ class Shells : GameObject() {
         var color = g2.color
         g2.color = Color.YELLOW
         // 炮弹直径
-        g2.fillRect(x, y, d, d)
+//        g2.fillRect(x, y, d, d)
         g2.color = color
+        when (direction) {
+            DIRECTION_NORTH -> {
+                g2.drawImage(imageN, x, y, null)
+            }
+
+            DIRECTION_SOUTH -> {
+                g2.drawImage(imageS, x, y, null)
+            }
+
+            DIRECTION_WEST -> {
+                g2.drawImage(imageW, x, y, null)
+            }
+
+            DIRECTION_EAST -> {
+                g2.drawImage(imageE, x, y, null)
+            }
+
+            else -> {}
+        }
     }
 
     override fun onTick() {
