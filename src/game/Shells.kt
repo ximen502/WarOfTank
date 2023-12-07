@@ -33,8 +33,10 @@ class Shells : GameObject() {
 
     val d = 10
     val SIZE = CP.SIZE
+    val SIZE_M = CP.SIZE_M
     var doCollision = false
     var observer: GOObserver? = null
+    // 4个方向的炮弹图片
     var imageN:BufferedImage
     var imageS:BufferedImage
     var imageW:BufferedImage
@@ -98,8 +100,8 @@ class Shells : GameObject() {
     override fun onTick() {
         when (direction) {
             DIRECTION_NORTH -> {
-                var xGrid = x / SIZE
-                var yGrid = y / SIZE
+                var xGrid = x / SIZE_M
+                var yGrid = y / SIZE_M
                 var yNext = if (yGrid <= 1) 0 else yGrid - 1
 
                 // 炮弹前方有障碍物，准备碰撞检测和处理；只需要处理砖块和钢铁的碰撞
@@ -137,8 +139,8 @@ class Shells : GameObject() {
             }
 
             DIRECTION_SOUTH -> {
-                var xGrid = x / SIZE
-                var yGrid = y / SIZE
+                var xGrid = x / SIZE_M
+                var yGrid = y / SIZE_M
                 var yNext = if (yGrid >= CP.R - 2) CP.R - 1 else yGrid + 1
 
                 // 炮弹前方有障碍物，准备碰撞检测和处理
@@ -177,8 +179,8 @@ class Shells : GameObject() {
             }
 
             DIRECTION_WEST -> {
-                var xGrid = x / SIZE
-                var yGrid = y / SIZE
+                var xGrid = x / SIZE_M
+                var yGrid = y / SIZE_M
                 var xNext = if (xGrid - 1 <= 0) 0 else xGrid - 1
 
                 // 炮弹前方有障碍物，准备碰撞检测和处理
@@ -216,8 +218,8 @@ class Shells : GameObject() {
             }
 
             DIRECTION_EAST -> {
-                var xGrid = x / SIZE
-                var yGrid = y / SIZE
+                var xGrid = x / SIZE_M
+                var yGrid = y / SIZE_M
                 var xNext = if (xGrid >= CP.C - 2) CP.C - 1 else xGrid + 1
 
                 // 炮弹前方有障碍物，准备碰撞检测和处理
@@ -261,7 +263,7 @@ class Shells : GameObject() {
     /**
      * 处理与砖块和钢铁的碰撞
      */
-    fun handleCollision(direction: Int) {
+    private fun handleCollision(direction: Int) {
         var go: GameObject? = null
         when (tile) {
             CP.TILE_BRICK -> {
