@@ -8,8 +8,9 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
 /**
- * 坦克，根据给定的坐标绘制一个坦克的俯视图
+ * 玩家坦克，根据给定的坐标绘制一个坦克的俯视图
  * 矩形车身+圆形炮台+矩形炮筒
+ * @Author xsc
  */
 class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     private var image: Image = Toolkit.getDefaultToolkit().createImage("image/Snow.png")
@@ -23,20 +24,13 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     var imgS: BufferedImage
     var imgW: BufferedImage
     var imgE: BufferedImage
-    var imgX = 0
-    var imgY = 0
+
     // 方便记录遇到障碍物后4个方向的边界
     var west = -1
     var east = -1
     var north = -1
     var south = -1
 
-    companion object {
-        val ANGLE_0 = Math.toRadians(0.0)
-        val ANGLE_90 = Math.toRadians(90.0)
-        val ANGLE_180 = Math.toRadians(180.0)
-        val ANGLE_270 = Math.toRadians(270.0)
-    }
 
     //炮弹缓存
     val shells = Shells()
@@ -79,8 +73,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         //shells born
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {
             println("control is pressed, fire in the hole. shellsList size:${shellsList.size}")
-            if (shellsList.isEmpty()) {
-                var sh = shells
+            // 简化炮弹是否可以发射的判断逻辑
+            if (shells.isDestroyed) {
+                val sh = shells
                 sh.id = System.currentTimeMillis()
                 sh.observer = observer
                 sh.ground = ground
@@ -94,13 +89,13 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         }
 
         //shells die
-        var iterator = shellsList.iterator()
-        while (iterator.hasNext()) {
-            var next = iterator.next()
-            if (next.isDestroyed) {
-                iterator.remove()
-            }
-        }
+//        var iterator = shellsList.iterator()
+//        while (iterator.hasNext()) {
+//            var next = iterator.next()
+//            if (next.isDestroyed) {
+//                iterator.remove()
+//            }
+//        }
     }
 
     override fun drawTank(g: Graphics?) {
