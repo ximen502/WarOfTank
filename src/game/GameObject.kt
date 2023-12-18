@@ -50,4 +50,12 @@ abstract class GameObject {
         return false
     }
 
+    override fun equals(other: Any?): Boolean {
+        return if (other is GameObject) {
+            other.id == id
+        } else {
+            false
+        }
+    }
+
 }

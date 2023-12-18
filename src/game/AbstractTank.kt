@@ -1,7 +1,7 @@
 package game
 
 import java.awt.Graphics
-import java.awt.Graphics2D
+
 import java.util.*
 
 /**
@@ -17,7 +17,7 @@ abstract class AbstractTank : GameObject() {
         const val TANK_SIZE = CP.TANK_SIZE
     }
     // 坦克前进的方向
-    var direction = 0
+    protected var direction = 0
 
     //炮筒(需要根据行走方向调整指向)
     val ptRadius = 4
@@ -36,11 +36,36 @@ abstract class AbstractTank : GameObject() {
     // 炮弹容器
     var shellsList: ArrayList<Shells> = ArrayList()
 
+    val mapArray = CP.mapArray
+
     // 在网格中的行
     var row = 0
     // 在网格中的列
     var col = 0
 
+    // 方便记录遇到障碍物后4个方向的边界
+    var west = -1
+    var east = -1
+    var north = -1
+    var south = -1
+
+    var observer: GOObserver? = null
+
     abstract fun drawTank(g: Graphics?)
+
+    /**
+     * 出生动画
+     */
+    abstract fun born()
+
+    /**
+     * 在地图中行走
+     */
+    abstract fun walk()
+
+    /**
+     * 发射炮弹
+     */
+    abstract fun fire()
 
 }

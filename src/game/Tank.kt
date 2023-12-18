@@ -17,19 +17,12 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 
     private var input: Input
 
-    var observer: GOObserver? = null
     var fireAC: AudioClip? = null
-    val mapArray = CP.mapArray
+
     var imgN: BufferedImage
     var imgS: BufferedImage
     var imgW: BufferedImage
     var imgE: BufferedImage
-
-    // 方便记录遇到障碍物后4个方向的边界
-    var west = -1
-    var east = -1
-    var north = -1
-    var south = -1
 
 
     //炮弹缓存
@@ -387,6 +380,18 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         cy = y + h / 2
         shellsX = cx
         shellsY = cy - shells.h / 2
+    }
+
+    override fun born() {
+
+    }
+
+    override fun walk() {
+
+    }
+
+    override fun fire() {
+
     }
 
 }

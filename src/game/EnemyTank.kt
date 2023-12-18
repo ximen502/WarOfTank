@@ -9,12 +9,14 @@ import kotlin.math.pow
 /**
  * 坦克，根据给定的坐标绘制一个坦克的俯视图
  * 矩形车身+圆形炮台+矩形炮筒
+ *
+ * 敌军坦克和玩家坦克的行走、地图探索、发射炮弹、消除瓦片的逻辑是一样的，所以需要将这些逻辑提取出来，
+ * 玩家坦克和敌军坦克公用这些逻辑功能。
+ *
  */
 class EnemyTank(ground: Ground) : AbstractTank() {
 //    private var speed = 2 * 2
 
-    //    private var input: Input
-    var observer: GOObserver? = null
 
     private var r = Random()
 
@@ -169,31 +171,6 @@ class EnemyTank(ground: Ground) : AbstractTank() {
         }
     }
 
-    private fun logstr(d: Int) {
-        var str1 = ""
-        when (d) {
-            Shells.DIRECTION_NORTH -> {
-                str1 = "north"
-            }
-
-            Shells.DIRECTION_SOUTH -> {
-                str1 = "south"
-            }
-
-            Shells.DIRECTION_WEST -> {
-                str1 = "west"
-            }
-
-            Shells.DIRECTION_EAST -> {
-                str1 = "east"
-            }
-
-            else -> {
-            }
-        }
-        //println("new dir is ${str1}")
-    }
-
     override fun drawTank(g: Graphics?) {
         var g2 = g as Graphics2D
 
@@ -228,6 +205,43 @@ class EnemyTank(ground: Ground) : AbstractTank() {
             g2?.fillRoundRect(x + offset - ptRadius / 2, y + offset, ptRadius, ptLength, arc, arc)
         }
 
+    }
+
+    override fun born() {
+
+    }
+
+    override fun walk() {
+
+    }
+
+    override fun fire() {
+
+    }
+
+    private fun logstr(d: Int) {
+        var str1 = ""
+        when (d) {
+            Shells.DIRECTION_NORTH -> {
+                str1 = "north"
+            }
+
+            Shells.DIRECTION_SOUTH -> {
+                str1 = "south"
+            }
+
+            Shells.DIRECTION_WEST -> {
+                str1 = "west"
+            }
+
+            Shells.DIRECTION_EAST -> {
+                str1 = "east"
+            }
+
+            else -> {
+            }
+        }
+        //println("new dir is ${str1}")
     }
 
 }
