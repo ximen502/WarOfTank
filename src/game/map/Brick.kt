@@ -20,15 +20,26 @@ class Brick : GameObject() {
     //3.根据全局样貌进行地图初始化
     var img: BufferedImage? = null
     var shells: Shells? = null
-    val ONE2ND = CP.SIZE / 2
-    val ONE4TH = CP.SIZE * 0.25f
-    val ONE4THINT = ONE4TH.toInt()
+
     var observer: GOObserver? = null
+    // 表示形状的数字，可以根据数字获得目前砖的形状
+    // 每个小砖块可被炮弹打成4个部分
+    // [1][2]
+    // [4][8]
+    // 00001111B
+    var shape = 0x0F
 
     init {
         val path = javaClass.getResource("../image/wood_m.png")
         println(path)
         img = ImageIO.read(path)
+    }
+
+    companion object {
+        const val SIZE_M = CP.SIZE_M
+        // 如果尺寸/2得到的是偶数，下面这个变量可以去掉
+        const val ONE2ND_F = CP.SIZE_M * 0.5f
+        const val ONE2ND_I = CP.SIZE_M / 2
     }
 
     override fun draw(g: Graphics?) {
@@ -37,13 +48,13 @@ class Brick : GameObject() {
     }
 
     override fun onTick() {
-        when (shells?.direction) {
-            Shells.DIRECTION_NORTH -> {
-                //炮弹向北，南侧被命中
-                shells?.let {
+        shells?.let {
+            when (it.direction) {
+                Shells.DIRECTION_NORTH -> {
+                    //炮弹向北，南侧被命中
                     if (it.level <= Shells.LEVEL1) {//只能消除1层
-                        var newH = (h - ONE4TH).toInt()
-                        println("=====h:$h, 1/4:$ONE4THINT, newH:$newH")
+                        var newH = (h - ONE2ND_F).toInt()
+                        println("=====h:$h, 1/4:$ONE2ND_I, newH:$newH")
                         //砖块彻底消失
                         if (newH <= 0) {
                             isDestroyed = true
@@ -55,8 +66,8 @@ class Brick : GameObject() {
                             h = newH
                         }
                     } else {//可以消除2层
-                        var newH = (h - ONE2ND).toInt()
-                        println("=====oldH:$h, 1/2:$ONE2ND, newH:$newH")
+                        var newH = (h - SIZE_M).toInt()
+                        println("=====oldH:$h, 1/2:$SIZE_M, newH:$newH")
                         //彻底消失
                         if (newH <= 0) {
                             isDestroyed = true
@@ -68,52 +79,48 @@ class Brick : GameObject() {
                             h = newH
                         }
                     }
+                    shells = null
                 }
-                shells = null
-            }
-            Shells.DIRECTION_SOUTH -> {
-                //炮弹向南，北侧被命中
-                shells?.let {
+                Shells.DIRECTION_SOUTH -> {
+                    //炮弹向南，北侧被命中
                     if (it.level <= Shells.LEVEL1) {//只能消除1层
-                        var newH = h - ONE4THINT
-                        println("=====h:$h, 1/4:$ONE4THINT, newH:$newH, y:$y")
+                        var newH = h - ONE2ND_I
+                        println("=====h:$h, 1/4:$ONE2ND_I, newH:$newH, y:$y")
                         //砖块彻底消失(剩余高度不足1/4)
-                        if (newH < ONE4TH) {
+                        if (newH < ONE2ND_F) {
                             isDestroyed = true
                             h = 0
                             w = 0
                             observer?.die(this)
                         } else {
                             println("砖块w:$w, h:$h, x:$x, y:$y, maxY:$maxY img w:${img?.width}, img h:${img?.height}")
-                            img = img?.getSubimage(0, ONE4THINT, w, newH)
+                            img = img?.getSubimage(0, ONE2ND_I, w, newH)
                             h = newH
-                            y += ONE4THINT
+                            y += ONE2ND_I
                         }
                     } else {//可以消除2层
-                        var newH = h - ONE2ND
-                        println("=====oldH:$h, 1/2:$ONE2ND, newH:$newH, y:$y")
+                        var newH = h - SIZE_M
+                        println("=====oldH:$h, 1/2:$SIZE_M, newH:$newH, y:$y")
                         //彻底消失(剩余高度1/2)
-                        if (newH < ONE2ND) {
+                        if (newH < SIZE_M) {
                             isDestroyed = true
                             h = 0
                             w = 0
                             observer?.die(this)
                         } else {
                             println("钢铁w:$w, h:$h, x:$x, y:$y, maxY:$maxY img w:${img?.width}, img h:${img?.height}")
-                            img = img?.getSubimage(0, ONE2ND, w, newH)
+                            img = img?.getSubimage(0, SIZE_M, w, newH)
                             h = newH
-                            y += ONE2ND
+                            y += SIZE_M
                         }
                     }
+                    shells = null
                 }
-                shells = null
-            }
-            Shells.DIRECTION_WEST -> {
-                //炮弹向西，东侧被命中
-                shells?.let {
+                Shells.DIRECTION_WEST -> {
+                    //炮弹向西，东侧被命中
                     if (it.level <= Shells.LEVEL1) {//只能消除1层
-                        var newW = (w - ONE4TH).toInt()
-                        println("=====w:$w, 1/4:$ONE4THINT, newW:$newW")
+                        var newW = (w - ONE2ND_F).toInt()
+                        println("=====w:$w, 1/4:$ONE2ND_I, newW:$newW")
                         //砖块彻底消失
                         if (newW <= 0) {
                             isDestroyed = true
@@ -125,8 +132,8 @@ class Brick : GameObject() {
                             w = newW
                         }
                     } else {//可以消除2层
-                        var newW = (w - ONE2ND).toInt()
-                        println("=====oldW:$w, 1/2:$ONE2ND, newW:$newW")
+                        var newW = (w - SIZE_M).toInt()
+                        println("=====oldW:$w, 1/2:$SIZE_M, newW:$newW")
                         //钢铁彻底消失
                         if (newW <= 0) {
                             isDestroyed = true
@@ -138,47 +145,45 @@ class Brick : GameObject() {
                             w = newW
                         }
                     }
+                    shells = null
                 }
-                shells = null
-            }
-            Shells.DIRECTION_EAST -> {
-                //炮弹向东，西侧被命中
-                shells?.let {
+                Shells.DIRECTION_EAST -> {
+                    //炮弹向东，西侧被命中
                     if (it.level <= Shells.LEVEL1) {//只能消除1层
-                        var newW = w - ONE4THINT
-                        println("=====w:$w, 1/4:$ONE4THINT, newW:$newW")
+                        var newW = w - ONE2ND_I
+                        println("=====w:$w, 1/4:$ONE2ND_I, newW:$newW")
                         //砖块彻底消失(剩余宽度不足1/4)
-                        if (newW < ONE4TH) {
+                        if (newW < ONE2ND_F) {
                             isDestroyed = true
                             w = 0
                             h = 0
                             observer?.die(this)
                         } else {
                             println("砖块w:$w, h:$h, x:$x, y:$y, maxY:$maxY img w:${img?.width}, img h:${img?.height}")
-                            img = img?.getSubimage(ONE4THINT, 0, newW, h)
+                            img = img?.getSubimage(ONE2ND_I, 0, newW, h)
                             w = newW
-                            x += ONE4THINT
+                            x += ONE2ND_I
                         }
                     } else {//可以消除2层
-                        var newW = w - ONE2ND
-                        println("=====oldW:$w, 1/2:$ONE2ND, newW:$newW")
+                        var newW = w - SIZE_M
+                        println("=====oldW:$w, 1/2:$SIZE_M, newW:$newW")
                         //钢铁彻底消失(剩余宽度不足1/2)
-                        if (newW < ONE2ND) {
+                        if (newW < SIZE_M) {
                             isDestroyed = true
                             w = 0
                             h = 0
                             observer?.die(this)
                         } else {
                             println("钢铁w:$w, h:$h, x:$x, y:$y, maxY:$maxY img w:${img?.width}, img h:${img?.height}")
-                            img = img?.getSubimage(ONE2ND, 0, newW, h)
+                            img = img?.getSubimage(SIZE_M, 0, newW, h)
                             w = newW
-                            x += ONE2ND
+                            x += SIZE_M
                         }
                     }
+                    shells = null
                 }
-                shells = null
-            }
-            else -> {
+                else -> {
+                }
             }
         }
     }
