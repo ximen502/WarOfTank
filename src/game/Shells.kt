@@ -34,7 +34,7 @@ class Shells : GameObject() {
     //3.级别2，速度快，火力升级，2发消灭胖子坦克，消除2层砖块，无法破坏铁块
     //4.级别3，速度块，火力升级，2发消灭胖子坦克，消除2层砖块，可以破块铁块
     //道具星星，吃1个lv1，吃2个lv2，吃3个lv3
-    var times = 2
+    var times = 1
 
     val d = 10
     val SIZE = CP.SIZE
@@ -78,7 +78,7 @@ class Shells : GameObject() {
     init {
         w = d
         h = d
-        level = LEVEL3
+        level = LEVEL1
         isDestroyed = true
         val path = javaClass.getResource("image/shn.png")
         println("shells path:$path")
@@ -128,6 +128,9 @@ class Shells : GameObject() {
                  * 炮弹消除瓦片的逻辑需要修改，由于坦克车身需要2块网格的宽度才能通行，
                  * 因此炮弹前进遇到瓦片障碍物，需要消除2块瓦片才行，如果炮弹无法消除钢铁，
                  * 那么炮弹就不能再前进。
+                 *
+                 * 2023-12-22 根据最近几天的测试发现，如果炮弹前方有砖块，不一定要处理
+                 * 碰撞，因为砖块剩余的部分很可能已经不在炮弹的行走的路径上。
                  * ***********************************************************/
                 // 炮弹前方有障碍物，准备碰撞检测和处理；只需要处理砖块和钢铁的碰撞
                 if (doCollision) {
@@ -382,7 +385,9 @@ class Shells : GameObject() {
                 val hOf2 = (h + brick0.h) / 2
                 //println("炮弹x:$x, y:$y, $w, $h")
                 //println("brick x:${brick.x}, y:${brick.y}, w:${brick.w}, h:${brick.h}brickCX:$bcx, brickCY:$bcy")
-                // 2个砖块，如果炮弹击中了一个砖块，那么另一个砖块肯定也碰撞了，直接处理碰撞逻辑即可
+                // (1)2个砖块，如果炮弹击中了一个砖块，那么另一个砖块肯定也碰撞了，直接处理碰撞逻辑即可
+                // 如上(1)所述，这样是不够严谨的，有bug。
+                // 2个障碍物的情况，要分别处理碰撞逻辑，而且必须讲究先后顺序，距离近的优先处理
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
@@ -427,7 +432,26 @@ class Shells : GameObject() {
                 val hOf2 = (h + brick0.h) / 2
                 //println("炮弹x:$x, y:$y, $w, $h")
                 //println("brick x:${brick.x}, y:${brick.y}, w:${brick.w}, h:${brick.h}brickCX:$bcx, brickCY:$bcy")
-                // 2个砖块，如果炮弹击中了一个砖块，那么另一个砖块肯定也碰撞了，直接处理碰撞逻辑即可
+
+                //直接创建一个未来的矩形和砖头碰撞检测，碰不到就不需要再处理了
+                //前方虽然有障碍物，但是被炮弹击中消除了一部分，剩余部分不会和炮弹发生碰撞
+                //暂时注释，不够成熟
+//                val gh = Rectangle()
+//                gh.x = x
+//                gh.y = brick0.y
+//                gh.width = w / 2
+//                gh.height = brick0.h
+//                val collision = gh.intersects(Rectangle(brick0.x, brick0.y, brick0.w, brick0.h))
+//                println("collision:$collision")
+//                if (!collision) {
+//                    doCollision = false
+//                    move()
+//                }
+
+                // 如果炮弹已经不在砖块网格可碰撞范围那么，没必要再处理了
+                mayStop(direction, brick0)
+
+                // 2个障碍物的情况，要分别处理碰撞逻辑，而且必须讲究先后顺序，距离近的优先处理
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
@@ -515,7 +539,10 @@ class Shells : GameObject() {
                 val hOf2 = (h + brick1.h) / 2
                 //println("炮弹x:$x, y:$y, $w, $h")
                 //println("brick x:${brick.x}, y:${brick.y}, w:${brick.w}, h:${brick.h}brickCX:$bcx, brickCY:$bcy")
-                // 2个砖块，如果炮弹击中了一个砖块，那么另一个砖块肯定也碰撞了，直接处理碰撞逻辑即可
+
+                // 如果炮弹已经不在砖块网格可碰撞范围那么，没必要再处理了
+                mayStop(direction, brick1)
+
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
@@ -599,6 +626,48 @@ class Shells : GameObject() {
                 var xOffset = (times * speed).toInt()
                 transfer(xOffset, 0)
             }
+            else -> {}
+        }
+        // 有时候出现一个bug，炮弹跑到障碍物上面并飞出游戏窗口了，可是炮弹没消失，还在前进
+        if (x < ground.l || x > ground.r) {
+            println("水平方向已经出界")
+//            observer?.die(this)
+        } else if (y < ground.t || y > ground.b) {
+            println("垂直方向已经出界")
+//            observer?.die(this)
+        }
+
+    }
+
+    /**
+     * 判断是否要停止处理碰撞
+     */
+    private fun mayStop(direction: Int, br: Brick) {
+        when (direction) {
+            DIRECTION_NORTH -> {
+                if (y <= br.y + SIZE_M / 2) {
+                    doCollision = false
+                }
+            }
+
+            DIRECTION_SOUTH -> {
+                if (y > br.y + SIZE_M / 2) {
+                    doCollision = false
+                }
+            }
+
+            DIRECTION_WEST -> {
+                if (x <= br.x + SIZE_M / 2) {
+                    doCollision = false
+                }
+            }
+
+            DIRECTION_EAST -> {
+                if (x > br.x + SIZE_M / 2) {
+                    doCollision = false
+                }
+            }
+
             else -> {}
         }
     }
