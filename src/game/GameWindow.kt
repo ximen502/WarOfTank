@@ -55,6 +55,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         initMap()
 
         player = Tank(input, ground)
+        player.id = 101
         player.w = CP.TANK_SIZE
         player.h = CP.TANK_SIZE
         player.x = w / 2 - SIZE_M * 5 + (SIZE - CP.TANK_SIZE) / 2
@@ -404,7 +405,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     }
 
     override fun born(go: GameObject?) {
-        println("born")
+        println("born ${go?.javaClass.toString()}")
         list.add(go!!)
     }
 

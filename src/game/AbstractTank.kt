@@ -15,6 +15,8 @@ abstract class AbstractTank : GameObject() {
         const val SIZE = CP.SIZE
         const val SIZE_M = CP.SIZE_M
         const val TANK_SIZE = CP.TANK_SIZE
+        const val TANK_W = CP.TANK_W
+        const val TANK_H = CP.TANK_H
     }
     // 坦克前进的方向
     protected var direction = 0
@@ -32,7 +34,7 @@ abstract class AbstractTank : GameObject() {
 
     protected var speed = 1
     //炮弹速度倍数
-    protected var times = 4
+    var times = 4
     // 炮弹容器
     var shellsList: ArrayList<Shells> = ArrayList()
 

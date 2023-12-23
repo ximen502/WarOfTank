@@ -66,29 +66,8 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         //shells born
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {
             println("control is pressed, fire in the hole. shellsList size:${shellsList.size}")
-            // 简化炮弹是否可以发射的判断逻辑
-            if (shells.isDestroyed) {
-                val sh = shells
-                sh.id = System.currentTimeMillis()
-                sh.observer = observer
-                sh.ground = ground
-                sh.setPosition(shellsX, shellsY)
-                sh.direction = direction
-                sh.isDestroyed = false
-                shellsList.add(sh)
-                observer?.born(sh)
-                fireAC?.play()
-            }
+            fire()
         }
-
-        //shells die
-//        var iterator = shellsList.iterator()
-//        while (iterator.hasNext()) {
-//            var next = iterator.next()
-//            if (next.isDestroyed) {
-//                iterator.remove()
-//            }
-//        }
     }
 
     override fun drawTank(g: Graphics?) {
@@ -391,7 +370,19 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     }
 
     override fun fire() {
-
+        // 简化炮弹是否可以发射的判断逻辑
+        if (shells.isDestroyed) {
+            val sh = shells
+            sh.id = (CP.PLAYER shl 8 or id.toInt()).toLong()
+            sh.observer = observer
+            sh.ground = ground
+            sh.setPosition(shellsX, shellsY)
+            sh.direction = direction
+            sh.isDestroyed = false
+            shellsList.add(sh)
+            observer?.born(sh)
+            fireAC?.play()
+        }
     }
 
 }

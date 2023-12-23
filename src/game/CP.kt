@@ -9,6 +9,8 @@ object CP {
     const val SIZE_M = 25
 
     const val TANK_SIZE = 40
+    const val TANK_W = 40
+    const val TANK_H = 44
 
     const val TILE_BRICK = 1
     const val TILE_IRON = 2
@@ -18,6 +20,14 @@ object CP {
     const val TILE_EAGLE = 6
     const val TILE_P1 = 50
     const val TILE_P2 = 51
+
+    const val BORN_1 = 1
+    const val BORN_2 = 2
+    const val BORN_3 = 3
+
+    const val PLAYER = 0x60
+
+    const val ENEMY = 0x50
 
     val mapArray = Map.map
 
