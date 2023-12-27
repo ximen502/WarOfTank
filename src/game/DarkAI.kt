@@ -5,6 +5,7 @@ import game.enemy.TireTank
 import game.tank.Producing
 import java.awt.event.KeyEvent
 import kotlin.math.abs
+import kotlin.math.ceil
 
 /**
  * 负责敌军坦克的生成和移动、发射炮弹、判断当前关卡是否结束
@@ -103,7 +104,7 @@ class DarkAI {
                     // 如果是垂直方向相撞，双方各后撤到互相撞不到的位置，然后随即选择一个新方向继续行走，有bug坦克后撤位移略大
                     // 对角碰撞垂直和水平方向分别处理，效果很生硬，而且有bug，坦克会跑到瓦片上，或超出边缘
                     if (bet.x == list[j].x) {// 垂直方向碰撞
-                        val ok = CP.TANK_H - abs(bet.y - list[j].y)
+                        val ok = ceil((CP.TANK_H - abs(bet.y - list[j].y)) / 2.0).toInt()
                         if (bet.y < list[j].y) {
                             bet.y = bet.y - ok
                             list[j].y = list[j].y + ok
@@ -112,7 +113,7 @@ class DarkAI {
                             bet.y = bet.y + ok
                         }
                     } else if (bet.y == list[j].y) {// 水平方向碰撞
-                        val ok = CP.TANK_W - abs(bet.x - list[j].x)
+                        val ok = ceil((CP.TANK_W - abs(bet.x - list[j].x)) / 2.0).toInt()
                         if (bet.x < list[j].x) {
                             bet.x = bet.x - ok
                             list[j].x = list[j].x + ok
@@ -126,22 +127,22 @@ class DarkAI {
                             // bet:java.awt.Rectangle[x=805,y=280,width=40,height=44],
                             //   j:java.awt.Rectangle[x=830,y=305,width=40,height=44]
                             KeyEvent.VK_UP -> {
-                                val ok = CP.TANK_H - abs(bet.y - list[j].y)
+                                val ok = ceil((CP.TANK_H - abs(bet.y - list[j].y)) / 2.0).toInt()
                                 list[j].y = list[j].y - ok
                                 bet.y = bet.y + ok
                             }
                             KeyEvent.VK_DOWN -> {
-                                val ok = CP.TANK_H - abs(bet.y - list[j].y)
+                                val ok = ceil((CP.TANK_H - abs(bet.y - list[j].y)) / 2.0).toInt()
                                 bet.y = bet.y - ok
                                 list[j].y = list[j].y + ok
                             }
                             KeyEvent.VK_LEFT -> {
-                                val ok = CP.TANK_W - abs(bet.x - list[j].x)
+                                val ok = ceil((CP.TANK_W - abs(bet.x - list[j].x)) / 2.0).toInt()
                                 list[j].x = list[j].x - ok
                                 bet.x = bet.x + ok
                             }
                             KeyEvent.VK_RIGHT -> {
-                                val ok = CP.TANK_W - abs(bet.x - list[j].x)
+                                val ok = ceil((CP.TANK_W - abs(bet.x - list[j].x)) / 2.0).toInt()
                                 list[j].x = list[j].x + ok
                                 bet.x = bet.x - ok
                             }
