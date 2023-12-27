@@ -400,6 +400,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         g?.drawImage(tempImage, 0, 0, null)
 
         darkAI?.pushTank(ground, this)
+        darkAI?.checkCollision()
 
         //detectCollision()
     }
@@ -422,6 +423,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     CP.mapArray[i][j] = 0
                     CP.tileArray[i][j] = null
                 }
+
+                //darkAI?.removeDeadTank(go)
                 break
             }
         }

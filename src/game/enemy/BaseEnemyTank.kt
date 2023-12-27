@@ -5,6 +5,7 @@ import game.CP
 import game.Shells
 import java.awt.Graphics
 import java.awt.Graphics2D
+import java.awt.Rectangle
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
 import java.util.*
@@ -33,7 +34,9 @@ open class BaseEnemyTank :AbstractTank() {
 
     private var keyList = ArrayList<Int>()
     // 模拟按键
-    protected var key = KeyEvent.VK_DOWN
+    var key = KeyEvent.VK_DOWN
+
+    var rect: Rectangle = Rectangle(x, y, w, h)
 
     val KEY_LIST = arrayListOf(
         KeyEvent.VK_UP,
@@ -52,6 +55,32 @@ open class BaseEnemyTank :AbstractTank() {
         var index = r.nextInt(keyList.size)
         this.key = keyList.get(index)
         //println("enemy tank拐弯了，之前方向：${logstr(oldDir)}，新方向: ${logstr(this.direction)}")
+    }
+
+    /**
+     * 掉头
+     * @param key 当前方向
+     */
+    fun turnAround(key: Int) {
+        when (key) {
+            KeyEvent.VK_UP -> {
+                this.key = KeyEvent.VK_DOWN
+            }
+
+            KeyEvent.VK_DOWN -> {
+                this.key = KeyEvent.VK_UP
+            }
+
+            KeyEvent.VK_LEFT -> {
+                this.key = KeyEvent.VK_RIGHT
+            }
+
+            KeyEvent.VK_RIGHT -> {
+                this.key = KeyEvent.VK_LEFT
+            }
+
+            else -> {}
+        }
     }
 
     /**
@@ -76,6 +105,17 @@ open class BaseEnemyTank :AbstractTank() {
         cy = y + h / 2
         shellsX = cx
         shellsY = cy - shells.h / 2
+    }
+
+    /**
+     * 替代get方法
+     */
+    fun pickRect(): Rectangle {
+        rect.x = x
+        rect.y = y
+        rect.width = w
+        rect.height = h
+        return rect
     }
 
     fun logstr(d: Int): String {
