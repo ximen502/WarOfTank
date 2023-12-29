@@ -1,5 +1,6 @@
 package game
 
+import java.applet.Applet
 import java.lang.Thread.sleep
 
 class RenderThread(gameWindow: GameWindow) : Runnable {
@@ -17,6 +18,7 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
 
     override fun run() {
         println("start rendering")
+        bgMusic()
         while (!exited){
             _gameWindow?.repaint()
             sleep(interval)
@@ -41,5 +43,21 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
 //            _gameWindow?.exit()
 //        };
 //        timer.start()
+    }
+
+    /**
+     * 音乐如果放在主线程，初始化时间会变长，导致窗口白屏时间太久，
+     * 在异步线程初始化时间也很长，这也是个问题。
+     */
+    private fun bgMusic() {
+        Thread() {
+            run(){
+                val resource = this@RenderThread.javaClass.getResource("sound/midifile0.mid")
+                val audioClip = Applet.newAudioClip(resource)
+                //        audioClip.play();//从头播放
+                audioClip.loop() //循环播放
+                //        audioClip.stop();//停止播放
+            }
+        }.start()
     }
 }
