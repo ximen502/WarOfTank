@@ -45,6 +45,11 @@ class DarkAI {
          * 然后创建坦克，坦克出现在画面上。
          * 2s后重复上述动作。
          * 首次创建的时候，先等待游戏创建一定的帧数再开始
+         *
+         * 在4辆坦克存在的情况，判断是否有坦克被消灭，如果有，库存
+         * 还有的话，继续创建新坦克。
+         *
+         * 此方法逻辑异常复杂，待优化。
          * ***********************************************/
 
         if (nums < ENEMIES && total > 0 && gameStarted >= BEGIN_FPS) {// 创建坦克生成动画
@@ -53,7 +58,7 @@ class DarkAI {
                 ttlPro = 0
                 countDown = 120
             }
-            if (ttlPro == 0) {
+            if (ttlPro == 0) {// 创建坦克动画
                 var pos = total % 3 + 1
                 produce = Producing(ground, pos)
                 produce?.id = 110
@@ -82,6 +87,7 @@ class DarkAI {
             ttlPro++
         } else {
             fps2Tank = 0
+            dispatchMoreTank()
         }
     }
 
@@ -157,11 +163,24 @@ class DarkAI {
     }
 
     /**
-     * 移除已经被摧毁的坦克
+     * 派出更多坦克
      */
-//    fun removeDeadTank(go: GameObject) {
-//        list.removeIf {
-//            it.id == go.id
-//        }
-//    }
+    private fun dispatchMoreTank() {
+        //是否有坦克被消灭，如果有，库存还有的话，继续创建新坦克
+        var minus = false
+        // 轮询移除被消灭的敌军坦克
+        var i = 0
+        while (i < list.size) {
+            if (list[i].isDestroyed) {
+                list.remove(list[i])
+                nums--
+                i--
+                minus = true
+            }
+            i++
+        }
+        if (minus) {
+            countDown = 0
+        }
+    }
 }
