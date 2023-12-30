@@ -304,9 +304,12 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         if (!ps.isDestroyed) {
             darkAI?.let {
                 for (enemy in it.list) {
-                    //玩家的炮弹击中了敌军坦克发射的炮弹
-                    if (ps.pickRect().intersects(enemy.shells.pickRect())) {
-
+                    if (!enemy.shells.isDestroyed) {
+                        //玩家的炮弹击中了敌军坦克发射的炮弹
+                        if (ps.pickRect().intersects(enemy.shells.pickRect())) {
+                            die(ps)
+                            die(enemy.shells)
+                        }
                     }
                     if (!enemy.isDestroyed) {
                         //玩家的炮弹击中了敌军坦克
