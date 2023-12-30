@@ -316,10 +316,11 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     //敌军的炮弹击中了玩家坦克
                     if (player.pickRect().intersects(enemy.shells.pickRect())) {
                         playerDieAC?.play()
-                        var boom = Boom(player.cx, player.cy)
+                        die(player)
+                        die(enemy.shells)
+                        val boom = Boom(player.cx, player.cy)
                         boom.observer = this@GameWindow
                         born(boom)
-                        die(player)
                     }
                 }
             }
