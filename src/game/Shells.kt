@@ -5,6 +5,7 @@ import game.map.Iron
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
+import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import kotlin.math.abs
@@ -51,6 +52,8 @@ class Shells : GameObject() {
 
     //缓存
     var hit = Hit()
+    // 代表炮弹的矩形
+    var rect: Rectangle = Rectangle(x, y, w, h)
 
     companion object {
         const val DIRECTION_EAST = 1
@@ -670,6 +673,17 @@ class Shells : GameObject() {
 
             else -> {}
         }
+    }
+
+    /**
+     * 替代get方法
+     */
+    fun pickRect(): Rectangle {
+        rect.x = x
+        rect.y = y
+        rect.width = w
+        rect.height = h
+        return rect
     }
 
 }

@@ -19,6 +19,7 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
     override fun run() {
         println("start rendering")
         bgMusic()
+        initAudioResource()
         while (!exited){
             _gameWindow?.repaint()
             sleep(interval)
@@ -57,6 +58,19 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
                 //        audioClip.play();//从头播放
                 audioClip.loop() //循环播放
                 //        audioClip.stop();//停止播放
+            }
+        }.start()
+    }
+
+    /**
+     * 初始化音频资源，方便主线程调用
+     */
+    private fun initAudioResource() {
+        Thread() {
+            run() {
+                // 玩家被消灭
+                val resPD = this@RenderThread.javaClass.getResource("sound/playerdie.wav")
+                _gameWindow?.playerDieAC = Applet.newAudioClip(resPD)
             }
         }.start()
     }

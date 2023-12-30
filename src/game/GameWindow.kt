@@ -1,6 +1,7 @@
 package game
 
 import game.map.*
+import java.applet.AudioClip
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
@@ -28,6 +29,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     private var player: Tank//? = null
 
     var showLine = true //
+
+    var playerDieAC: AudioClip? = null
 
     //    var list = mutableListOf<GameObject>()
     //为解决ConcurrentModificationException，使用了如下的线程安全的容器类
@@ -285,47 +288,42 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     }
 
     private fun detectCollision() {
-//        tileList.forEachIndexed { index, tile ->
-//            val tcx = tile.x + tile.w / 2
-//            val pcx = player.x + player.w / 2
-//            val tpwhalf = (tile.w + player.w) / 2
-//
-//            val tcy = tile.y + tile.h / 2
-//            val pcy = player.y + player.h / 2
-//            val tphhalf = (tile.h + player.h) / 2
+        /***************************************************************************************
+         * (1)玩家坦克炮弹拿到敌军坦克发射的炮弹的引用，然后进行碰撞检测，如果发生碰撞则相互抵消
+         * (2)玩家坦克炮弹拿到敌军坦克的引用，然后进行碰撞检测，如果发生碰撞则敌军坦克发生爆炸被摧毁，炮弹消失
+         * (3)敌军坦克炮弹拿到玩家坦克的引用，然后进行碰撞检测，如果发生碰撞则玩家坦克发生爆炸被摧毁，炮弹消失
+         * *************************************************************************************/
+        val ps = player.shells
+        if (!ps.isDestroyed) {
+            darkAI?.let {
+                for (enemy in it.list) {
+                    //玩家的炮弹击中了敌军坦克发射的炮弹
+                    if (ps.pickRect().intersects(enemy.shells.pickRect())) {
 
-//            if (Math.abs(tcx - pcx) <= tpwhalf && Math.abs(tcy - pcy) <= tphhalf) {
-//                println("--碰撞--${index}")
-//                when (player.direction) {
-//                    Shells.DIRECTION_NORTH -> {
-//                        println("上面撞墙了，边界坐标y:${tile.y + tile.h}")
-//                    }
-//                    Shells.DIRECTION_SOUTH -> {
-//                        println("下面撞墙了，边界坐标y:${tile.y}")
-//                    }
-//                    Shells.DIRECTION_WEST -> {
-//                        println("左面撞墙了，边界坐标x:${tile.x + tile.w}")
-//                    }
-//                    Shells.DIRECTION_EAST -> {
-//                        println("右面撞墙了，边界坐标x:${tile.x}")
-//                    }
-//                    else -> {}
-//                }
-//            }
-//        }
-//        for (tile in tileList) {
-//            val tcx = tile.x + tile.w / 2
-//            val pcx = player.x + player.w / 2
-//            val tpwhalf = (tile.w + player.w) / 2
-//
-//            val tcy = tile.y + tile.h / 2
-//            val pcy = player.y + player.h / 2
-//            val tphhalf = (tile.h + player.h) / 2
-//
-//            if (Math.abs(tcx - pcx) <= tpwhalf && Math.abs(tcy - pcy) <= tphhalf) {
-//                println("--碰撞${tile}")
-//            }
-//        }
+                    }
+                    //玩家的炮弹击中了敌军坦克
+                    if (enemy.pickRect().intersects(ps.pickRect())) {
+
+                    }
+                }
+            }
+        }
+
+
+        darkAI?.let {
+            for (enemy in it.list) {
+                if (!enemy.shells.isDestroyed && !player.isDestroyed) {
+                    //敌军的炮弹击中了玩家坦克
+                    if (player.pickRect().intersects(enemy.shells.pickRect())) {
+                        playerDieAC?.play()
+                        var boom = Boom(player.cx, player.cy)
+                        boom.observer = this@GameWindow
+                        born(boom)
+                        die(player)
+                    }
+                }
+            }
+        }
     }
 
     private fun createWindow() {
@@ -402,7 +400,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         darkAI?.pushTank(ground, this)
         darkAI?.checkCollision()
 
-        //detectCollision()
+        detectCollision()
     }
 
     override fun born(go: GameObject?) {
@@ -414,6 +412,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         println("die ${go?.javaClass.toString()}")
         for (gameObject in list) {
             if (gameObject.id == go?.id) {
+                go.isDestroyed = true
                 list.remove(gameObject)
                 println("founded====")
                 // 将砖块和铁块从地图上去掉

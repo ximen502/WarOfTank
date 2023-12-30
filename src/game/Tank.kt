@@ -28,6 +28,8 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     //炮弹缓存
     val shells = Shells()
 
+    var rect: Rectangle = Rectangle(x, y, w, h)
+
     init {
         this.ground = ground
         println("w:${ground.width}")
@@ -359,6 +361,17 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         cy = y + h / 2
         shellsX = cx
         shellsY = cy - shells.h / 2
+    }
+
+    /**
+     * 替代get方法
+     */
+    fun pickRect(): Rectangle {
+        rect.x = x
+        rect.y = y
+        rect.width = w
+        rect.height = h
+        return rect
     }
 
     override fun born() {
