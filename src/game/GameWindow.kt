@@ -31,6 +31,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     var showLine = true //
 
     var playerDieAC: AudioClip? = null
+    var enemyDieAC: AudioClip? = null
 
     //    var list = mutableListOf<GameObject>()
     //为解决ConcurrentModificationException，使用了如下的线程安全的容器类
@@ -287,6 +288,12 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         }
     }
 
+    private fun boom(go: GameObject) {
+        val boom = Boom(go.cx, go.cy)
+        boom.observer = this@GameWindow
+        born(boom)
+    }
+
     private fun detectCollision() {
         /***************************************************************************************
          * (1)玩家坦克炮弹拿到敌军坦克发射的炮弹的引用，然后进行碰撞检测，如果发生碰撞则相互抵消
@@ -301,9 +308,14 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     if (ps.pickRect().intersects(enemy.shells.pickRect())) {
 
                     }
-                    //玩家的炮弹击中了敌军坦克
-                    if (enemy.pickRect().intersects(ps.pickRect())) {
-
+                    if (!enemy.isDestroyed) {
+                        //玩家的炮弹击中了敌军坦克
+                        if (enemy.pickRect().intersects(ps.pickRect())) {
+                            enemyDieAC?.play()
+                            die(enemy)
+                            die(ps)
+                            boom(enemy)
+                        }
                     }
                 }
             }
@@ -318,9 +330,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                         playerDieAC?.play()
                         die(player)
                         die(enemy.shells)
-                        val boom = Boom(player.cx, player.cy)
-                        boom.observer = this@GameWindow
-                        born(boom)
+                        boom(player)
                     }
                 }
             }

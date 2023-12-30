@@ -65,7 +65,7 @@ class Boom(x: Int, y: Int) : GameObject() {
         private val speed: Double
         private val angle: Double
         private val color: Color
-        private var size = 5 * 2
+        private var size = 5 * 3
         fun update(): Boolean {
             x += (speed * Math.cos(angle)).toInt()
             y += (speed * Math.sin(angle)).toInt()
@@ -87,6 +87,6 @@ class Boom(x: Int, y: Int) : GameObject() {
     }
 
     companion object {
-        private const val NUM_PARTICLES = 100
+        private const val NUM_PARTICLES = 150
     }
 }

@@ -71,6 +71,8 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
                 // 玩家被消灭
                 val resPD = this@RenderThread.javaClass.getResource("sound/playerdie.wav")
                 _gameWindow?.playerDieAC = Applet.newAudioClip(resPD)
+                val resED = this@RenderThread.javaClass.getResource("sound/Bang.wav")
+                _gameWindow?.enemyDieAC = Applet.newAudioClip(resED)
             }
         }.start()
     }
