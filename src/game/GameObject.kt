@@ -58,4 +58,14 @@ abstract class GameObject {
         }
     }
 
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + x
+        result = 31 * result + y
+        result += 78
+        result += 73
+        result += 63
+        return result
+    }
+
 }
