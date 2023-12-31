@@ -2,6 +2,11 @@ package game
 
 import java.awt.Graphics
 
+/**
+ * 游戏基类
+ * 在游戏窗口的对象中id是唯一的
+ * @Author xsc
+ */
 abstract class GameObject {
     var id = 0L
     var x: Int = 0

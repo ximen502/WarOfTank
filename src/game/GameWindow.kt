@@ -23,15 +23,17 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     private var renderThread: RenderThread? = null
 
     private var darkAI: DarkAI? = null
+    private var lightAI: LightAI? = null
 
     private var ground: Ground//? = null
 
-    private var player: Tank//? = null
+    var player: Tank//? = null
 
     var showLine = true //
 
     var playerDieAC: AudioClip? = null
     var enemyDieAC: AudioClip? = null
+    var hitAC: AudioClip? = null
 
     //    var list = mutableListOf<GameObject>()
     //为解决ConcurrentModificationException，使用了如下的线程安全的容器类
@@ -68,11 +70,12 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         player.col = player.y / SIZE_M
         println("row:${player.row}, col:${player.col}")
         player.observer = this
-        list.add(player)
+        //list.add(player)
 
         input.moveListener = player
 
         darkAI = DarkAI()
+        lightAI = LightAI()
 
         tempImage = this.createImage(w, h)
         tempGraphics = tempImage?.graphics
@@ -413,6 +416,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         darkAI?.pushTank(ground, this)
         darkAI?.checkCollision()
+
+        lightAI?.dispatchPlayer(ground, this, player, input)
 
         detectCollision()
     }

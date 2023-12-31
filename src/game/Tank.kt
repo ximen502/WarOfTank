@@ -42,7 +42,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         direction = Shells.DIRECTION_NORTH
         println("tank born position x:$x, y:$y, cx:$cx, cy:$cy, shells x:$shellsX, y:$shellsY")
         this.input = input
-        times = 5
+        times = 7
 //        println(javaClass.toString())
 //        var resource = javaClass.getResource("")
 //        println(resource)
@@ -56,7 +56,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 //        imgX = (w - img.width) / 2
 //        imgY = (h - img.height) / 2
 //        println(resource2)
-        fireAC = Applet.newAudioClip(javaClass.getResource("./../Gunfire.wav"))
+        fireAC = Applet.newAudioClip(javaClass.getResource("sound/Gunfire.wav"))
     }
 
     override fun draw(g: Graphics?) {
@@ -386,6 +386,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         // 简化炮弹是否可以发射的判断逻辑
         if (shells.isDestroyed) {
             val sh = shells
+            sh.times = 2
             sh.id = (CP.PLAYER shl 8 or id.toInt()).toLong()
             sh.observer = observer
             sh.ground = ground

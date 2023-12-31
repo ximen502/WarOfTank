@@ -24,10 +24,14 @@ object CP {
     const val BORN_1 = 1
     const val BORN_2 = 2
     const val BORN_3 = 3
+    const val BORN_4 = 4
+    const val BORN_5 = 5
 
     const val PLAYER = 0x60
 
     const val ENEMY = 0x50
+
+    const val BEGIN_FPS = 60
 
     val mapArray = Map.map
 

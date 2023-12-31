@@ -49,6 +49,10 @@ class Producing(ground: Ground, position: Int) : GameObject() {
                 x = ground.width - CP.SIZE + (CP.SIZE - CP.TANK_SIZE) / 2
                 y = (CP.SIZE - CP.TANK_SIZE) / 2
             }
+            CP.BORN_4 -> {
+                x = ground.width / 2 - CP.SIZE_M * 5 + (CP.SIZE - CP.TANK_SIZE) / 2
+                y = ground.height - CP.SIZE_M * 2 + (CP.SIZE - CP.TANK_SIZE) / 2
+            }
             else -> {}
         }
     }
