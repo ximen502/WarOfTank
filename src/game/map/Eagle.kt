@@ -15,20 +15,28 @@ import javax.imageio.ImageIO
  */
 class Eagle : GameObject() {
     //1.实现基地老鹰绘制
-    var img: BufferedImage? = null
+    private var imgAlive: BufferedImage? = null
+    private var imgNow: BufferedImage? = null
+    private var imgDead: BufferedImage? = null
 
     init {
         val path = javaClass.getResource("../image/eagle.png")
         println(path)
-        img = ImageIO.read(path)
+        imgAlive = ImageIO.read(path)
+        imgDead = ImageIO.read(javaClass.getResource("../image/eagle_dead.png"))
+        imgNow = imgAlive
     }
 
     override fun draw(g: Graphics?) {
         val g2 = g as Graphics2D
-        g2.drawImage(img, x, y, null)
+        g2.drawImage(imgNow, x, y, null)
     }
 
     override fun onTick() {
-
+        imgNow = if (isDestroyed) {
+            imgDead
+        } else {
+            imgAlive
+        }
     }
 }
