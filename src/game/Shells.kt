@@ -1,6 +1,7 @@
 package game
 
 import game.map.Brick
+import game.map.Eagle
 import game.map.Iron
 import java.awt.Color
 import java.awt.Graphics
@@ -54,6 +55,8 @@ class Shells : GameObject() {
     var hit = Hit()
     // 代表炮弹的矩形
     var rect: Rectangle = Rectangle(x, y, w, h)
+    // 基地老鹰缓存
+    var baseEagle: Eagle
 
     companion object {
         const val DIRECTION_EAST = 1
@@ -66,15 +69,20 @@ class Shells : GameObject() {
         const val LEVEL2 = 2
         const val LEVEL3 = 3
 
-        //brick, iron, empty,两两组合(9-1=8)
+        //brick, iron, empty,两两组合(9-1=8)，还要加一个基地老鹰eagle(A)
         const val BB = 'B'.code shl 8 or 'B'.code
         const val BI = 'B'.code shl 8 or 'I'.code
         const val BE = 'B'.code shl 8 or 'E'.code
+        const val BA = 'B'.code shl 8 or 'A'.code
         const val IB = 'I'.code shl 8 or 'B'.code
         const val II = 'I'.code shl 8 or 'I'.code
         const val IE = 'I'.code shl 8 or 'E'.code
+        const val IA = 'I'.code shl 8 or 'A'.code
         const val EB = 'E'.code shl 8 or 'B'.code
         const val EI = 'E'.code shl 8 or 'I'.code
+        const val AB = 'A'.code shl 8 or 'B'.code
+        const val AI = 'A'.code shl 8 or 'I'.code
+        const val AA = 'A'.code shl 8 or 'A'.code
         //const val EE = 0x80 useless
     }
 
@@ -89,6 +97,7 @@ class Shells : GameObject() {
         imageS = ImageIO.read(javaClass.getResource("image/shs.png"))
         imageW = ImageIO.read(javaClass.getResource("image/shw.png"))
         imageE = ImageIO.read(javaClass.getResource("image/she.png"))
+        baseEagle = tileArray[28][18] as Eagle
     }
 
     override fun draw(g: Graphics?) {
@@ -145,8 +154,10 @@ class Shells : GameObject() {
                     // 前方可以通行
                     if (mapArray[yNext][xGrid].toInt() != CP.TILE_BRICK
                         && mapArray[yNext][xGrid].toInt() != CP.TILE_IRON
+                        && mapArray[yNext][xGrid].toInt() != CP.TILE_EAGLE//useless
                         && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_BRICK
-                        && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_IRON) {
+                        && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_IRON
+                        && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_EAGLE) {//useless
                         if (y <= ground.t) {
                             println("bullet up 炮弹已到达顶部")
                             y = ground.t
@@ -167,6 +178,10 @@ class Shells : GameObject() {
                             tilePair[0] = tileArray[yNext][xGrid]
                             doCollision = true
                             flag = 'I'.code shl 8
+                        } else if (mapArray[yNext][xGrid].toInt() == CP.TILE_EAGLE) {
+                            tilePair[0] = tileArray[yNext][xGrid]
+                            doCollision = true
+                            flag = 'A'.code shl 8
                         } else { //不处理
                             tilePair[0] = null
                             flag = 'E'.code shl 8
@@ -180,6 +195,10 @@ class Shells : GameObject() {
                             tilePair[1] = tileArray[yNext][xGrid + 1]
                             doCollision = true
                             flag = flag or 'I'.code
+                        } else if (mapArray[yNext][xGrid + 1].toInt() == CP.TILE_EAGLE) {
+                            tilePair[1] = tileArray[yNext][xGrid + 1]
+                            doCollision = true
+                            flag = flag or 'A'.code
                         } else {
                             tilePair[1] = null
                             flag = flag or 'E'.code
@@ -204,8 +223,10 @@ class Shells : GameObject() {
                     // 前方可以通行
                     if (mapArray[yNext][xGrid].toInt() != CP.TILE_BRICK
                         && mapArray[yNext][xGrid].toInt() != CP.TILE_IRON
+                        && mapArray[yNext][xGrid].toInt() != CP.TILE_EAGLE
                         && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_BRICK
-                        && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_IRON) {
+                        && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_IRON
+                        && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_EAGLE) {
                         if (y >= ground.b) {
                             println("bullet down 炮弹已到达底部")
                             y = ground.b
@@ -225,6 +246,10 @@ class Shells : GameObject() {
                             tilePair[0] = tileArray[yNext][xGrid]
                             doCollision = true
                             flag = 'I'.code shl 8
+                        } else if (mapArray[yNext][xGrid].toInt() == CP.TILE_EAGLE) {
+                            tilePair[0] = tileArray[yNext][xGrid]
+                            doCollision = true
+                            flag = 'A'.code shl 8
                         } else { //不处理
                             tilePair[0] = null
                             flag = 'E'.code shl 8
@@ -238,6 +263,10 @@ class Shells : GameObject() {
                             tilePair[1] = tileArray[yNext][xGrid + 1]
                             doCollision = true
                             flag = flag or 'I'.code
+                        } else if (mapArray[yNext][xGrid + 1].toInt() == CP.TILE_EAGLE) {
+                            tilePair[1] = tileArray[yNext][xGrid + 1]
+                            doCollision = true
+                            flag = flag or 'A'.code
                         } else {
                             tilePair[1] = null
                             flag = flag or 'E'.code
@@ -263,8 +292,10 @@ class Shells : GameObject() {
                     // 前方可以通行
                     if (mapArray[yGrid][xNext].toInt() != CP.TILE_BRICK
                         && mapArray[yGrid][xNext].toInt() != CP.TILE_IRON
+                        && mapArray[yGrid][xNext].toInt() != CP.TILE_EAGLE
                         && mapArray[yGrid + 1][xNext].toInt() != CP.TILE_BRICK
-                        && mapArray[yGrid + 1][xNext].toInt() != CP.TILE_IRON) {
+                        && mapArray[yGrid + 1][xNext].toInt() != CP.TILE_IRON
+                        && mapArray[yGrid + 1][xNext].toInt() != CP.TILE_EAGLE) {
                         if (x <= ground.l) {
                             x = ground.l
                             isDestroyed = true
@@ -284,6 +315,10 @@ class Shells : GameObject() {
                             tilePair[0] = tileArray[yGrid][xNext]
                             doCollision = true
                             flag = 'I'.code shl 8
+                        } else if (mapArray[yGrid][xNext].toInt() == CP.TILE_EAGLE) {
+                            tilePair[0] = tileArray[yGrid][xNext]
+                            doCollision = true
+                            flag = 'A'.code shl 8
                         } else { //不处理
                             tilePair[0] = null
                             flag = 'E'.code shl 8
@@ -297,6 +332,10 @@ class Shells : GameObject() {
                             tilePair[1] = tileArray[yGrid + 1][xNext]
                             doCollision = true
                             flag = flag or 'I'.code
+                        } else if (mapArray[yGrid + 1][xNext].toInt() == CP.TILE_EAGLE) {
+                            tilePair[1] = tileArray[yGrid + 1][xNext]
+                            doCollision = true
+                            flag = flag or 'A'.code
                         } else {
                             tilePair[1] = null
                             flag = flag or 'E'.code
@@ -322,8 +361,10 @@ class Shells : GameObject() {
                     // 前方可以通行
                     if (mapArray[yGrid][xNext].toInt() != CP.TILE_BRICK
                         && mapArray[yGrid][xNext].toInt() != CP.TILE_IRON
+                        && mapArray[yGrid][xNext].toInt() != CP.TILE_EAGLE
                         && mapArray[yGrid + 1][xNext].toInt() != CP.TILE_BRICK
-                        && mapArray[yGrid + 1][xNext].toInt() != CP.TILE_IRON) {
+                        && mapArray[yGrid + 1][xNext].toInt() != CP.TILE_IRON
+                        && mapArray[yGrid + 1][xNext].toInt() != CP.TILE_EAGLE) {
                         if (x >= ground.r) {
                             //println("bullet right 333")
                             x = ground.r
@@ -344,6 +385,10 @@ class Shells : GameObject() {
                             tilePair[0] = tileArray[yGrid][xNext]
                             doCollision = true
                             flag = 'I'.code shl 8
+                        } else if (mapArray[yGrid][xNext].toInt() == CP.TILE_EAGLE) {
+                            tilePair[0] = tileArray[yGrid][xNext]
+                            doCollision = true
+                            flag = 'A'.code shl 8
                         } else { //不处理
                             tilePair[0] = null
                             flag = 'E'.code shl 8
@@ -357,6 +402,10 @@ class Shells : GameObject() {
                             tilePair[1] = tileArray[yGrid + 1][xNext]
                             doCollision = true
                             flag = flag or 'I'.code
+                        } else if (mapArray[yGrid + 1][xNext].toInt() == CP.TILE_EAGLE) {
+                            tilePair[1] = tileArray[yGrid + 1][xNext]
+                            doCollision = true
+                            flag = flag or 'A'.code
                         } else {
                             tilePair[1] = null
                             flag = flag or 'E'.code
@@ -579,6 +628,128 @@ class Shells : GameObject() {
                     move()
                 }
             }
+            BA -> {
+                /*********************************************************************
+                 * 碰撞逻辑需要完善，炮弹前方2个障碍物必须分别检测，避免出现炮弹状态无法重置的bug
+                 *
+                 * 这里由于砖块的尺寸是一个奇数，导致一半的尺寸使用Int有0.5的误差，会出现碰撞判断
+                 * 不够准确的bug，故改为浮点数判断。
+                 * 这个bug的触发条件是当炮弹沿一个数轴方向，由大到小发射的时候。
+                 * ******************************************************************/
+                var hit0 = false
+                var hit1 = false
+
+                val brick0 = tile0 as Brick
+                val bcx = brick0.cxf
+                val bcy = brick0.cyf
+                val wOf2 = (w + brick0.w) / 2f
+                val hOf2 = (h + brick0.h) / 2f
+                //println("炮弹x:$x, y:$y, $w, $h")
+                //println("brick x:${brick0.x}, y:${brick0.y}, w:${brick0.w}, h:${brick0.h}brickCX:$bcx, brickCY:$bcy")
+                if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
+                    hit0 = true
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
+                    //通知砖块碰撞消息
+                    brick0.shells = this
+                }
+
+                //判断与基地的碰撞
+                hit1 = checkEagle()
+
+                if (hit0 || hit1) {
+                    hitEffect()
+                    reset()
+                } else {
+                    move()
+                }
+            }
+            AB -> {
+                val hit0 = checkEagle()
+                var hit1 = false
+
+                val brick1 = tile1 as Brick
+                val bcx = brick1.cx
+                val bcy = brick1.cy
+                val wOf2 = (w + brick1.w) / 2
+                val hOf2 = (h + brick1.h) / 2
+                //println("炮弹x:$x, y:$y, $w, $h")
+                //println("brick x:${brick.x}, y:${brick.y}, w:${brick.w}, h:${brick.h}brickCX:$bcx, brickCY:$bcy")
+                if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
+                    hit1 = true
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
+                    //通知砖块碰撞消息
+                    brick1.shells = this
+                }
+
+                if (hit0 || hit1) {
+                    hitEffect()
+                    reset()
+                } else {
+                    move()
+                }
+            }
+            IA -> {
+                var hit0 = false
+                var hit1 = false
+
+                val iron0 = tile0 as Iron
+                val bcx = iron0.cxf
+                val bcy = iron0.cyf
+                val wOf2 = (w + iron0.w) / 2f
+                val hOf2 = (h + iron0.h) / 2f
+                //println("炮弹x:$x, y:$y, $w, $h")
+                //println("brick x:${brick0.x}, y:${brick0.y}, w:${brick0.w}, h:${brick0.h}brickCX:$bcx, brickCY:$bcy")
+                if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
+                    hit0 = true
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
+                    //通知碰撞消息
+                    iron0.shells = this
+                }
+
+                //判断与基地的碰撞
+                hit1 = checkEagle()
+
+                if (hit0 || hit1) {
+                    hitEffect()
+                    reset()
+                } else {
+                    move()
+                }
+            }
+            AI -> {
+                val hit0 = checkEagle()
+                var hit1 = false
+
+                val iron1 = tile1 as Iron
+                val bcx = iron1.cx
+                val bcy = iron1.cy
+                val wOf2 = (w + iron1.w) / 2
+                val hOf2 = (h + iron1.h) / 2
+                //println("炮弹x:$x, y:$y, $w, $h")
+                //println("brick x:${brick.x}, y:${brick.y}, w:${brick.w}, h:${brick.h}brickCX:$bcx, brickCY:$bcy")
+                if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
+                    hit1 = true
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
+                    //通知碰撞消息
+                    iron1.shells = this
+                }
+
+                if (hit0 || hit1) {
+                    hitEffect()
+                    reset()
+                } else {
+                    move()
+                }
+            }
+            AA -> {
+                val hit0 = checkEagle()
+                if (hit0) {
+                    hitEffect()
+                    reset()
+                } else {
+                    move()
+                }
+            }
         }
     }
 
@@ -684,6 +855,32 @@ class Shells : GameObject() {
         rect.width = w
         rect.height = h
         return rect
+    }
+
+    /**
+     * 检测炮弹和基地的碰撞
+     */
+    private fun checkEagle(): Boolean {
+        //判断与基地的碰撞(基地比较特殊，判断一次即可)
+        val eagle = baseEagle
+        if (eagle.isDestroyed)
+            return false
+
+        var hit = false
+        val bcx = eagle.cx
+        val bcy = eagle.cy
+        val wOf2 = (w + eagle.w) / 2
+        val hOf2 = (h + eagle.h) / 2
+        //println("炮弹x:$x, y:$y, $w, $h")
+        if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
+            hit = true
+            eagle.isDestroyed = true
+            mapArray[28][18] = 0
+            mapArray[28][19] = 0
+            mapArray[29][18] = 0
+            mapArray[29][19] = 0
+        }
+        return hit
     }
 
 }

@@ -16,11 +16,11 @@ class LightAI {
     // 初始生命数量
     var life = INIT_LIFE
     // 游戏启动后经过的帧数，60f/s, 90f后开始创建坦克
-    var gameStarted = 0
+    private var gameStarted = 0
     // 动画生存的帧数
-    var ttlPro = 0
+    private var ttlPro = 0
     // 活动的坦克数量
-    var active = 0
+    private var active = 0
 
 
     companion object {
@@ -73,5 +73,7 @@ class LightAI {
             }
         }
     }
+
+    fun getActive(): Int = active
 
 }
