@@ -879,6 +879,7 @@ class Shells : GameObject() {
             mapArray[28][19] = 0
             mapArray[29][18] = 0
             mapArray[29][19] = 0
+            AC.enemyDieAC?.play()
         }
         return hit
     }
