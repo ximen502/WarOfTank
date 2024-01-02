@@ -20,6 +20,11 @@ abstract class GameObject {
     var cy = 0
         get() = y + h / 2
 
+    val cxf
+        get() = x + w / 2.0f
+    val cyf
+        get() = y + h / 2.0f
+
     var maxX = 0
         get() = x + w
     var maxY = 0
