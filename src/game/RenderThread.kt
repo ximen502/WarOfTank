@@ -55,11 +55,16 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
             run(){
                 val resource = this@RenderThread.javaClass.getResource("sound/midifile0.mid")
                 val audioClip = Applet.newAudioClip(resource)
+                AC.bgMusicAC = audioClip
                 //        audioClip.play();//从头播放
                 audioClip.loop() //循环播放
                 //        audioClip.stop();//停止播放
             }
         }.start()
+    }
+
+    fun stopBgMusic() {
+        AC.bgMusicAC?.stop()
     }
 
     /**

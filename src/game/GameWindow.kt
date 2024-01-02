@@ -329,6 +329,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 if (!gameOver.showing) {
                     born(gameOver)
                     gameOver.showing = true
+                    input.moveListener = null
+                    renderThread?.stopBgMusic()
                 }
             }
         }

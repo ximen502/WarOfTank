@@ -13,4 +13,5 @@ object AC {
     // 击中钢铁或多命坦克的音效
     var hitAC: AudioClip? = null
     var enemyDieAC: AudioClip? = null
+    var bgMusicAC: AudioClip? = null
 }
