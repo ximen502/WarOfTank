@@ -5,8 +5,6 @@ import java.applet.AudioClip
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
-import java.io.*
-import java.net.URISyntaxException
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.swing.JFrame
 
@@ -46,6 +44,9 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     private val SIZE = CP.SIZE
     private val SIZE_M = CP.SIZE_M
 
+    private var river = 0
+    private var gameOver: GameOver
+
     init {
         this.w = width
         this.h = height
@@ -76,6 +77,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         darkAI = DarkAI()
         lightAI = LightAI()
+
+        gameOver = GameOver(ground)
 
         tempImage = this.createImage(w, h)
         tempGraphics = tempImage?.graphics
@@ -297,6 +300,40 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         born(boom)
     }
 
+    /**
+     * 判断是否游戏结束，
+     * 如果玩家全被消灭或基地被摧毁，游戏结束，停止背景音乐播放
+     * 如果敌军全部被消灭，玩家和基地也都健在，那就开始下一关
+     */
+    private fun isGameOver() {
+        river++
+        // 当流逝的时间大于1s再进行判断，等待游戏准备好
+        if (river >= CP.BEGIN_FPS) {
+            val e = CP.tileArray[28][18]
+            var over = false
+            //基地被摧毁
+            if (e.isDestroyed) {
+                //println("GAME OVER")
+                over = true
+            }
+
+            //玩家生命值为0
+            lightAI?.let {
+                if (it.life == 0 && it.getActive() == 0) {
+                    //println("...GAME OVER")
+                    over = true
+                }
+            }
+
+            if (over) {
+                if (!gameOver.showing) {
+                    born(gameOver)
+                    gameOver.showing = true
+                }
+            }
+        }
+    }
+
     private fun detectCollision() {
         /***************************************************************************************
          * (1)玩家坦克炮弹拿到敌军坦克发射的炮弹的引用，然后进行碰撞检测，如果发生碰撞则相互抵消
@@ -420,6 +457,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         lightAI?.dispatchPlayer(ground, this, player, input)
 
         detectCollision()
+
+        isGameOver()
     }
 
     override fun born(go: GameObject?) {
