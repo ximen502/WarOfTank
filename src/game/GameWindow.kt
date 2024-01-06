@@ -80,6 +80,12 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         gameOver = GameOver(ground)
 
+        val tips = Tips()
+        tips.x = w / 2
+        tips.y = h * 2 / 3
+        tips.observer = this
+        list.add(tips)
+
         tempImage = this.createImage(w, h)
         tempGraphics = tempImage?.graphics
 
