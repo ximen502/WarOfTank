@@ -7,8 +7,7 @@ import java.util.ArrayList;
 public class LaunchGame {
     public static void main(String[] args) {
         Runnable runnable = () -> {
-            GameWindow gameWindow = new GameWindow(CP.C * CP.SIZE_M, CP.R * CP.SIZE_M, "坦克大战[ximen502]");
-            gameWindow.setShowLine(false);
+            MainWindow mainWindow = new MainWindow();
         };
         SwingUtilities.invokeLater(runnable);
         System.out.println(System.currentTimeMillis());
