@@ -19,6 +19,8 @@
 ![alt tag](screenshot/stage1.png)
 * GAME OVER效果
   ![alt tag](screenshot/game_over.png)
+* 增加一个首页
+  ![alt tag](screenshot/main.png)
 
 # 问题
 1. 地图瓦片的大小很有讲究，自己按自己的想法，最终实现了，但是与游戏需求对不大上，跟原游戏差距很大，更改为了更小尺寸的方格才满足需求。

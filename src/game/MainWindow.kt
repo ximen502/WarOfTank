@@ -40,7 +40,9 @@ class MainWindow : JFrame() {
         var lbStart = JButton("开始游戏")
         lbStart.font = Font("宋体", Font.PLAIN, 24)
         lbStart.isOpaque = true
-        lbStart.background = Color.ORANGE
+//        lbStart.background = Color.ORANGE
+        lbStart.foreground = Color.WHITE
+        lbStart.background = Color(0, 0, 0, 0)
         lbStart.setBounds(100, 100, 200, 50)
         lbStart.horizontalAlignment = JLabel.CENTER;
         add(lbStart)
@@ -48,7 +50,9 @@ class MainWindow : JFrame() {
         var lbKeyBoard = JButton("键盘设置")
         lbKeyBoard.font = Font("宋体", Font.PLAIN, 24)
         lbKeyBoard.isOpaque = true
-        lbKeyBoard.background = Color.ORANGE
+//        lbKeyBoard.background = Color.ORANGE
+        lbKeyBoard.foreground = Color.WHITE
+        lbKeyBoard.background = Color(0, 0, 0, 0)
         lbKeyBoard.setBounds(100, 200, 200, 50)
         lbKeyBoard.horizontalAlignment = JLabel.CENTER;
         add(lbKeyBoard)
@@ -56,7 +60,9 @@ class MainWindow : JFrame() {
         var lbAbout = JButton("关于")
         lbAbout.font = Font("宋体", Font.PLAIN, 24)
         lbAbout.isOpaque = true
-        lbAbout.background = Color.ORANGE
+//        lbAbout.background = Color.ORANGE
+        lbAbout.foreground = Color.WHITE
+        lbAbout.background = Color(0, 0, 0, 0)
         lbAbout.setBounds(100, 300, 200, 50)
         lbAbout.horizontalAlignment = JLabel.CENTER;
         add(lbAbout)
@@ -64,7 +70,9 @@ class MainWindow : JFrame() {
         var lbExit = JButton("退出游戏")
         lbExit.font = Font("宋体", Font.PLAIN, 24)
         lbExit.isOpaque = true
-        lbExit.background = Color.ORANGE
+        //lbExit.background = Color.ORANGE
+        lbExit.foreground = Color.WHITE
+        lbExit.background = Color(0, 0, 0, 0)
         lbExit.setBounds(100, 400, 200, 50)
         lbExit.horizontalAlignment = JLabel.CENTER;
         add(lbExit)
