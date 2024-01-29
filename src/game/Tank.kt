@@ -49,14 +49,14 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 //        var tankPath = javaClass.getResource("image/tank.png")
 //        println(tankPath)
 //        img = ImageIO.read(tankPath)
-        imgN = ImageIO.read(javaClass.getResource("image/tkn2.png"))
-        imgS = ImageIO.read(javaClass.getResource("image/tks2.png"))
-        imgW = ImageIO.read(javaClass.getResource("image/tkw2.png"))
-        imgE = ImageIO.read(javaClass.getResource("image/tke2.png"))
+        imgN = ImageIO.read(javaClass.getResource("/game/image/tkn2.png"))
+        imgS = ImageIO.read(javaClass.getResource("/game/image/tks2.png"))
+        imgW = ImageIO.read(javaClass.getResource("/game/image/tkw2.png"))
+        imgE = ImageIO.read(javaClass.getResource("/game/image/tke2.png"))
 //        imgX = (w - img.width) / 2
 //        imgY = (h - img.height) / 2
 //        println(resource2)
-        fireAC = Applet.newAudioClip(javaClass.getResource("sound/Gunfire.wav"))
+        fireAC = Applet.newAudioClip(javaClass.getResource("/game/sound/Gunfire.wav"))
     }
 
     override fun draw(g: Graphics?) {

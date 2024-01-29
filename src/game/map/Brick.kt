@@ -30,7 +30,7 @@ class Brick : GameObject() {
     var shape = 0x0F
 
     init {
-        val path = javaClass.getResource("../image/wood_m.png")
+        val path = javaClass.getResource("/game/image/wood_m.png")
         println(path)
         img = ImageIO.read(path)
     }

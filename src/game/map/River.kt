@@ -20,8 +20,8 @@ class River : GameObject() {
     var river: Image? = null
 
     init {
-        val path = javaClass.getResource("../image/river.png")
-        println(path)
+        val path = javaClass.getResource("/game/image/river.png")
+        //println(path)
         river = ImageIO.read(path)
     }
 

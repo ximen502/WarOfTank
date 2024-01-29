@@ -43,10 +43,10 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
         direction = Shells.DIRECTION_SOUTH
         times = 2
 
-        imgN = ImageIO.read(javaClass.getResource("../image/fastn.png"))
-        imgS = ImageIO.read(javaClass.getResource("../image/fasts.png"))
-        imgW = ImageIO.read(javaClass.getResource("../image/fastw.png"))
-        imgE = ImageIO.read(javaClass.getResource("../image/faste.png"))
+        imgN = ImageIO.read(javaClass.getResource("/game/image/fastn.png"))
+        imgS = ImageIO.read(javaClass.getResource("/game/image/fasts.png"))
+        imgW = ImageIO.read(javaClass.getResource("/game/image/fastw.png"))
+        imgE = ImageIO.read(javaClass.getResource("/game/image/faste.png"))
     }
 
     override fun drawTank(g: Graphics?) {

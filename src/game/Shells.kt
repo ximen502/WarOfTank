@@ -91,12 +91,12 @@ class Shells : GameObject() {
         h = d
         level = LEVEL1
         isDestroyed = true
-        val path = javaClass.getResource("image/shn.png")
-        println("shells path:$path")
+        val path = javaClass.getResource("/game/image/shn.png")
+        //println("shells path:$path")
         imageN = ImageIO.read(path)
-        imageS = ImageIO.read(javaClass.getResource("image/shs.png"))
-        imageW = ImageIO.read(javaClass.getResource("image/shw.png"))
-        imageE = ImageIO.read(javaClass.getResource("image/she.png"))
+        imageS = ImageIO.read(javaClass.getResource("/game/image/shs.png"))
+        imageW = ImageIO.read(javaClass.getResource("/game/image/shw.png"))
+        imageE = ImageIO.read(javaClass.getResource("/game/image/she.png"))
         baseEagle = tileArray[28][18] as Eagle
     }
 

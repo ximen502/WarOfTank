@@ -60,7 +60,10 @@ class Input : KeyListener {
                 JOptionPane.showConfirmDialog(frame, "确认要退出吗", "游戏提示", JOptionPane.YES_NO_OPTION)
             //println("op:$option")
             if (option == 0) { // yes
-                System.exit(1)
+                //System.exit(1)
+                frame?.dispose()
+                //AC.bgMusicAC?.stop()
+                AC.midiPlayer?.stop()
             } else if (option == 1) { // no
                 // do nothing
             }

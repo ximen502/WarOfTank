@@ -20,8 +20,8 @@ class Grass : GameObject() {
     var grass: Image? = null
 
     init {
-        val path = javaClass.getResource("../image/grass.png")
-        println(path)
+        val path = javaClass.getResource("/game/image/grass.png")
+        //println(path)
         grass = ImageIO.read(path)
     }
 

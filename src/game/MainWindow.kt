@@ -23,7 +23,7 @@ import kotlin.system.exitProcess
 class MainWindow : JFrame() {
 
     init {
-        val path = javaClass.getResource("image/bg_main.png")
+        val path = javaClass.getResource("/game/image/bg_main.png")
         println(path)
         var img = ImageIO.read(path)
         val imageIcon = ImageIcon(img)
@@ -77,7 +77,7 @@ class MainWindow : JFrame() {
         lbExit.horizontalAlignment = JLabel.CENTER;
         add(lbExit)
 
-        val home = javaClass.getResource("image/hometank.png")
+        val home = javaClass.getResource("/game/image/hometank.png")
         var imgHome = ImageIO.read(home)
         val iconHome = ImageIcon(imgHome)
         var lbHome = JLabel(iconHome)

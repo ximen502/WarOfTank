@@ -20,10 +20,10 @@ class Eagle : GameObject() {
     private var imgDead: BufferedImage? = null
 
     init {
-        val path = javaClass.getResource("../image/eagle.png")
-        println(path)
+        val path = javaClass.getResource("/game/image/eagle.png")
+        //println(path)
         imgAlive = ImageIO.read(path)
-        imgDead = ImageIO.read(javaClass.getResource("../image/eagle_dead.png"))
+        imgDead = ImageIO.read(javaClass.getResource("/game/image/eagle_dead.png"))
         imgNow = imgAlive
     }
 

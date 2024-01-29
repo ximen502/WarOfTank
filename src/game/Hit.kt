@@ -26,8 +26,8 @@ class Hit : GameObject() {
     var observer: GOObserver? = null
 
     init {
-        val path = javaClass.getResource("image/hit.png")
-        println(path)
+        val path = javaClass.getResource("/game/image/hit.png")
+        //println(path)
         hit = ImageIO.read(path)
         id = System.currentTimeMillis()
     }

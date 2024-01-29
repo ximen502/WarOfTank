@@ -17,7 +17,7 @@ class GameOver(ground: Ground) : GameObject() {
     var showing = false
 
     init {
-        img = ImageIO.read(javaClass.getResource("image/gameover.png"))
+        img = ImageIO.read(javaClass.getResource("/game/image/gameover.png"))
         w = img?.width!!
         h = img?.height!!
         x = (ground.width - w) / 2

@@ -20,7 +20,8 @@ class InfoWindow : JFrame() {
 //        lb.foreground = Color(0xf4, 0x60, 0x6c)
         lb.foreground = Color(0x19, 0xca, 0xad)
 
-        val path = javaClass.getResource("../image/xunzi.jpg")
+        //修改资源的访问路径，避免打包为可执行jar后读取资源失败
+        val path = javaClass.getResource("/game/image/xunzi.jpg")
         var img = ImageIO.read(path)
         val imageIcon = ImageIcon(img)
         val lbHead = JLabel(imageIcon)

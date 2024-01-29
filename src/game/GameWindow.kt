@@ -6,6 +6,7 @@ import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
 import java.util.concurrent.CopyOnWriteArrayList
+import javax.imageio.ImageIO
 import javax.swing.JFrame
 
 class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObserver {
@@ -46,6 +47,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     private var river = 0
     private var gameOver: GameOver
+    var bg = ImageIO.read(javaClass.getResource("/game/image/bg_game.png"))
 
     init {
         this.w = width
@@ -392,9 +394,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         setSize(w, h)
         title = t
         isUndecorated = true
+//        contentPane = JLabel(ImageIcon(ImageIO.read(javaClass.getResource("image/bg_game.png"))))
         isVisible = true
         setLocationRelativeTo(null)
-        defaultCloseOperation = EXIT_ON_CLOSE
+        defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
     }
 
     fun setFps(fps: Int): Boolean {
@@ -421,6 +424,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         clear(tempGraphics)
 
+        //tempGraphics?.drawImage(bg, 0, 0, null)
         for (gameObject in list) {
 //            if (gameObject.isDestroyed) {
 //                continue

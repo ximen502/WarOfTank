@@ -26,8 +26,8 @@ class Iron : GameObject() {
     val ONE2ND = CP.SIZE / 2
 
     init {
-        val path = javaClass.getResource("../image/iron_m.png")
-        println(path)
+        val path = javaClass.getResource("/game/image/iron_m.png")
+        //println(path)
         img = ImageIO.read(path)
     }
 

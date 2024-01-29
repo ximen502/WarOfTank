@@ -36,8 +36,7 @@ class KeySetWindow : JFrame() {
         jp.add(lb)
         add(jp, BorderLayout.NORTH)
 
-        val path = javaClass.getResource("../image/bg_key.png")
-        println(path)
+        val path = javaClass.getResource("/game/image/bg_key.png")
         var img = ImageIO.read(path)
         val imageIcon = ImageIcon(img)
         val lbIcon = JLabel()
