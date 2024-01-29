@@ -1,5 +1,6 @@
 package game
 
+import game.lib.MidiPlayer
 import java.applet.Applet
 import java.lang.Thread.sleep
 
@@ -49,22 +50,18 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
     /**
      * 音乐如果放在主线程，初始化时间会变长，导致窗口白屏时间太久，
      * 在异步线程初始化时间也很长，这也是个问题。
+     *
+     * 这个问题，通过MidiPlayer类已经解决了。
      */
     private fun bgMusic() {
-        Thread() {
-            run(){
-                val resource = this@RenderThread.javaClass.getResource("sound/midifile0.mid")
-                val audioClip = Applet.newAudioClip(resource)
-                AC.bgMusicAC = audioClip
-                //        audioClip.play();//从头播放
-                audioClip.loop() //循环播放
-                //        audioClip.stop();//停止播放
-            }
-        }.start()
+        val player = MidiPlayer()
+        AC.midiPlayer = player
+        player.play(player.getSequence("/game/sound/midifile0.mid"), true)
     }
 
     fun stopBgMusic() {
-        AC.bgMusicAC?.stop()
+        //AC.bgMusicAC?.stop()
+        AC.midiPlayer?.stop()
     }
 
     /**
@@ -74,11 +71,11 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
         Thread() {
             run() {
                 // 玩家被消灭
-                val resPD = this@RenderThread.javaClass.getResource("sound/playerdie.wav")
+                val resPD = this@RenderThread.javaClass.getResource("/game/sound/playerdie.wav")
                 _gameWindow?.playerDieAC = Applet.newAudioClip(resPD)
-                val resED = this@RenderThread.javaClass.getResource("sound/Bang.wav")
+                val resED = this@RenderThread.javaClass.getResource("/game/sound/Bang.wav")
                 _gameWindow?.enemyDieAC = Applet.newAudioClip(resED)
-                val resHit = this@RenderThread.javaClass.getResource("sound/hit.wav")
+                val resHit = this@RenderThread.javaClass.getResource("/game/sound/hit.wav")
                 _gameWindow?.hitAC = Applet.newAudioClip(resHit)
                 AC.hitAC = _gameWindow?.hitAC
                 AC.enemyDieAC = _gameWindow?.enemyDieAC
