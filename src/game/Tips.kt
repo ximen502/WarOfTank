@@ -12,13 +12,14 @@ class Tips : GameObject() {
     private var ttl = 0
     private var alpha = 0x0
     private var textColor: Color
-    private var font: Font = Font("Arial", Font.PLAIN, 26)
+    //字体改为宋体字体，在Windows平台可以正常显示
+    private var font: Font = Font("SimSun", Font.PLAIN, 26)
     private var text: String
     var observer: GOObserver? = null
 
     init {
         textColor = Color(0xff, 0xff, 0xff, alpha)
-        text = "按方向键移动，CTRL键发射炮弹，Esc键退出游戏"
+        text = String("按方向键移动，CTRL键发射炮弹，Esc键退出游戏".toByteArray())
     }
 
     override fun draw(g: Graphics?) {
