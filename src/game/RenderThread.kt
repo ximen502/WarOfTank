@@ -70,15 +70,9 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
     private fun initAudioResource() {
         Thread() {
             run() {
-                // 玩家被消灭
-                val resPD = this@RenderThread.javaClass.getResource("/game/sound/playerdie.wav")
-                _gameWindow?.playerDieAC = Applet.newAudioClip(resPD)
-                val resED = this@RenderThread.javaClass.getResource("/game/sound/Bang.wav")
-                _gameWindow?.enemyDieAC = Applet.newAudioClip(resED)
                 val resHit = this@RenderThread.javaClass.getResource("/game/sound/hit.wav")
                 _gameWindow?.hitAC = Applet.newAudioClip(resHit)
                 AC.hitAC = _gameWindow?.hitAC
-                AC.enemyDieAC = _gameWindow?.enemyDieAC
             }
         }.start()
     }

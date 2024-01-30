@@ -1,5 +1,6 @@
 package game
 
+import game.lib.SoundManager
 import game.map.*
 import java.applet.AudioClip
 import java.awt.Color
@@ -30,8 +31,6 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     var showLine = true //
 
-    var playerDieAC: AudioClip? = null
-    var enemyDieAC: AudioClip? = null
     var hitAC: AudioClip? = null
 
     //    var list = mutableListOf<GameObject>()
@@ -60,6 +59,11 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         input = Input()
         input.frame = this@GameWindow
         addKeyListener(input)
+
+        AC.soundManager = SoundManager(AC.PLAYBACK_FORMAT, 3)
+        AC.bang = AC.soundManager?.getSound("/game/sound/Bang.wav")
+        AC.soundManagerPD = SoundManager(AC.PLAYBACK_FORMAT_PD, 2)
+        AC.playerdie = AC.soundManagerPD?.getSound("/game/sound/playerdie.wav")
 
         initMap()
 
@@ -364,7 +368,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     if (!enemy.isDestroyed) {
                         //玩家的炮弹击中了敌军坦克
                         if (enemy.pickRect().intersects(ps.pickRect())) {
-                            enemyDieAC?.play()
+                            AC.soundManager?.play(AC.bang)
                             die(enemy)
                             die(ps)
                             boom(enemy)
@@ -380,7 +384,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 if (!enemy.shells.isDestroyed && !player.isDestroyed) {
                     //敌军的炮弹击中了玩家坦克
                     if (player.pickRect().intersects(enemy.shells.pickRect())) {
-                        playerDieAC?.play()
+                        AC.soundManagerPD?.play(AC.playerdie)
                         die(player)
                         die(enemy.shells)
                         boom(player)
