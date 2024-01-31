@@ -1,6 +1,6 @@
 package game
 
-import game.lib.SoundManager
+import com.brackeen.sound.SoundManager
 import game.map.*
 import java.applet.AudioClip
 import java.awt.Color

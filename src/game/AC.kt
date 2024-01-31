@@ -1,8 +1,8 @@
 package game
 
+import com.brackeen.sound.Sound
+import com.brackeen.sound.SoundManager
 import game.lib.MidiPlayer
-import game.lib.Sound
-import game.lib.SoundManager
 import java.applet.AudioClip
 import javax.sound.sampled.AudioFormat
 
