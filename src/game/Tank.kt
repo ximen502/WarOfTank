@@ -17,8 +17,6 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 
     private var input: Input
 
-    var fireAC: AudioClip? = null
-
     var imgN: BufferedImage
     var imgS: BufferedImage
     var imgW: BufferedImage
@@ -56,7 +54,6 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 //        imgX = (w - img.width) / 2
 //        imgY = (h - img.height) / 2
 //        println(resource2)
-        fireAC = Applet.newAudioClip(javaClass.getResource("/game/sound/Gunfire.wav"))
     }
 
     override fun draw(g: Graphics?) {
@@ -395,7 +392,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
             sh.isDestroyed = false
             shellsList.add(sh)
             observer?.born(sh)
-            fireAC?.play()
+            AC.soundManagerGF?.play(AC.gunfire)
         }
     }
 

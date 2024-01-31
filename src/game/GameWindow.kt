@@ -64,6 +64,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         AC.bang = AC.soundManager?.getSound("/game/sound/Bang.wav")
         AC.soundManagerPD = SoundManager(AC.PLAYBACK_FORMAT_PD, 2)
         AC.playerdie = AC.soundManagerPD?.getSound("/game/sound/playerdie.wav")
+        AC.soundManagerGF = SoundManager(AC.PLAYBACK_FORMAT_GF, 2)
+        AC.gunfire = AC.soundManagerGF?.getSound("/game/sound/Gunfire.wav")
 
         initMap()
 

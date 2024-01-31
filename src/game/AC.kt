@@ -29,4 +29,9 @@ object AC {
     val PLAYBACK_FORMAT_PD = AudioFormat(12000f, 16, 1, true, false)
     var soundManagerPD: SoundManager? = null
     var playerdie: Sound? = null
+
+    // Gunfire.wav音频格式
+    val PLAYBACK_FORMAT_GF = AudioFormat(8363f, 16, 1, true, false)
+    var soundManagerGF: SoundManager? = null
+    var gunfire: Sound? = null
 }
