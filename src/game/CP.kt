@@ -4,13 +4,15 @@ object CP {
     const val R = 15 * 2// + 2
     const val C = 19 * 2// + 2
 
-    const val SIZE = 50
+    const val SIZE = 48
 
-    const val SIZE_M = 25
+    const val SIZE_M = 24
 
     const val TANK_SIZE = 40
     const val TANK_W = 40
     const val TANK_H = 44
+    const val FAST_B = 45
+    const val FAST_S = 40
 
     const val TILE_BRICK = 1
     const val TILE_IRON = 2
