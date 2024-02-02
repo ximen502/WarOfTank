@@ -149,8 +149,8 @@ class Shells : GameObject() {
                     handleCollision(DIRECTION_NORTH)
                 } else {
                     // 判断前进方向有没有障碍物，需要对前方的2个网格进行判断。
-                    println("bullet x grd:$xGrid, y grd:$yGrid, next yGrid:${yNext} :${mapArray[yNext][xGrid]}")
-                    println("bullet x:$x, y:$y")
+                    //println("bullet x grd:$xGrid, y grd:$yGrid, next yGrid:${yNext} :${mapArray[yNext][xGrid]}")
+                    //println("bullet x:$x, y:$y")
                     // 前方可以通行
                     if (mapArray[yNext][xGrid].toInt() != CP.TILE_BRICK
                         && mapArray[yNext][xGrid].toInt() != CP.TILE_IRON
@@ -159,7 +159,7 @@ class Shells : GameObject() {
                         && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_IRON
                         && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_EAGLE) {//useless
                         if (y <= ground.t) {
-                            println("bullet up 炮弹已到达顶部")
+                            //println("bullet up 炮弹已到达顶部")
                             y = ground.t
                             isDestroyed = true
                             observer?.die(this)
@@ -228,7 +228,7 @@ class Shells : GameObject() {
                         && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_IRON
                         && mapArray[yNext][xGrid + 1].toInt() != CP.TILE_EAGLE) {
                         if (y >= ground.b) {
-                            println("bullet down 炮弹已到达底部")
+                            //println("bullet down 炮弹已到达底部")
                             y = ground.b
                             isDestroyed = true
                             observer?.die(this)
@@ -286,8 +286,8 @@ class Shells : GameObject() {
                     handleCollision(DIRECTION_WEST)
                 } else {
                     //前进方向有没有障碍物
-                    println("bullet x grd:$xGrid, y grd:$yGrid, next xGrid:${xNext} :${mapArray[yGrid][xNext]}")
-                    println("y:$y, maxY:$maxY")
+                    //println("bullet x grd:$xGrid, y grd:$yGrid, next xGrid:${xNext} :${mapArray[yGrid][xNext]}")
+                    //println("y:$y, maxY:$maxY")
 
                     // 前方可以通行
                     if (mapArray[yGrid][xNext].toInt() != CP.TILE_BRICK
@@ -355,8 +355,8 @@ class Shells : GameObject() {
                     handleCollision(DIRECTION_EAST)
                 } else {
                     //前进方向有没有障碍物
-                    println("bullet x grd:$xGrid, y grd:$yGrid, next xGrid:${xNext} :${mapArray[yGrid][xNext]}")
-                    println("y:$y, maxY:$maxY")
+                    //println("bullet x grd:$xGrid, y grd:$yGrid, next xGrid:${xNext} :${mapArray[yGrid][xNext]}")
+                    //println("y:$y, maxY:$maxY")
 
                     // 前方可以通行
                     if (mapArray[yGrid][xNext].toInt() != CP.TILE_BRICK
@@ -443,7 +443,7 @@ class Shells : GameObject() {
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
-                    println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
                     //通知砖块碰撞消息
                     brick0.shells = this
                     brick1.shells = this
@@ -466,7 +466,7 @@ class Shells : GameObject() {
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
-                    println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
                     //通知砖块碰撞消息
                     brick0.shells = this
                     iron1.shells = this
@@ -507,7 +507,7 @@ class Shells : GameObject() {
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
-                    println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
                     //通知砖块碰撞消息
                     brick0.shells = this
 
@@ -529,7 +529,7 @@ class Shells : GameObject() {
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
-                    println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${iron0.id} brickCX:$bcx, brickCY:$bcy")
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${iron0.id} brickCX:$bcx, brickCY:$bcy")
                     //通知砖块碰撞消息
                     iron0.shells = this
                     brick1.shells = this
@@ -552,7 +552,7 @@ class Shells : GameObject() {
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
-                    println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${iron0.id} brickCX:$bcx, brickCY:$bcy")
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${iron0.id} brickCX:$bcx, brickCY:$bcy")
                     //通知砖块碰撞消息
                     iron0.shells = this
                     iron1.shells = this
@@ -574,7 +574,7 @@ class Shells : GameObject() {
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
-                    println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${iron0.id} brickCX:$bcx, brickCY:$bcy")
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${iron0.id} brickCX:$bcx, brickCY:$bcy")
                     //通知砖块碰撞消息
                     iron0.shells = this
 
@@ -598,7 +598,7 @@ class Shells : GameObject() {
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
-                    println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick1.id} brickCX:$bcx, brickCY:$bcy")
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick1.id} brickCX:$bcx, brickCY:$bcy")
                     //通知砖块碰撞消息
                     brick1.shells = this
 
@@ -619,7 +619,7 @@ class Shells : GameObject() {
                 if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
                     hitEffect()
 
-                    println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${iron1.id} brickCX:$bcx, brickCY:$bcy")
+                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${iron1.id} brickCX:$bcx, brickCY:$bcy")
                     //通知砖块碰撞消息
                     iron1.shells = this
 
@@ -781,22 +781,22 @@ class Shells : GameObject() {
     private fun move() {
         when (direction) {
             DIRECTION_NORTH -> {
-                println("还没有碰撞，正在接近")
+                //println("还没有碰撞，正在接近")
                 var yOffset = (-times * speed).toInt()
                 transfer(0, yOffset)
             }
             DIRECTION_SOUTH -> {
-                println("还没有碰撞，正在接近")
+                //println("还没有碰撞，正在接近")
                 var yOffset = (times * speed).toInt()
                 transfer(0, yOffset)
             }
             DIRECTION_WEST -> {
-                println("还没有碰撞，正在接近")
+                //println("还没有碰撞，正在接近")
                 var xOffset = (-times * speed).toInt()
                 transfer(xOffset, 0)
             }
             DIRECTION_EAST -> {
-                println("还没有碰撞，正在接近")
+                //println("还没有碰撞，正在接近")
                 var xOffset = (times * speed).toInt()
                 transfer(xOffset, 0)
             }
@@ -804,10 +804,10 @@ class Shells : GameObject() {
         }
         // 有时候出现一个bug，炮弹跑到障碍物上面并飞出游戏窗口了，可是炮弹没消失，还在前进
         if (x < ground.l || x > ground.r) {
-            println("水平方向已经出界")
+            //println("水平方向已经出界")
 //            observer?.die(this)
         } else if (y < ground.t || y > ground.b) {
-            println("垂直方向已经出界")
+            //println("垂直方向已经出界")
 //            observer?.die(this)
         }
 

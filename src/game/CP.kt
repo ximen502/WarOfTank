@@ -11,8 +11,8 @@ object CP {
     const val TANK_SIZE = 40
     const val TANK_W = 40
     const val TANK_H = 44
-    const val FAST_B = 45
-    const val FAST_S = 40
+    const val FAST_B = 45// big
+    const val FAST_S = 40// small
 
     const val TILE_BRICK = 1
     const val TILE_IRON = 2

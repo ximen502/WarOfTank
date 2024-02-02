@@ -58,6 +58,30 @@ open class BaseEnemyTank :AbstractTank() {
     }
 
     /**
+     * 当坦克撞到障碍物，直接朝相反的方向前进
+     */
+    fun adjustDirection2(key: Int): Unit {
+        keyList.clear()
+        keyList.addAll(KEY_LIST)
+        keyList.remove(key)
+        when (key) {
+            KeyEvent.VK_UP -> {
+                this.key = KeyEvent.VK_DOWN
+            }
+            KeyEvent.VK_DOWN -> {
+                this.key = KeyEvent.VK_UP
+            }
+            KeyEvent.VK_LEFT -> {
+                this.key = KeyEvent.VK_RIGHT
+            }
+            KeyEvent.VK_RIGHT -> {
+                this.key = KeyEvent.VK_LEFT
+            }
+        }
+        //println("enemy tank拐弯了，之前方向：${logstr(oldDir)}，新方向: ${logstr(this.direction)}")
+    }
+
+    /**
      * 掉头
      * @param key 当前方向
      */
@@ -172,12 +196,12 @@ open class BaseEnemyTank :AbstractTank() {
     override fun walk() {
         when (key) {
             KeyEvent.VK_UP -> {
-                println("old direction:" + this.direction)
+                //println("old direction:" + this.direction)
                 if (this.direction == Shells.DIRECTION_NORTH) {
-                    println("直行")
+                    //println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    //println("拐弯了，拐弯前的方向是${this.direction}")
                     // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
                     if (this.direction == Shells.DIRECTION_WEST) {
                         adjustX()
@@ -191,7 +215,7 @@ open class BaseEnemyTank :AbstractTank() {
 
                 row = y / SIZE_M
                 col = x / SIZE_M
-                println("${this::javaClass.get().simpleName} move up row:$row, col:$col, x:$x, y:$y")
+                //println("${this::javaClass.get().simpleName} move up row:$row, col:$col, x:$x, y:$y")
                 //没有抵达边界并且前方可通行
                 if (row > 0) {
                     if ((mapArray[row - 1][col].toInt() == 0
@@ -201,17 +225,17 @@ open class BaseEnemyTank :AbstractTank() {
                                 || mapArray[row - 1][col + 1].toInt() == CP.TILE_GRASS
                                 || mapArray[row - 1][col + 1].toInt() == CP.TILE_SNOW)
                     ) {
-                        println("up222")
+                        //println("up222")
                         var yOffset = -times * speed
                         transfer(0, yOffset)
                     } else {
                         //逻辑不太好处理，需要多加一个网格的高度，务必注意，困扰我好久
                         north = (row - 1) * SIZE_M + SIZE_M
-                        println("发现障碍物row:${row-1}, north:$north")
+                        //println("发现障碍物row:${row-1}, north:$north")
                         if (y > north + (SIZE - TANK_SIZE) / 2) {
                             var yOffset = -times * speed
                             transfer(0, yOffset)
-                            println("1-1 y:$y")
+                            //println("1-1 y:$y")
                         } else {
                             y = north + (SIZE - TANK_SIZE) / 2
                             //println("1-2 y:$y")
@@ -227,19 +251,19 @@ open class BaseEnemyTank :AbstractTank() {
                         adjustDirection(key)
                     }
                 }
-                println("move over new x:$x, y:$y")
+                //println("move over new x:$x, y:$y")
                 //炮弹初始位置
                 shellsX = cx - shells.w / 2
                 shellsY = cy
             }
 
             KeyEvent.VK_DOWN -> {
-                println("old direction:" + this.direction)
+                //println("old direction:" + this.direction)
                 if (this.direction == Shells.DIRECTION_SOUTH) {
-                    println("直行")
+                    //println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    //println("拐弯了，拐弯前的方向是${this.direction}")
                     // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
                     if (this.direction == Shells.DIRECTION_WEST) {
                         adjustX()
@@ -290,12 +314,12 @@ open class BaseEnemyTank :AbstractTank() {
             }
 
             KeyEvent.VK_LEFT -> {
-                println("old direction:" + this.direction)
+                //println("old direction:" + this.direction)
                 if (this.direction == Shells.DIRECTION_WEST) {
-                    println("直行")
+                    //println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    //println("拐弯了，拐弯前的方向是${this.direction}")
                     // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
                     if (this.direction == Shells.DIRECTION_NORTH) {
                         adjustY()
@@ -309,7 +333,7 @@ open class BaseEnemyTank :AbstractTank() {
 
                 row = y / SIZE_M
                 col = x / SIZE_M
-                println("move left row:$row, col:$col, x:$x, y:$y")
+                //println("move left row:$row, col:$col, x:$x, y:$y")
                 //没有抵达边界并且前方可通行
                 if (col > 0) {
                     if ((mapArray[row][col-1].toInt() == 0
@@ -340,7 +364,7 @@ open class BaseEnemyTank :AbstractTank() {
                         adjustDirection(key)
                     }
                 }
-                println("move over new x:$x, y:$y")
+                //println("move over new x:$x, y:$y")
 
                 //炮弹初始位置
                 shellsX = cx
@@ -348,12 +372,12 @@ open class BaseEnemyTank :AbstractTank() {
             }
 
             KeyEvent.VK_RIGHT -> {
-                println("old direction:" + this.direction)
+                //println("old direction:" + this.direction)
                 if (this.direction == Shells.DIRECTION_EAST) {
-                    println("直行")
+                    //println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    //println("拐弯了，拐弯前的方向是${this.direction}")
                     // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
                     if (this.direction == Shells.DIRECTION_NORTH) {
                         adjustY()
@@ -367,7 +391,7 @@ open class BaseEnemyTank :AbstractTank() {
 
                 row = y / SIZE_M
                 col = x / SIZE_M
-                println("move right row:$row, col:$col, x:$x, y:$y")
+                //println("move right row:$row, col:$col, x:$x, y:$y")
 
                 //没有抵达边界并且前方可通行
                 if (col < CP.C - 2) {
@@ -400,7 +424,7 @@ open class BaseEnemyTank :AbstractTank() {
                         adjustDirection(key)
                     }
                 }
-                println("move over new x:$x, y:$y")
+                //println("move over new x:$x, y:$y")
                 //炮弹初始位置
                 shellsX = cx
                 shellsY = cy - shells.h / 2

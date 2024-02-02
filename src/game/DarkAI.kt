@@ -98,67 +98,81 @@ class DarkAI {
          *
          * 方法：1矩形碰撞检测；2分离轴定理(暂时没有使用)
         * ****************************************************/
-        var size: Int = list.size
+        val size: Int = list.size
         //双重循环实现敌军坦克之间的碰撞检测
         //这里的循环就好比足球比赛的循环赛，每2支队伍都进行一场比赛
         for (i in 0 until size - 1) {
             val bet = list[i]
             for (j in i + 1 until size) {
-                var inter = list[j].pickRect().intersects(bet.pickRect())
+                val inter = list[j].pickRect().intersects(bet.pickRect())
                 if (inter) {
-                    //println("敌军坦克撞车了, bet:${bet.pickRect().toString()}, j:${list[j].pickRect().toString()}")
-                    // 如果是垂直方向相撞，双方各后撤到互相撞不到的位置，然后随即选择一个新方向继续行走，有bug坦克后撤位移略大
+                    //println("敌军坦克撞车了, bet:${bet.pickRect().toString()}, id:${bet.id},key:${bet.key},
+                    // bet2:${list[j].pickRect().toString()}, id2:${list[j].id}, key2:${list[j].key}")
+                    //有严重的arrayIndexOutOfBounds问题，必须尽快解决
+                    // 如果是垂直方向相撞，双方各后撤到互相撞不到的位置，然后随机选择一个新方向继续行走，有bug坦克后撤位移略大
                     // 对角碰撞垂直和水平方向分别处理，效果很生硬，而且有bug，坦克会跑到瓦片上，或超出边缘
-                    if (bet.x == list[j].x) {// 垂直方向碰撞
-                        val ok = ceil((CP.TANK_H - abs(bet.y - list[j].y)) / 2.0).toInt()
-                        if (bet.y < list[j].y) {
-                            bet.y = bet.y - ok
-                            list[j].y = list[j].y + ok
-                        } else {
-                            list[j].y = list[j].y - ok
-                            bet.y = bet.y + ok
-                        }
-                    } else if (bet.y == list[j].y) {// 水平方向碰撞
-                        val ok = ceil((CP.TANK_W - abs(bet.x - list[j].x)) / 2.0).toInt()
-                        if (bet.x < list[j].x) {
-                            bet.x = bet.x - ok
-                            list[j].x = list[j].x + ok
-                        } else {
-                            list[j].x = list[j].x - ok
-                            bet.x = bet.x + ok
-                        }
-                    } else { // 对角方向碰撞
-                        when (bet.key) {
-                            //敌军坦克撞车了,
-                            // bet:java.awt.Rectangle[x=805,y=280,width=40,height=44],
-                            //   j:java.awt.Rectangle[x=830,y=305,width=40,height=44]
-                            KeyEvent.VK_UP -> {
-                                val ok = ceil((CP.TANK_H - abs(bet.y - list[j].y)) / 2.0).toInt()
-                                list[j].y = list[j].y - ok
-                                bet.y = bet.y + ok
-                            }
-                            KeyEvent.VK_DOWN -> {
-                                val ok = ceil((CP.TANK_H - abs(bet.y - list[j].y)) / 2.0).toInt()
-                                bet.y = bet.y - ok
-                                list[j].y = list[j].y + ok
-                            }
-                            KeyEvent.VK_LEFT -> {
-                                val ok = ceil((CP.TANK_W - abs(bet.x - list[j].x)) / 2.0).toInt()
-                                list[j].x = list[j].x - ok
-                                bet.x = bet.x + ok
-                            }
-                            KeyEvent.VK_RIGHT -> {
-                                val ok = ceil((CP.TANK_W - abs(bet.x - list[j].x)) / 2.0).toInt()
-                                list[j].x = list[j].x + ok
-                                bet.x = bet.x - ok
-                            }
-                            else -> {}
-                        }
-                    }
-                    bet.adjustDirection(bet.key)
-                    list[j].adjustDirection(list[j].key)
+                    // 坦克相互碰撞的改进方案：
+                    /***********************************************************************************
+                     * 坦克后撤要判断能不能后撤，比如后面是墙或不可通行瓦片、坦克，就不可后撤；如果是可以后撤的情况，
+                     * 后撤后就暂时不再向与前进方向垂直的方向拐弯。
+                     * 如果要支持拐弯，需要遵守后撤后必须对齐到网格线上的前提，否则还会出现下标越界的bug。
+                     * *********************************************************************************/
+                    intersectsArea(bet, list[j])
                 }
             }
+        }
+    }
+
+    /**
+     * 垂直方向互相后撤
+     */
+    private fun leaveVert(bet: BaseEnemyTank, bet2: BaseEnemyTank) {
+        val ok = ceil((CP.FAST_B - abs(bet.y - bet2.y)) / 2.0).toInt()
+        if (bet.y < bet2.y) {
+            bet.y = bet.y - ok
+            bet2.y = bet2.y + ok
+        } else {
+            bet2.y = bet2.y - ok
+            bet.y = bet.y + ok
+        }
+    }
+
+    /**
+     * 水平方向互相后撤
+     */
+    private fun leaveHori(bet: BaseEnemyTank, bet2: BaseEnemyTank) {
+        val ok = ceil((CP.FAST_B - abs(bet.x - bet2.x)) / 2.0).toInt()
+        if (bet.x < bet2.x) {
+            bet.x = bet.x - ok
+            bet2.x = bet2.x + ok
+        } else {
+            bet2.x = bet2.x - ok
+            bet.x = bet.x + ok
+        }
+    }
+
+    /**
+     * 第一个参数代表的坦克后撤
+     */
+    private fun leave1st(bet: BaseEnemyTank, bet2: BaseEnemyTank) {
+        when (bet.key) {
+            KeyEvent.VK_UP -> {
+                val ok = CP.FAST_B - abs(bet.y - bet2.y);
+                bet.y = bet.y + ok
+            }
+            KeyEvent.VK_DOWN -> {
+                val ok = CP.FAST_B - abs(bet.y - bet2.y);
+                bet.y = bet.y - ok
+            }
+            KeyEvent.VK_LEFT -> {
+                val ok = CP.FAST_B - abs(bet.x - bet2.x)
+                bet.x = bet.x + ok
+            }
+            KeyEvent.VK_RIGHT -> {
+                val ok = CP.FAST_B - abs(bet.x - bet2.x)
+                bet.x = bet.x - ok
+            }
+            else -> {}
         }
     }
 
@@ -181,6 +195,155 @@ class DarkAI {
         }
         if (minus) {
             countDown = 0
+        }
+    }
+
+    /*************************************************************************************
+     * 升级版解决方案：
+     * 当tank1,tank2水平方向相撞
+     * (1)1，2互相撞击，1向右，2向左
+     * (2)1撞击2，1向右，2向上下右
+     * (3)2撞击1，1向上下左，2向左
+     *
+     * 当tank1,tank2垂直方向相撞
+     * (1)1，2互相撞击，1向下，2向上
+     * (2)1撞击2，1向下，2向左右下
+     * (3)2撞击1，1向左右上，2向上
+     *
+     * 判断2个tank水平还是垂直分布，计算重叠区域的宽度和高度，如果宽小，那就是水平分布，如果高小，
+     * 那就是垂直分布。
+     *
+     * 当后撤的时候，坦克应该在后撤到对齐网格线的情况下，随机选择新的方向，增加坦克移动的随机性。
+     *
+     ************************************************************************************/
+    private fun intersectsArea(t1: BaseEnemyTank, t2: BaseEnemyTank) {
+        var w = (t1.w + t2.w) / 2 - abs(t1.cx - t2.cx)
+        var h = (t1.h + t2.h) / 2 - abs(t1.cy - t2.cy)
+        if (w < h) {
+            //horizontal
+            //0)面对面相撞
+            //1)1 hit 2
+            //2)2 hit 1
+            if (t1.key == KeyEvent.VK_RIGHT) {
+                if (t2.key == KeyEvent.VK_LEFT) {
+                    leaveHori(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {
+                    leave1st(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                }
+            } else if (t1.key == KeyEvent.VK_LEFT) {
+                if (t2.key == KeyEvent.VK_RIGHT) {
+                    leaveHori(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {// t1 hit t2
+                    leave1st(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                }
+            } else if (t2.key == KeyEvent.VK_RIGHT) {
+                if (t1.key == KeyEvent.VK_LEFT) {
+                    leaveHori(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {
+                    leave1st(t2, t1)
+                    t2.adjustDirection2(t2.key)
+                }
+            } else if (t2.key == KeyEvent.VK_LEFT) {
+                if (t1.key == KeyEvent.VK_RIGHT) {
+                    leaveHori(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {// t1 hit t2
+                    leave1st(t2, t1)
+                    t2.adjustDirection2(t1.key)
+                }
+            }
+        } else if (h < w) {
+            //vertical
+            //面对面相撞
+            if (t1.key == KeyEvent.VK_DOWN) {
+                if (t2.key == KeyEvent.VK_UP) {
+                    leaveVert(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {
+                    leave1st(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                }
+            } else if (t1.key == KeyEvent.VK_UP) {
+                if (t2.key == KeyEvent.VK_DOWN) {
+                    leaveVert(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {
+                    leave1st(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                }
+            } else if (t2.key == KeyEvent.VK_DOWN) {
+                if (t1.key == KeyEvent.VK_UP) {
+                    leaveVert(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {
+                    leave1st(t2, t1)
+                    t2.adjustDirection2(t2.key)
+                }
+            } else if (t2.key == KeyEvent.VK_UP) {
+                if (t1.key == KeyEvent.VK_DOWN) {
+                    leaveVert(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {
+                    leave1st(t2, t1)
+                    t2.adjustDirection2(t2.key)
+                }
+            }
+        } else if (w == h) {//正方形
+            //either is ok
+            //for example choose horizontal
+            //0)面对面相撞
+            //1)1 hit 2
+            //2)2 hit 1
+            if (t1.key == KeyEvent.VK_RIGHT) {
+                if (t2.key == KeyEvent.VK_LEFT) {
+                    leaveHori(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {
+                    leave1st(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                }
+            } else if (t1.key == KeyEvent.VK_LEFT) {
+                if (t2.key == KeyEvent.VK_RIGHT) {
+                    leaveHori(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {// t1 hit t2
+                    leave1st(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                }
+            } else if (t2.key == KeyEvent.VK_RIGHT) {
+                if (t1.key == KeyEvent.VK_LEFT) {
+                    leaveHori(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {
+                    leave1st(t2, t1)
+                    t2.adjustDirection2(t2.key)
+                }
+            } else if (t2.key == KeyEvent.VK_LEFT) {
+                if (t1.key == KeyEvent.VK_RIGHT) {
+                    leaveHori(t1, t2)
+                    t1.adjustDirection2(t1.key)
+                    t2.adjustDirection2(t2.key)
+                } else {// t1 hit t2
+                    leave1st(t2, t1)
+                    t2.adjustDirection2(t1.key)
+                }
+            }
         }
     }
 }

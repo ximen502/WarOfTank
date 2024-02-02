@@ -3,6 +3,7 @@ package game.enemy
 import game.CP
 import game.Ground
 import game.Shells
+import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
 import javax.imageio.ImageIO
@@ -20,23 +21,23 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
         this.position = position
         when (position) {
             CP.BORN_1 -> {
-                x = (SIZE - TANK_SIZE) / 2
-                y = (SIZE - TANK_SIZE) / 2
+                x = (SIZE - FAST_S) / 2
+                y = (SIZE - FAST_B) / 2
 
                 println("tire cx:$cx, cy:$cy")
             }
             CP.BORN_2 -> {
-                x = ground.width / 2 - TANK_SIZE / 2
-                y = (SIZE - TANK_SIZE) / 2
+                x = ground.width / 2 - FAST_S / 2
+                y = (SIZE - FAST_B) / 2
             }
             CP.BORN_3 -> {
-                x = ground.width - SIZE + (SIZE - TANK_SIZE) / 2
-                y = (SIZE - TANK_SIZE) / 2
+                x = ground.width - SIZE + (SIZE - FAST_S) / 2
+                y = (SIZE - FAST_B) / 2
             }
             else -> {}
         }
-        w = TANK_W
-        h = TANK_H
+        w = FAST_S
+        h = FAST_B
         shellsX = cx - shells.w / 2
         shellsY = cy - shells.h / 2
         this.ground = ground
@@ -61,7 +62,21 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
         } else if (direction == Shells.DIRECTION_SOUTH) {
             g2.drawImage(imgS, x, y, null)
         }
+        //g2.drawString("$id", x, cy)
+        //drawFrame(g2)
     }
+
+    /**
+     * 画一个外框，查看坦克的宽高是否正确
+     */
+    private fun drawFrame(g2: Graphics2D) {
+        var tmp: Color? = null
+        tmp = g2.color
+        g2.color = Color.RED
+        g2.drawRect(x, y, w, h)
+        g2.color = tmp
+    }
+
     override fun born() {
 
     }
@@ -90,6 +105,22 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
     override fun onTick() {
         walk()
         fire()
+    }
+
+    override fun walk() {
+//        if (direction==Shells.DIRECTION_EAST || direction==Shells.DIRECTION_WEST && y >=(2.5 * 48) ) {
+//            //super.walk()
+//        } else {
+//        }
+        super.walk()
+        //修改坦克的宽和高，坦克是长宽不等的矩形
+        if (direction == Shells.DIRECTION_WEST || direction == Shells.DIRECTION_EAST) {
+            this.w = FAST_B
+            this.h = FAST_S
+        } else if (direction == Shells.DIRECTION_NORTH || direction == Shells.DIRECTION_SOUTH) {
+            this.w = FAST_S
+            this.h = FAST_B
+        }
     }
 
 }

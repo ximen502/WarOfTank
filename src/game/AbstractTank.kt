@@ -17,6 +17,8 @@ abstract class AbstractTank : GameObject() {
         const val TANK_SIZE = CP.TANK_SIZE
         const val TANK_W = CP.TANK_W
         const val TANK_H = CP.TANK_H
+        const val FAST_B = CP.FAST_B
+        const val FAST_S = CP.FAST_S
     }
     // 坦克前进的方向
     protected var direction = 0
