@@ -58,26 +58,29 @@ open class BaseEnemyTank :AbstractTank() {
     }
 
     /**
-     * 当坦克撞到障碍物，直接朝相反的方向前进
+     * 当坦克撞到障碍物，直接朝相反的方向前进。
+     * 缺少随机性，不够完善，先调用原方法实现，原方法的缺点是，
+     * 容易出现位置坦克飘忽的问题。
      */
     fun adjustDirection2(key: Int): Unit {
-        keyList.clear()
-        keyList.addAll(KEY_LIST)
-        keyList.remove(key)
-        when (key) {
-            KeyEvent.VK_UP -> {
-                this.key = KeyEvent.VK_DOWN
-            }
-            KeyEvent.VK_DOWN -> {
-                this.key = KeyEvent.VK_UP
-            }
-            KeyEvent.VK_LEFT -> {
-                this.key = KeyEvent.VK_RIGHT
-            }
-            KeyEvent.VK_RIGHT -> {
-                this.key = KeyEvent.VK_LEFT
-            }
-        }
+        adjustDirection(key)
+//        keyList.clear()
+//        keyList.addAll(KEY_LIST)
+//        keyList.remove(key)
+//        when (key) {
+//            KeyEvent.VK_UP -> {
+//                this.key = KeyEvent.VK_DOWN
+//            }
+//            KeyEvent.VK_DOWN -> {
+//                this.key = KeyEvent.VK_UP
+//            }
+//            KeyEvent.VK_LEFT -> {
+//                this.key = KeyEvent.VK_RIGHT
+//            }
+//            KeyEvent.VK_RIGHT -> {
+//                this.key = KeyEvent.VK_LEFT
+//            }
+//        }
         //println("enemy tank拐弯了，之前方向：${logstr(oldDir)}，新方向: ${logstr(this.direction)}")
     }
 
