@@ -7,7 +7,7 @@ import java.util.*
 /**
  * @Class Boom
  * @Description 炮弹击中坦克的粒子爆炸效果，后续可能会改为逐帧动画
- * @Author 某PT
+ * @Author 某PT生成的粒子效果，略加修改
  * @Date 2023-09-08 15:07
  * @Version 1.0
  */
