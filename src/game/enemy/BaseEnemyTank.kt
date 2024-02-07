@@ -63,24 +63,24 @@ open class BaseEnemyTank :AbstractTank() {
      * 容易出现位置坦克飘忽的问题。
      */
     fun adjustDirection2(key: Int): Unit {
-        adjustDirection(key)
-//        keyList.clear()
-//        keyList.addAll(KEY_LIST)
-//        keyList.remove(key)
-//        when (key) {
-//            KeyEvent.VK_UP -> {
-//                this.key = KeyEvent.VK_DOWN
-//            }
-//            KeyEvent.VK_DOWN -> {
-//                this.key = KeyEvent.VK_UP
-//            }
-//            KeyEvent.VK_LEFT -> {
-//                this.key = KeyEvent.VK_RIGHT
-//            }
-//            KeyEvent.VK_RIGHT -> {
-//                this.key = KeyEvent.VK_LEFT
-//            }
-//        }
+//        adjustDirection(key)
+        keyList.clear()
+        keyList.addAll(KEY_LIST)
+        keyList.remove(key)
+        when (key) {
+            KeyEvent.VK_UP -> {
+                this.key = KeyEvent.VK_DOWN
+            }
+            KeyEvent.VK_DOWN -> {
+                this.key = KeyEvent.VK_UP
+            }
+            KeyEvent.VK_LEFT -> {
+                this.key = KeyEvent.VK_RIGHT
+            }
+            KeyEvent.VK_RIGHT -> {
+                this.key = KeyEvent.VK_LEFT
+            }
+        }
         //println("enemy tank拐弯了，之前方向：${logstr(oldDir)}，新方向: ${logstr(this.direction)}")
     }
 

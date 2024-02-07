@@ -28,10 +28,12 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 
     var rect: Rectangle = Rectangle(x, y, w, h)
 
+    var gameOver = false
+
     init {
         this.ground = ground
         println("w:${ground.width}")
-        x = ground.width / 2 - (SIZE * 2.5).toInt() + (SIZE - CP.TANK_SIZE) / 2
+        x = ground.width / 2 - (SIZE_M * 5) + (SIZE - CP.TANK_SIZE) / 2
         y = ground.height - SIZE + (SIZE - CP.TANK_SIZE) / 2
         w = TANK_SIZE
         h = TANK_SIZE
@@ -40,7 +42,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         direction = Shells.DIRECTION_NORTH
         println("tank born position x:$x, y:$y, cx:$cx, cy:$cy, shells x:$shellsX, y:$shellsY")
         this.input = input
-        times = 6
+        times = 4
 //        println(javaClass.toString())
 //        var resource = javaClass.getResource("")
 //        println(resource)
@@ -62,11 +64,26 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     }
 
     override fun onTick() {
+        if (gameOver)
+            return
         //shells born
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {
-            println("control is pressed, fire in the hole. shellsList size:${shellsList.size}")
+            println("control is pressed, fire in the hole")
             fire()
         }
+
+        // player walk
+        var key = 0
+        if(input.getKeyDown(KeyEvent.VK_UP) == true) {
+            key = KeyEvent.VK_UP
+        } else if (input.getKeyDown(KeyEvent.VK_DOWN) == true) {
+            key = KeyEvent.VK_DOWN
+        } else if (input.getKeyDown(KeyEvent.VK_LEFT) == true) {
+            key = KeyEvent.VK_LEFT
+        } else if (input.getKeyDown(KeyEvent.VK_RIGHT) == true) {
+            key = KeyEvent.VK_RIGHT
+        }
+        playerWalk(key)
     }
 
     override fun drawTank(g: Graphics?) {
@@ -89,6 +106,58 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
      */
     override fun begin(key: Int) {
         println("begin:${key}")
+    }
+
+    override fun end(direction: Int) {
+        println("end")
+
+    }
+
+    /**
+     * 水平方向行驶，纵向转弯后X坐标调整
+     */
+    private fun adjustX() {
+        //将y坐标重新进行设置，以对齐拐弯后的网格线
+        x = x / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+        //处理坦克中心点的坐标和炮弹发射起点坐标
+        cx = x + w / 2
+        shellsX = cx - shells.w / 2
+        shellsY = cy
+    }
+
+    /**
+     * 垂直方向行驶，横向转弯后Y坐标调整
+     */
+    private fun adjustY() {
+        //将y坐标重新进行设置，以对齐拐弯后的网格线
+        y = y / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+        //处理坦克中心点的坐标和炮弹发射起点坐标
+        cy = y + h / 2
+        shellsX = cx
+        shellsY = cy - shells.h / 2
+    }
+
+    /**
+     * 替代get方法
+     */
+    fun pickRect(): Rectangle {
+        rect.x = x
+        rect.y = y
+        rect.width = w
+        rect.height = h
+        return rect
+    }
+
+    override fun born() {
+
+    }
+
+
+    override fun walk() {
+
+    }
+
+    fun playerWalk(key: Int) {
         when (key) {
             KeyEvent.VK_UP -> {
                 /*************************************************
@@ -331,66 +400,30 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         }
     }
 
-    override fun end(direction: Int) {
-        println("end")
-
-    }
-
-    /**
-     * 水平方向行驶，纵向转弯后X坐标调整
-     */
-    private fun adjustX() {
-        //将y坐标重新进行设置，以对齐拐弯后的网格线
-        x = x / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
-        //处理坦克中心点的坐标和炮弹发射起点坐标
-        cx = x + w / 2
+    fun reset() {
+        x = ground.width / 2 - (SIZE_M * 5) + (SIZE - CP.TANK_SIZE) / 2
+        y = ground.height - SIZE + (SIZE - CP.TANK_SIZE) / 2
+        w = TANK_SIZE
+        h = TANK_SIZE
         shellsX = cx - shells.w / 2
-        shellsY = cy
-    }
-
-    /**
-     * 垂直方向行驶，横向转弯后Y坐标调整
-     */
-    private fun adjustY() {
-        //将y坐标重新进行设置，以对齐拐弯后的网格线
-        y = y / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
-        //处理坦克中心点的坐标和炮弹发射起点坐标
-        cy = y + h / 2
-        shellsX = cx
         shellsY = cy - shells.h / 2
-    }
-
-    /**
-     * 替代get方法
-     */
-    fun pickRect(): Rectangle {
-        rect.x = x
-        rect.y = y
-        rect.width = w
-        rect.height = h
-        return rect
-    }
-
-    override fun born() {
-
-    }
-
-    override fun walk() {
-
+        row = y / SIZE_M
+        col = x / SIZE_M
+        direction = Shells.DIRECTION_NORTH
+        isDestroyed = true
     }
 
     override fun fire() {
         // 简化炮弹是否可以发射的判断逻辑
         if (shells.isDestroyed) {
             val sh = shells
-            sh.times = 2
+            sh.times = 6
             sh.id = (CP.PLAYER shl 8 or id.toInt()).toLong()
             sh.observer = observer
             sh.ground = ground
             sh.setPosition(shellsX, shellsY)
             sh.direction = direction
             sh.isDestroyed = false
-            shellsList.add(sh)
             observer?.born(sh)
             AC.soundManagerGF?.play(AC.gunfire)
         }

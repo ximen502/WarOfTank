@@ -10,7 +10,7 @@ public class LaunchGame {
             MainWindow mainWindow = new MainWindow();
         };
         SwingUtilities.invokeLater(runnable);
-        System.out.println(System.currentTimeMillis());
+
 
         byte[][] sample = {
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},

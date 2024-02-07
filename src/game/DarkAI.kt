@@ -12,22 +12,23 @@ import kotlin.math.ceil
  * （玩家被消灭、基地被摧毁）
  */
 class DarkAI {
+    private var diedList = mutableListOf<BaseEnemyTank>()
     var list = mutableListOf<BaseEnemyTank>()
     var total = TOTAL
     // 已经创建的坦克数量
     var nums = 0
 
     // 用于生成坦克的计数变量
-    var fps2Tank = 0
+    private var fps2Tank = 0
     // 动画生存的帧数
-    var ttlPro = 0
-    var produce: Producing? = null
+    private var ttlPro = 0
+    private var produce: Producing? = null
 
     // 游戏启动后经过的帧数，60f/s, 90f后开始创建坦克
-    var gameStarted = 0
+    private var gameStarted = 0
 
     // 计时120fps
-    var countDown = WAITING
+    private var countDown = WAITING
 
     companion object {
         const val WAITING = 120
@@ -39,6 +40,8 @@ class DarkAI {
     fun pushTank(ground: Ground, go: GOObserver) {
 //        println("push")
         gameStarted++
+
+        calcLiveEnemies()
 
         /*************************************************
          * 首先生成一个动画对象放到画面上，计时约600ms，动画消失。
@@ -89,6 +92,26 @@ class DarkAI {
             fps2Tank = 0
             dispatchMoreTank()
         }
+    }
+
+    /**
+     * 临时保存敌军坦克，计算剩余坦克数量
+     */
+    private fun calcLiveEnemies() {
+        // 轮询add被消灭的敌军坦克
+        var i = 0
+        while (i < list.size) {
+            if (list[i].isDestroyed) {
+                if (!diedList.contains(list[i])) {
+                    diedList.add(list[i])
+                }
+            }
+            i++
+        }
+    }
+
+    fun getLiveEnemies(): Int {
+        return TOTAL - diedList.size
     }
 
     fun checkCollision() {
@@ -345,5 +368,15 @@ class DarkAI {
                 }
             }
         }
+    }
+
+    fun reset() {
+        nums = 0
+        total = TOTAL
+        gameStarted = 0
+        fps2Tank = 0
+        ttlPro = 0
+        countDown = 0
+        diedList.clear()
     }
 }

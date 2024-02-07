@@ -21,6 +21,8 @@ class LightAI {
     private var ttlPro = 0
     // 活动的坦克数量
     private var active = 0
+    // 创建好的玩家坦克
+    var player: Tank? = null
 
 
     companion object {
@@ -28,38 +30,45 @@ class LightAI {
         const val ACTIVE_PLAYER = 1
     }
 
-    fun dispatchPlayer(ground: Ground, go: GOObserver, playerInit: Tank, input: Input) {
+    fun dispatchPlayer(ground: Ground, go: GOObserver, input: Input) {
         gameStarted++
 
         //准备创建玩家坦克
         if (life > 0 && active < ACTIVE_PLAYER && gameStarted >= CP.BEGIN_FPS) {
             if (ttlPro == 0) {
                 //创建玩家坦克生成动画
-                val pos = CP.BORN_4
+                val pos = CP.BORN_P1
                 val produce = Producing(ground, pos)
                 /* 这里的动画id，111，112为玩家准备 */
                 produce.id = 111
                 produce.observer = go
                 go.born(produce)
             } else if (ttlPro >= Producing.GONE) {
+                var construct = false
                 //创建玩家坦克
-                if (playerInit.isDestroyed) {
+                if (player == null) {
+                    construct = true
+                } else {
+                    if (player?.isDestroyed == true) {
+                        construct = true
+                    }
+                }
+                if (construct) {
                     val w = ground.width
                     val h = ground.height
-                    val player = Tank(input, ground)
-                    player.id = 101
-                    player.w = CP.TANK_SIZE
-                    player.h = CP.TANK_SIZE
-                    player.x = w / 2 - CP.SIZE_M * 5 + (CP.SIZE - CP.TANK_SIZE) / 2
-                    player.y = h - CP.SIZE_M * 2 + (CP.SIZE - CP.TANK_SIZE) / 2
-                    player.row = player.x / CP.SIZE_M
-                    player.col = player.y / CP.SIZE_M
-                    player.observer = go
-                    input.moveListener = player
-                    (go as GameWindow).player = player
+                    val tank = Tank(input, ground)
+                    tank.id = 101
+                    tank.w = CP.TANK_SIZE
+                    tank.h = CP.TANK_SIZE
+                    tank.x = w / 2 - CP.SIZE_M * 5 + (CP.SIZE - CP.TANK_SIZE) / 2
+                    tank.y = h - CP.SIZE_M * 2 + (CP.SIZE - CP.TANK_SIZE) / 2
+                    tank.row = tank.x / CP.SIZE_M
+                    tank.col = tank.y / CP.SIZE_M
+                    tank.observer = go
+                    input.moveListener = tank
+                    //(go as GameWindow).player = tank
+                    player = tank
                     go.born(player)
-                } else {
-                    go.born(playerInit)
                 }
                 life--
                 active++
@@ -67,7 +76,7 @@ class LightAI {
             ttlPro++
         } else {
             //玩家被消灭
-            if (playerInit.isDestroyed) {
+            if (player?.isDestroyed == true) {
                 ttlPro = 0
                 active = 0
             }
@@ -75,5 +84,13 @@ class LightAI {
     }
 
     fun getActive(): Int = active
+
+    fun reset() {
+        life += active
+        active = 0
+        gameStarted = 0
+        ttlPro = 0
+        player?.reset()
+    }
 
 }

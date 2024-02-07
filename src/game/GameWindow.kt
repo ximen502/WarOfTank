@@ -1,11 +1,15 @@
 package game
 
 import com.brackeen.sound.SoundManager
+import game.lib.findStr
 import game.map.*
 import java.applet.AudioClip
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
+import java.awt.event.WindowEvent
+import java.awt.event.WindowListener
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.imageio.ImageIO
 import javax.swing.JFrame
@@ -27,8 +31,6 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     private var ground: Ground//? = null
 
-    var player: Tank//? = null
-
     var showLine = true //
 
     var hitAC: AudioClip? = null
@@ -46,7 +48,11 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     private var river = 0
     private var gameOver: GameOver
-    var bg = ImageIO.read(javaClass.getResource("/game/image/bg_game.png"))
+    private val bg: Image
+    private var gameData: GameData? = null
+    private var stack: Deque<String>? = null
+    private var wait2Next = CP.WAIT_FPS //下一关的等待时间
+    private var nowStage = 0 // 关卡编号
 
     init {
         this.w = width
@@ -54,7 +60,14 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         this.t = windowTitle
         createWindow()
 
-        ground = Ground(w, h)
+        listenClose()
+        bg = ImageIO.read(javaClass.getResource("/game/image/bg_game.png"))
+
+        ground = Ground(w - CP.SIZE, h)
+        ground.rW = w
+        ground.rH = h
+
+        initStage()
 
         input = Input()
         input.frame = this@GameWindow
@@ -64,24 +77,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         AC.bang = AC.soundManager?.getSound("/game/sound/Bang.wav")
         AC.soundManagerPD = SoundManager(AC.PLAYBACK_FORMAT_PD, 2)
         AC.playerdie = AC.soundManagerPD?.getSound("/game/sound/playerdie.wav")
-        AC.soundManagerGF = SoundManager(AC.PLAYBACK_FORMAT_GF, 2)
+        AC.soundManagerGF = SoundManager(AC.PLAYBACK_FORMAT_GF, 3)
         AC.gunfire = AC.soundManagerGF?.getSound("/game/sound/Gunfire.wav")
 
-        initMap()
-
-        player = Tank(input, ground)
-        player.id = 101
-        player.w = CP.TANK_SIZE
-        player.h = CP.TANK_SIZE
-        player.x = w / 2 - SIZE_M * 5 + (SIZE - CP.TANK_SIZE) / 2
-        player.y = h - SIZE_M * 2 + (SIZE - CP.TANK_SIZE) / 2
-        player.row = player.x / SIZE_M
-        player.col = player.y / SIZE_M
-        println("row:${player.row}, col:${player.col}")
-        player.observer = this
-        //list.add(player)
-
-        input.moveListener = player
+        initMap("lv01.map")
 
         darkAI = DarkAI()
         lightAI = LightAI()
@@ -93,6 +92,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         tips.y = h * 2 / 3
         tips.observer = this
         list.add(tips)
+
+        initGameData()
 
         tempImage = this.createImage(w, h)
         tempGraphics = tempImage?.graphics
@@ -112,29 +113,85 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     }
 
+    private fun initStage() {
+        // 创建一个双端队列（Deque）实现栈
+        stack = LinkedList()
+        stack?.let {
+            // 入栈
+            it.push("lv18.map")
+            it.push("lv05.map")
+            it.push("lv02.map")
+            //it.push("lv01.map")
+        }
+    }
+
+    /**
+     * 开始下一关
+     */
+    private fun nextStage() {
+        wait2Next--
+        //等待2s再开始下一关
+        if (wait2Next > 0) {
+            return
+        }
+        // river重置
+        river = 0
+        wait2Next = CP.WAIT_FPS
+        //1.准备好关卡数据
+        stack?.let {
+            while (it.isNotEmpty()) {
+                val stage = it.pop()
+                //1.1清空地图
+                clearMap()
+                //1.2重置AI
+                darkAI?.reset()
+                lightAI?.reset()
+                //2.地图重新load
+                initMap(stage)
+                break//选择下一关后，跳出循环
+            }
+        }
+        //2.1初始化游戏数据
+        initGameData()
+        //3.从头播放bg music
+        AC.midiPlayer?.play(AC.midiPlayer?.getSequence("/game/sound/midifile0.mid"), true)
+        //4.玩家和敌军坦克
+        //相关状态、数据重置或清除
+        //(敌军坦克数量、关卡编号)
+    }
+
+    private fun clearMap() {
+        val mapArray = CP.mapArray
+        val tileArray = CP.tileArray
+        for (i in mapArray.indices) {
+            for (j in mapArray[i].indices) {
+                mapArray[i][j] = 0
+                tileArray[i][j] = null
+            }
+        }
+        list.clear()
+        tileList.clear()
+    }
+
+    private fun initGameData() {
+        gameData = GameData(ground)
+        list.add(gameData)
+    }
+
     /**
      * 使用byte二维数组实现地图布局
      */
-    private fun initMap() {
-//        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-//        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
-//        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
-//        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
-//        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
-//        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
-//        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
-//        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-//        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-//        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-//        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-//        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-//        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-//        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-//        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        // 尝试从地图文件读取地图
-        // test map
-        val mapArray = CP.mapArray
-//        val mapArray = Map().readBMapFromFile()
+    private fun initMap(filename: String) {
+        var stageStr = filename.findStr(filename, "[0-9]{2}")
+        nowStage = try {
+            Integer.parseInt(stageStr)
+        } catch (e: NumberFormatException) {
+            0
+        }
+        // 从地图文件读取地图
+        val map = Map()
+        val mapArray = map.readBMapFromFile(filename)
+        CP.mapArray = mapArray
         val tileArray = CP.tileArray
 
         // 4个方格代表的一个瓦片（河流、草地、基地...），每个元素存储二维数组的横纵坐标
@@ -173,16 +230,23 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     tileList.add(iron)
                     tileArray[i][j] = iron
                 } else if (tile == CP.TILE_RIVER) {
-                    var river = River()
+                    val rowCol = i shl 8 or j
+                    if (four.contains(rowCol)) {
+                        continue
+                    }
+
+                    val river = River()
                     river.id = (i shl 8 or j).toLong()
-                    river.x = SIZE * j
-                    river.y = SIZE * i
-                    river.w = SIZE
-                    river.h = SIZE
+                    river.x = SIZE_M * j
+                    river.y = SIZE_M * i
+                    river.w = SIZE_M
+                    river.h = SIZE_M
                     river.ground = ground
                     list.add(river)
                     tileList.add(river)
                     tileArray[i][j] = river
+
+                    four2One(four, rowCol, mapArray, i, j, CP.TILE_RIVER)
                 } else if (tile == CP.TILE_GRASS) {
                     var rowCol = i shl 8 or j
                     //如果包含就不再处理，防止每个小格绘制4个瓦片
@@ -247,37 +311,6 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 }*/
             }
         }
-
-        // good map
-//        val mapArray = Array(CP.R) { ByteArray(CP.C) }
-//        for (i in mapArray.indices) {
-//            if (i in 6..8) {
-//                break
-//                //continue
-//            }
-//            if (i == 14){
-//                continue
-//            }
-//            for (j in mapArray[i].indices) {
-//                if (i == 0) {
-//                    mapArray[i][j] = 0
-//                } else {
-//                    if (j % 2 == 0) {
-//                        mapArray[i][j] = 1
-//
-//                        var brick = Brick()
-//                        brick.x = SIZE * j
-//                        brick.y = SIZE * i
-//                        brick.ground = ground
-//                        list.add(brick)
-//                    }
-//                }
-//            }
-//
-//        }
-//        for (i in mapArray.indices) {
-//            println(Arrays.toString(mapArray[i]))
-//        }
     }
 
     /**
@@ -315,11 +348,13 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     }
 
     /**
-     * 判断是否游戏结束，
+     * 判断是否游戏结束，或者过关
      * 如果玩家全被消灭或基地被摧毁，游戏结束，停止背景音乐播放
      * 如果敌军全部被消灭，玩家和基地也都健在，那就开始下一关
+     * 如果过关，则开始下一个关卡
+     * 敌军坦克全部被消灭，则过关
      */
-    private fun isGameOver() {
+    private fun isGameOverOrCompleteLevel() {
         river++
         // 当流逝的时间大于1s再进行判断，等待游戏准备好
         if (river >= CP.BEGIN_FPS) {
@@ -343,11 +378,32 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 if (!gameOver.showing) {
                     born(gameOver)
                     gameOver.showing = true
-                    input.moveListener = null
+                    //input.moveListener = null
+                    lightAI?.player?.gameOver = true
                     renderThread?.stopBgMusic()
+                }
+            } else {
+                // 判断是否过关
+                darkAI?.let {
+                    //println("enemies:${it.nums + it.total}")
+                    if (it.nums + it.total == 0) {//敌军全部被消灭
+                        renderThread?.stopBgMusic()
+                        nextStage()
+                    }
                 }
             }
         }
+    }
+
+    private fun statistics() {
+        darkAI?.let {
+            val num = it.getLiveEnemies()
+            gameData?.enemies = num.toString()
+        }
+        lightAI?.let {
+            gameData?.p1 = (it.life + it.getActive()).toString()
+        }
+        gameData?.stage = nowStage.toString()
     }
 
     private fun detectCollision() {
@@ -356,8 +412,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
          * (2)玩家坦克炮弹拿到敌军坦克的引用，然后进行碰撞检测，如果发生碰撞则敌军坦克发生爆炸被摧毁，炮弹消失
          * (3)敌军坦克炮弹拿到玩家坦克的引用，然后进行碰撞检测，如果发生碰撞则玩家坦克发生爆炸被摧毁，炮弹消失
          * *************************************************************************************/
-        val ps = player.shells
-        if (!ps.isDestroyed) {
+        val ps = lightAI?.player?.shells
+        if (ps?.isDestroyed == false) {
             darkAI?.let {
                 for (enemy in it.list) {
                     if (!enemy.shells.isDestroyed) {
@@ -383,6 +439,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         darkAI?.let {
             for (enemy in it.list) {
+                val player = lightAI?.player ?: break
                 if (!enemy.shells.isDestroyed && !player.isDestroyed) {
                     //敌军的炮弹击中了玩家坦克
                     if (player.pickRect().intersects(enemy.shells.pickRect())) {
@@ -430,7 +487,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         clear(tempGraphics)
 
-        //tempGraphics?.drawImage(bg, 0, 0, null)
+        tempGraphics?.drawImage(bg, 0, 0, null)
         for (gameObject in list) {
 //            if (gameObject.isDestroyed) {
 //                continue
@@ -472,11 +529,13 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         darkAI?.pushTank(ground, this)
         darkAI?.checkCollision()
 
-        lightAI?.dispatchPlayer(ground, this, player, input)
+        lightAI?.dispatchPlayer(ground, this, input)
 
         detectCollision()
 
-        isGameOver()
+        isGameOverOrCompleteLevel()
+
+        statistics()
     }
 
     override fun born(go: GameObject?) {
@@ -503,5 +562,29 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 break
             }
         }
+    }
+
+    private fun listenClose() {
+        val windowListener: WindowListener = object : WindowListener {
+            override fun windowOpened(e: WindowEvent) {}
+            override fun windowClosing(e: WindowEvent) {
+                println("窗口关闭中")
+            }
+            override fun windowClosed(e: WindowEvent) {
+                println("窗口已关闭")
+                //1.1清空地图
+                clearMap()
+                //1.2重置AI
+                darkAI?.reset()
+                lightAI?.reset()
+            }
+            override fun windowIconified(e: WindowEvent) {}
+            override fun windowDeiconified(e: WindowEvent) {}
+            override fun windowActivated(e: WindowEvent) {}
+            override fun windowDeactivated(e: WindowEvent) {}
+        }
+
+        addWindowListener(windowListener)
+
     }
 }

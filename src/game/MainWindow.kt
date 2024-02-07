@@ -43,6 +43,7 @@ class MainWindow : JFrame() {
 //        lbStart.background = Color.ORANGE
         lbStart.foreground = Color.WHITE
         lbStart.background = Color(0, 0, 0, 0)
+        lbStart.isOpaque = false
         lbStart.setBounds(100, 100, 200, 50)
         lbStart.horizontalAlignment = JLabel.CENTER;
         add(lbStart)
@@ -53,6 +54,7 @@ class MainWindow : JFrame() {
 //        lbKeyBoard.background = Color.ORANGE
         lbKeyBoard.foreground = Color.WHITE
         lbKeyBoard.background = Color(0, 0, 0, 0)
+        lbKeyBoard.isOpaque = false
         lbKeyBoard.setBounds(100, 200, 200, 50)
         lbKeyBoard.horizontalAlignment = JLabel.CENTER;
         add(lbKeyBoard)
@@ -63,6 +65,7 @@ class MainWindow : JFrame() {
 //        lbAbout.background = Color.ORANGE
         lbAbout.foreground = Color.WHITE
         lbAbout.background = Color(0, 0, 0, 0)
+        lbAbout.isOpaque = false
         lbAbout.setBounds(100, 300, 200, 50)
         lbAbout.horizontalAlignment = JLabel.CENTER;
         add(lbAbout)
@@ -73,6 +76,7 @@ class MainWindow : JFrame() {
         //lbExit.background = Color.ORANGE
         lbExit.foreground = Color.WHITE
         lbExit.background = Color(0, 0, 0, 0)
+        lbExit.isOpaque = false
         lbExit.setBounds(100, 400, 200, 50)
         lbExit.horizontalAlignment = JLabel.CENTER;
         add(lbExit)
@@ -92,7 +96,7 @@ class MainWindow : JFrame() {
 
 
         lbStart.addActionListener {
-            val gameWindow = GameWindow(CP.C * CP.SIZE_M, CP.R * CP.SIZE_M, "坦克大战[ximen502]");
+            val gameWindow = GameWindow(CP.C * CP.SIZE_M + CP.SIZE, CP.R * CP.SIZE_M, "坦克大战[ximen502]");
             gameWindow.showLine = false
         }
 
