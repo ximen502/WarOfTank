@@ -92,6 +92,7 @@ class MainWindow : JFrame() {
         //contentPane.background = Color(0x51, 0x3E, 0x57)
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         setSize(875, 654)
+        isResizable = false
         isVisible = true
 
 
