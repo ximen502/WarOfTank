@@ -175,6 +175,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     private fun initGameData() {
         gameData = GameData(ground)
+        gameData?.id = CP.GAME_DATA.toLong()
         list.add(gameData)
     }
 
@@ -545,6 +546,17 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     override fun die(go: GameObject?) {
         println("die ${go?.javaClass.toString()}")
+//        var count = 0
+//        for (gameObject in list) {
+//            if (gameObject.id == 20L) {
+//                println("${gameObject?.id},------ ${gameObject?.isDestroyed}")
+//            }
+//        }
+//        if (count > 1) {
+//            println("*********************************************")
+//            println("${go?.id}founded more than once")
+//            println("*********************************************")
+//        }
         for (gameObject in list) {
             if (gameObject.id == go?.id) {
                 go.isDestroyed = true
@@ -559,7 +571,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 }
 
                 //darkAI?.removeDeadTank(go)
-                break
+                //break
             }
         }
     }

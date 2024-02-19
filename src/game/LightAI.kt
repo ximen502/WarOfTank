@@ -68,7 +68,7 @@ class LightAI {
                     input.moveListener = tank
                     //(go as GameWindow).player = tank
                     player = tank
-                    go.born(player)
+                    go.born(tank)
                 }
                 life--
                 active++

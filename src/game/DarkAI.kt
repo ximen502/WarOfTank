@@ -377,6 +377,7 @@ class DarkAI {
         fps2Tank = 0
         ttlPro = 0
         countDown = 0
+        list.clear()
         diedList.clear()
     }
 }
