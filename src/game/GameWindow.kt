@@ -42,6 +42,9 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     // 瓦片地图容器
     var tileList = mutableListOf<GameObject>()
 
+    // 敌军坦克已经被摧毁，发射的炮弹还在前进
+    private var loneShell: Array<Shells?>? = arrayOfNulls(2)
+
     private var input: Input
     private val SIZE = CP.SIZE
     private val SIZE_M = CP.SIZE_M
@@ -440,6 +443,11 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         darkAI?.let {
             for (enemy in it.list) {
+                //println("enemy:$enemy, enemy shells destroy:${enemy.shells.isDestroyed}")
+                //保存敌军被消灭前最后一发炮弹
+                if (enemy.isDestroyed) {
+                    loneShell?.set(0, enemy.shells)
+                }
                 val player = lightAI?.player ?: break
                 if (!enemy.shells.isDestroyed && !player.isDestroyed) {
                     //敌军的炮弹击中了玩家坦克
@@ -448,6 +456,32 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                         die(player)
                         die(enemy.shells)
                         boom(player)
+                    }
+                }
+            }
+
+            // 临时解决玩家被敌军最后一发炮弹击中没有产生碰撞的bug，后续2 players要改为循环遍历数组的判断方式
+            if (loneShell?.get(0) != null) {
+                val shell = loneShell?.get(0)!!
+//                println("****************************************************************")
+//                println("shell id:"+Integer.toHexString(shell?.id!!.toInt())+" isDestroy:${shell?.isDestroyed}")
+//                println("****************************************************************")
+                val player = lightAI?.player!!
+                if (!shell.isDestroyed && !player.isDestroyed) {
+                    val ps = player.shells
+                    //敌军最后一发炮弹击中了玩家坦克的炮弹
+                    if (ps.pickRect().intersects(shell.pickRect())) {
+                        die(ps)
+                        die(shell)
+                        loneShell?.set(0, null)
+                    }
+                    //敌军最后一发炮弹击中了玩家坦克
+                    if (player.pickRect().intersects(shell.pickRect())) {
+                        AC.soundManagerPD?.play(AC.playerdie)
+                        die(player)
+                        die(shell)
+                        boom(player)
+                        loneShell?.set(0, null)
                     }
                 }
             }

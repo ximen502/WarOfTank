@@ -92,7 +92,6 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
             sh.setPosition(shellsX, shellsY)
             sh.direction = direction
             sh.isDestroyed = false
-            shellsList.add(sh)
             observer?.born(sh)
             //fireAC?.play()
         }

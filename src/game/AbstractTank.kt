@@ -37,8 +37,6 @@ abstract class AbstractTank : GameObject() {
     protected var speed = 1
     //炮弹速度倍数
     var times = 4
-    // 炮弹容器
-    var shellsList: ArrayList<Shells> = ArrayList()
 
     val mapArray = CP.mapArray
 

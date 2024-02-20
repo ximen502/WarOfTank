@@ -437,6 +437,10 @@ open class BaseEnemyTank :AbstractTank() {
         }
     }
 
+    override fun toString(): String {
+        return "id:$id, destroy:$isDestroyed"
+    }
+
     override fun fire() {
         
     }
