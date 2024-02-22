@@ -37,7 +37,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     //    var list = mutableListOf<GameObject>()
     //为解决ConcurrentModificationException，使用了如下的线程安全的容器类
-    var list = CopyOnWriteArrayList<GameObject>()
+    private var list = CopyOnWriteArrayList<GameObject>()
+    private var grassList = mutableListOf<GameObject>()
 
     // 瓦片地图容器
     var tileList = mutableListOf<GameObject>()
@@ -173,6 +174,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             }
         }
         list.clear()
+        grassList.clear()
         tileList.clear()
     }
 
@@ -265,7 +267,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     grass.w = SIZE
                     grass.h = SIZE
                     grass.ground = ground
-                    list.add(grass)
+                    //list.add(grass)
+                    grassList.add(grass)
                     tileList.add(grass)
                     tileArray[i][j] = grass
 
@@ -531,6 +534,11 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             gameObject.onTick()
         }
 
+        for (gameObject in grassList) {
+            gameObject.draw(tempGraphics)
+            gameObject.onTick()
+        }
+
         //////////////////方便调试的网格线
         if (showLine) {
             var color = tempGraphics?.color
@@ -575,6 +583,11 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     override fun born(go: GameObject?) {
         println("born ${go?.javaClass.toString()}")
+//        if (list.contains(go) && go is TireTank) {
+//            println("********************************************************************")
+//            println("严重注意，已经包含同样的敌军坦克对象了go id:"+Integer.toHexString(go?.id!!.toInt()))
+//            println("--------------------------------------------------------------------")
+//        }
         list.add(go!!)
     }
 
