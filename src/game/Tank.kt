@@ -1,7 +1,5 @@
 package game
 
-import java.applet.Applet
-import java.applet.AudioClip
 import java.awt.*
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
@@ -114,10 +112,10 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     }
 
     /**
-     * 水平方向行驶，纵向转弯后X坐标调整
+     * 水平方向行驶，纵向转弯后X坐标调整，left->up, left->down
      */
     private fun adjustX() {
-        //将y坐标重新进行设置，以对齐拐弯后的网格线
+        //将x坐标重新进行设置，以对齐拐弯后的网格线
         x = x / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
         //处理坦克中心点的坐标和炮弹发射起点坐标
         cx = x + w / 2
@@ -126,11 +124,63 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     }
 
     /**
-     * 垂直方向行驶，横向转弯后Y坐标调整
+     * 水平方向行驶，纵向转弯后X坐标调整，right->up, right->down
+     */
+    private fun adjustX2() {
+        //如果是向右行驶，得到最右面的网格gridRightCol，再得到最右面网格左面一个网格gridLeftCol
+        //gridLeftCol的x坐标就作为拐弯后的x坐标。
+        //将x坐标重新进行设置，以对齐拐弯后的网格线
+        val east = x + w
+        var gridRightCol = east / SIZE_M
+        if (gridRightCol > CP.C - 1) {
+            gridRightCol = CP.C - 1
+        }
+        var gridLeftCol = gridRightCol - 1
+        if (gridLeftCol < 0) {
+            gridLeftCol = 0
+        }
+        x = gridLeftCol * SIZE_M + (SIZE - TANK_SIZE) / 2
+
+        //x = x / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+        //处理坦克中心点的坐标和炮弹发射起点坐标
+        cx = x + w / 2
+        shellsX = cx - shells.w / 2
+        shellsY = cy
+    }
+
+    /**
+     * 垂直方向行驶，横向转弯后Y坐标调整，up->left, up->right
      */
     private fun adjustY() {
+        //如果坦克向上行驶
         //将y坐标重新进行设置，以对齐拐弯后的网格线
         y = y / SIZE_M * SIZE_M + (SIZE - TANK_SIZE) / 2
+        //处理坦克中心点的坐标和炮弹发射起点坐标
+        cy = y + h / 2
+        shellsX = cx
+        shellsY = cy - shells.h / 2
+    }
+
+    /**
+     * 垂直方向行驶，横向转弯后Y坐标调整，down->left, down->right
+     */
+    private fun adjustY2() {
+        //如果是向下行驶，得到最下面的网格gridDownRow，再得到最下面网格上面一个网格gridUpRow
+        //gridUpRow的y坐标就作为拐弯后的y坐标。
+        //将y坐标重新进行设置，以对齐拐弯后的网格线
+        val south = y + h
+        var gridDownRow = south / SIZE_M
+        //边界检查
+        if (gridDownRow > CP.R - 1){
+            gridDownRow = CP.R - 1
+        }
+        var gridUpRow = gridDownRow - 1
+        if (gridUpRow < 0) {
+            gridUpRow = 0
+        }
+
+        y = gridUpRow * SIZE_M + (SIZE - TANK_SIZE) / 2
+
         //处理坦克中心点的坐标和炮弹发射起点坐标
         cy = y + h / 2
         shellsX = cx
@@ -157,7 +207,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 
     }
 
-    fun playerWalk(key: Int) {
+    private fun playerWalk(key: Int) {
         when (key) {
             KeyEvent.VK_UP -> {
                 /*************************************************
@@ -175,7 +225,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                     if (this.direction == Shells.DIRECTION_WEST) {
                         adjustX()
                     } else if (this.direction == Shells.DIRECTION_EAST) {
-                        adjustX()
+                        adjustX2()
                     }
                     this.direction = Shells.DIRECTION_NORTH
                     return
@@ -237,7 +287,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                     if (this.direction == Shells.DIRECTION_WEST) {
                         adjustX()
                     } else if (this.direction == Shells.DIRECTION_EAST) {
-                        adjustX()
+                        adjustX2()
                     }
                     this.direction = Shells.DIRECTION_SOUTH
                     return
@@ -292,7 +342,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                     if (this.direction == Shells.DIRECTION_NORTH) {
                         adjustY()
                     } else if (this.direction == Shells.DIRECTION_SOUTH) {
-                        adjustY()
+                        adjustY2()
                     }
                     this.direction = Shells.DIRECTION_WEST
                     return
@@ -350,7 +400,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                     if (this.direction == Shells.DIRECTION_NORTH) {
                         adjustY()
                     } else if (this.direction == Shells.DIRECTION_SOUTH) {
-                        adjustY()
+                        adjustY2()
                     }
                     this.direction = Shells.DIRECTION_EAST
                     return
