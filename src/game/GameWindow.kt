@@ -122,6 +122,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         stack = LinkedList()
         stack?.let {
             // 入栈
+            it.push("lv00.map")
             it.push("lv18.map")
             it.push("lv05.map")
             it.push("lv02.map")

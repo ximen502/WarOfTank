@@ -16,8 +16,12 @@
 
 # 效果
 * 下面是第一关的显示效果，后面的关卡待实现
-![alt tag](screenshot/stage1.png)
+  ![alt tag](screenshot/stage1_new.png)
+* 旧版本效果old version  
+  ![alt tag](screenshot/stage1.png)
 * GAME OVER效果
+  ![alt tag](screenshot/game_over_new.png)
+* 旧版本效果old version
   ![alt tag](screenshot/game_over.png)
 * 增加一个首页
   ![alt tag](screenshot/main.png)
@@ -41,10 +45,10 @@ NB闪闪的项目作者在模拟器中玩坦克大战的时候，查看内存偶
 用模拟器打开验证了一下，确实如此。作者很幽默。佩服，要向作者学习的地方还有很多。
 
 # TODO未来任务
-1. 后续所有关卡的地图
-2. 地图瓦片尺寸改为偶数
-3. 增加摧毁钢铁的敌军坦克
-4. 增加携带道具的敌军坦克，实现道具功能
-5. 增加地图编辑器，实现自建地图
-6. 实现2个玩家坦克
-7. 自定义按键
+- [ ] 1.后续所有关卡的地图
+- [x] 2.地图瓦片尺寸改为偶数
+- [ ] 3.增加摧毁钢铁的敌军坦克
+- [ ] 4.增加携带道具的敌军坦克，实现道具功能
+- [ ] 5.增加地图编辑器，实现自建地图
+- [ ] 6.实现2个玩家坦克
+- [ ] 7.自定义按键
