@@ -84,6 +84,8 @@ public class Map {
                 }
                 r++;//行号加1
             }
+            br.close();
+            is.close();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
