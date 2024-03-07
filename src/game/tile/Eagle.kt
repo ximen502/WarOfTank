@@ -1,6 +1,5 @@
-package game.map
+package game.tile
 
-import game.GameObject
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
@@ -13,7 +12,7 @@ import javax.imageio.ImageIO
  * @Date 2023/10/20 上午11:43
  * @Version 1.0
  */
-class Eagle : GameObject() {
+class Eagle : TileObject() {
     //1.实现基地老鹰绘制
     private var imgAlive: BufferedImage? = null
     private var imgNow: BufferedImage? = null

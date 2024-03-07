@@ -29,10 +29,12 @@ class DarkAI {
 
     // 计时120fps
     private var countDown = WAITING
+    private var baseId = ID.ID_ENEMY
+    private var baseIdProduce = ID.ID_ENEMY_PRODUCE
 
     companion object {
         const val WAITING = 120
-        const val TOTAL = 20
+        const val TOTAL = 10
         const val BEGIN_FPS = 90
         const val ENEMIES = 4
     }
@@ -64,7 +66,7 @@ class DarkAI {
             if (ttlPro == 0) {// 创建坦克动画
                 var pos = total % 3 + 1
                 produce = Producing(ground, pos)
-                produce?.id = 110
+                produce?.id = baseIdProduce++
                 produce?.observer = go
                 go.born(produce)
             } else if (ttlPro >= Producing.GONE) { // 开始创建坦克
@@ -76,7 +78,7 @@ class DarkAI {
     //            var enemyTank = TripleTank(ground, pos)
     //            var enemyTank = DoubleTank(ground, pos)
                     enemyTank.times = 1
-                    enemyTank.id = total.toLong()
+                    enemyTank.id = baseId++
                     enemyTank.observer = go
                     // 敌军坦克出现
                     go.born(enemyTank)
@@ -377,6 +379,8 @@ class DarkAI {
         fps2Tank = 0
         ttlPro = 0
         countDown = 0
+        baseId = ID.ID_ENEMY
+        baseIdProduce = ID.ID_ENEMY_PRODUCE
         list.clear()
         diedList.clear()
     }

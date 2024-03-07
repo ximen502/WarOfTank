@@ -1,9 +1,9 @@
-package game.map
+package game.tile
 
 import game.CP
 import game.GOObserver
-import game.GameObject
 import game.Shells
+import game.lib.Log
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
@@ -16,7 +16,7 @@ import javax.imageio.ImageIO
  * @Date 2023/8/19 上午10:52
  * @Version 1.0
  */
-class Iron : GameObject() {
+class Iron : TileObject() {
     //1.实现钢铁绘制
     //2.确定全局地图的样貌
     //3.根据全局样貌进行地图初始化
@@ -43,7 +43,7 @@ class Iron : GameObject() {
                 shells?.let {
                     if (it.level >= Shells.LEVEL3) {//炮弹可以破坏铁块
                         var newH = (h - ONE2ND).toInt()
-                        println("=====oldH:$h, 1/2:$ONE2ND, newH:$newH")
+                        Log.println("=====oldH:$h, 1/2:$ONE2ND, newH:$newH")
                         //彻底消失
                         if (newH <= 0) {
                             isDestroyed = true
@@ -55,7 +55,7 @@ class Iron : GameObject() {
                             h = newH
                         }
                     } else {//炮弹不可以破坏铁块
-                        println("炮弹级别不够，无法消除钢铁")
+                        Log.println("炮弹级别不够，无法消除钢铁")
                     }
                 }
                 shells = null
@@ -65,7 +65,7 @@ class Iron : GameObject() {
                 shells?.let {
                     if (it.level >= Shells.LEVEL3) {//炮弹可以破坏铁块
                         var newH = h - ONE2ND
-                        println("=====oldH:$h, 1/2:$ONE2ND, newH:$newH, y:$y")
+                        Log.println("=====oldH:$h, 1/2:$ONE2ND, newH:$newH, y:$y")
                         //彻底消失(剩余高度1/2)
                         if (newH < ONE2ND) {
                             isDestroyed = true
@@ -73,13 +73,13 @@ class Iron : GameObject() {
                             w = 0
                             observer?.die(this)
                         } else {
-                            println("钢铁w:$w, h:$h, x:$x, y:$y, maxY:$maxY img w:${img?.width}, img h:${img?.height}")
+                            Log.println("钢铁w:$w, h:$h, x:$x, y:$y, maxY:$maxY img w:${img?.width}, img h:${img?.height}")
                             img = img?.getSubimage(0, ONE2ND, w, newH)
                             h = newH
                             y += ONE2ND
                         }
                     } else {//炮弹不可以破坏铁块
-                        println("炮弹级别不够，无法消除钢铁")
+                        Log.println("炮弹级别不够，无法消除钢铁")
                     }
                 }
                 shells = null
@@ -89,7 +89,7 @@ class Iron : GameObject() {
                 shells?.let {
                     if (it.level >= Shells.LEVEL3) {//炮弹可以破坏铁块
                         var newW = (w - ONE2ND).toInt()
-                        println("=====oldW:$w, 1/2:$ONE2ND, newW:$newW")
+                        Log.println("=====oldW:$w, 1/2:$ONE2ND, newW:$newW")
                         //钢铁彻底消失
                         if (newW <= 0) {
                             isDestroyed = true
@@ -101,7 +101,7 @@ class Iron : GameObject() {
                             w = newW
                         }
                     } else {//炮弹不可以破坏铁块
-                        println("炮弹级别不够，无法消除钢铁")
+                        Log.println("炮弹级别不够，无法消除钢铁")
                     }
                 }
                 shells = null
@@ -111,7 +111,7 @@ class Iron : GameObject() {
                 shells?.let {
                     if (it.level >= Shells.LEVEL3) {//炮弹可以破坏铁块
                         var newW = w - ONE2ND
-                        println("=====oldW:$w, 1/2:$ONE2ND, newW:$newW")
+                        Log.println("=====oldW:$w, 1/2:$ONE2ND, newW:$newW")
                         //钢铁彻底消失(剩余宽度不足1/2)
                         if (newW < ONE2ND) {
                             isDestroyed = true
@@ -119,13 +119,13 @@ class Iron : GameObject() {
                             h = 0
                             observer?.die(this)
                         } else {
-                            println("钢铁w:$w, h:$h, x:$x, y:$y, maxY:$maxY img w:${img?.width}, img h:${img?.height}")
+                            Log.println("钢铁w:$w, h:$h, x:$x, y:$y, maxY:$maxY img w:${img?.width}, img h:${img?.height}")
                             img = img?.getSubimage(ONE2ND, 0, newW, h)
                             w = newW
                             x += ONE2ND
                         }
                     } else {//炮弹不可以破坏铁块
-                        println("炮弹级别不够，无法消除钢铁")
+                        Log.println("炮弹级别不够，无法消除钢铁")
                     }
                 }
                 shells = null

@@ -1,5 +1,6 @@
 package game
 
+import game.lib.Log
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
 import javax.swing.JFrame
@@ -28,7 +29,7 @@ class Input : KeyListener {
 
     override fun keyPressed(e: KeyEvent?) {
         e?.keyCode?.let { keyMap.put(it, true) }
-        println("key pressed:${e?.keyCode}")
+        Log.println("key pressed:${e?.keyCode}")
         b = System.currentTimeMillis()
         //println("b:$b")
         if (e?.keyCode == KeyEvent.VK_UP) {
@@ -68,7 +69,7 @@ class Input : KeyListener {
                 // do nothing
             }
         }
-        println("key release:${e?.keyCode}-----------------------")//${e?.keyCode}
+        Log.println("key release:${e?.keyCode}-----------------------")//${e?.keyCode}
     }
 
     fun getKeyDown(keyCode: Int): Boolean? {

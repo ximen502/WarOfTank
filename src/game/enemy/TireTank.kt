@@ -3,6 +3,7 @@ package game.enemy
 import game.CP
 import game.Ground
 import game.Shells
+import game.lib.Log
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -24,7 +25,7 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
                 x = (SIZE - FAST_S) / 2
                 y = (SIZE - FAST_B) / 2
 
-                println("tire cx:$cx, cy:$cy")
+                Log.println("tire cx:$cx, cy:$cy")
             }
             CP.BORN_2 -> {
                 x = ground.width / 2 - FAST_S / 2
@@ -85,7 +86,7 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
         // 简化炮弹是否可以发射的判断逻辑
         if (shells.isDestroyed) {
             val sh = shells
-            sh.id = (CP.ENEMY shl 8 or id.toInt()).toLong()
+            sh.id = id + 20//(CP.ENEMY shl 8 or id.toInt()).toLong()
             sh.times = 3
             sh.observer = observer
             sh.ground = ground

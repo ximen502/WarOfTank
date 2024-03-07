@@ -29,8 +29,6 @@ object CP {
     const val BORN_P1 = 4
     const val BORN_P2 = 5
 
-    const val GAME_DATA = 200
-
     const val PLAYER = 0x60
 
     const val ENEMY = 0x50

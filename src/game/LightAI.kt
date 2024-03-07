@@ -40,7 +40,7 @@ class LightAI {
                 val pos = CP.BORN_P1
                 val produce = Producing(ground, pos)
                 /* 这里的动画id，111，112为玩家准备 */
-                produce.id = 111
+                produce.id = ID.ID_P1_PRODUCE
                 produce.observer = go
                 go.born(produce)
             } else if (ttlPro >= Producing.GONE) {
@@ -57,7 +57,7 @@ class LightAI {
                     val w = ground.width
                     val h = ground.height
                     val tank = Tank(input, ground)
-                    tank.id = 101
+                    tank.id = ID.ID_P1
                     tank.w = CP.TANK_SIZE
                     tank.h = CP.TANK_SIZE
                     tank.x = w / 2 - CP.SIZE_M * 5 + (CP.SIZE - CP.TANK_SIZE) / 2

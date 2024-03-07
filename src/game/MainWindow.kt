@@ -1,6 +1,7 @@
 package game
 
 
+import game.lib.Log
 import game.page.InfoWindow
 import game.page.KeySetWindow
 import java.awt.Color
@@ -24,7 +25,7 @@ class MainWindow : JFrame() {
 
     init {
         val path = javaClass.getResource("/game/image/bg_main.png")
-        println(path)
+        Log.println(path)
         var img = ImageIO.read(path)
         val imageIcon = ImageIcon(img)
         var lb = JLabel(imageIcon)

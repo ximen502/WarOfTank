@@ -1,8 +1,9 @@
 package game
 
 import com.brackeen.sound.SoundManager
+import game.lib.Log
 import game.lib.findStr
-import game.map.*
+import game.tile.*
 import java.applet.AudioClip
 import java.awt.Color
 import java.awt.Graphics
@@ -113,7 +114,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 //            }
 //        }, 500L)
 
-        println("Title Height: ${insets.top}")
+        Log.println("Title Height: ${insets.top}")
 
     }
 
@@ -181,7 +182,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     private fun initGameData() {
         gameData = GameData(ground)
-        gameData?.id = CP.GAME_DATA.toLong()
+        gameData?.id = ID.ID_GAME_DATA
         list.add(gameData)
     }
 
@@ -207,14 +208,18 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             four[i] = -1
         }
 
+        var baseId = ID.ID_TILE
         //i行j列
         for (i in mapArray.indices) {
             for (j in mapArray[i].indices) {
                 val tile = mapArray[i][j].toInt()
-                println("tile:$tile")
+                //println("tile:$tile")
                 if (tile == CP.TILE_BRICK) {
                     var brick = Brick()
-                    brick.id = (i shl 8 or j).toLong()
+                    brick.id = baseId++
+                    Log.println("brick id：${brick.id}")
+                    brick.row = i
+                    brick.col = j
                     brick.x = SIZE_M * j
                     brick.y = SIZE_M * i
                     brick.w = SIZE_M
@@ -226,7 +231,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     tileArray[i][j] = brick
                 } else if (tile == CP.TILE_IRON) {
                     var iron = Iron()
-                    iron.id = (i shl 8 or j).toLong()
+                    iron.id = baseId++
+                    Log.println("铁片子id：${iron.id}")
+                    iron.row = i
+                    iron.col = j
                     iron.x = SIZE_M * j
                     iron.y = SIZE_M * i
                     iron.w = SIZE_M
@@ -243,7 +251,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     }
 
                     val river = River()
-                    river.id = (i shl 8 or j).toLong()
+                    river.id = baseId++
+                    Log.println("river id：${river.id}")
                     river.x = SIZE_M * j
                     river.y = SIZE_M * i
                     river.w = SIZE_M
@@ -262,7 +271,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     }
 
                     var grass = Grass()
-                    grass.id = (i shl 8 or j).toLong()
+                    grass.id = baseId++
+                    Log.println("grass id：${grass.id}")
                     grass.x = SIZE_M * j
                     grass.y = SIZE_M * i
                     grass.w = SIZE
@@ -282,7 +292,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     }
 
                     var eagle = Eagle()
-                    eagle.id = (i shl 8 or j).toLong()
+                    eagle.id = baseId++
+                    Log.println("eagle id：${eagle.id}")
                     eagle.x = SIZE_M * j
                     eagle.y = SIZE_M * i
                     eagle.w = SIZE
@@ -583,17 +594,12 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     }
 
     override fun born(go: GameObject?) {
-        println("born ${go?.javaClass.toString()}")
-//        if (list.contains(go) && go is TireTank) {
-//            println("********************************************************************")
-//            println("严重注意，已经包含同样的敌军坦克对象了go id:"+Integer.toHexString(go?.id!!.toInt()))
-//            println("--------------------------------------------------------------------")
-//        }
+        Log.println("born ${go?.javaClass.toString()}")
         list.add(go!!)
     }
 
     override fun die(go: GameObject?) {
-        println("die ${go?.javaClass.toString()}")
+        Log.println("die ${go?.javaClass.toString()} , id=${go?.id}")
 //        var count = 0
 //        for (gameObject in list) {
 //            if (gameObject.id == 20L) {
@@ -609,11 +615,12 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             if (gameObject.id == go?.id) {
                 go.isDestroyed = true
                 list.remove(gameObject)
-                println("founded====")
-                // 将砖块和铁块从地图上去掉
-                if (go is Brick || go is Iron) {
-                    var i = (go.id shr 8).toInt()
-                    var j = (go.id and 0x00000000000000ff).toInt()
+                Log.println("founded====")
+                // 将砖块和铁块从地图上去掉brick iron
+                if (go is TileObject) {
+                    var to = go as TileObject
+                    var i = to.row
+                    var j = to.col
                     CP.mapArray[i][j] = 0
                     CP.tileArray[i][j] = null
                 }
@@ -628,10 +635,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         val windowListener: WindowListener = object : WindowListener {
             override fun windowOpened(e: WindowEvent) {}
             override fun windowClosing(e: WindowEvent) {
-                println("窗口关闭中")
+                Log.println("窗口关闭中")
             }
             override fun windowClosed(e: WindowEvent) {
-                println("窗口已关闭")
+                Log.println("窗口已关闭")
                 //1.1清空地图
                 clearMap()
                 //1.2重置AI

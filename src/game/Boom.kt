@@ -14,14 +14,14 @@ import java.util.*
 class Boom(x: Int, y: Int) : GameObject() {
     var observer: GOObserver? = null
     private val particles: MutableList<Particle> = ArrayList()
-    var colorArray = arrayOf<Color>(
+    private var colorArray = arrayOf<Color>(
         Color(0xff, 0xa5, 0x00), Color(0xff, 0xbf, 0x0), Color.BLACK, Color.GRAY
     )
 
     init {
         this.x = x
         this.y = y
-        this.id = System.currentTimeMillis()
+        this.id = ID.generateBoomID()
         generateParticles()
         //println("Boom init{}")
     }

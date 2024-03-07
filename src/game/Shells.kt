@@ -1,8 +1,8 @@
 package game
 
-import game.map.Brick
-import game.map.Eagle
-import game.map.Iron
+import game.tile.Brick
+import game.tile.Eagle
+import game.tile.Iron
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D

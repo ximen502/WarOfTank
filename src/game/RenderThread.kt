@@ -1,5 +1,6 @@
 package game
 
+import game.lib.Log
 import game.lib.MidiPlayer
 import java.applet.Applet
 import java.lang.Thread.sleep
@@ -13,19 +14,19 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
     init {
         _gameWindow = gameWindow
         interval = 1000L / _gameWindow!!.getFps()
-        println("[Render] created")
-        println("[Render] interval $interval ms")
+        Log.println("[Render] created")
+        Log.println("[Render] interval $interval ms")
     }
 
     override fun run() {
-        println("start rendering")
+        Log.println("start rendering")
         bgMusic()
         initAudioResource()
         while (!exited){
             _gameWindow?.repaint()
             sleep(interval)
         }
-        println("stop rendering")
+        Log.println("stop rendering")
         _gameWindow?.exit()
     }
 

@@ -1,5 +1,6 @@
 package game
 
+import game.lib.Log
 import java.awt.*
 import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
@@ -30,7 +31,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 
     init {
         this.ground = ground
-        println("w:${ground.width}")
+        Log.println("w:${ground.width}")
         x = ground.width / 2 - (SIZE_M * 5) + (SIZE - CP.TANK_SIZE) / 2
         y = ground.height - SIZE + (SIZE - CP.TANK_SIZE) / 2
         w = TANK_SIZE
@@ -38,7 +39,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         shellsX = cx - shells.w / 2
         shellsY = cy - shells.h / 2
         direction = Shells.DIRECTION_NORTH
-        println("tank born position x:$x, y:$y, cx:$cx, cy:$cy, shells x:$shellsX, y:$shellsY")
+        Log.println("tank born position x:$x, y:$y, cx:$cx, cy:$cy, shells x:$shellsX, y:$shellsY")
         this.input = input
         times = 4
 //        println(javaClass.toString())
@@ -66,7 +67,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
             return
         //shells born
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {
-            println("control is pressed, fire in the hole")
+            Log.println("control is pressed, fire in the hole")
             fire()
         }
 
@@ -103,11 +104,11 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
      * 相当于keyPressed(key)
      */
     override fun begin(key: Int) {
-        println("begin:${key}")
+        Log.println("begin:${key}")
     }
 
     override fun end(direction: Int) {
-        println("end")
+        Log.println("end")
 
     }
 
@@ -215,12 +216,12 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                  * 能：空地；可以通过的瓦片(草地、雪地)；没有抵达游戏窗口边界；
                  * 不能：不可通过的瓦片(砖头、钢铁、河流)；抵达游戏窗口边界；
                  * ***********************************************/
-                println("old direction:" + this.direction)
+                Log.println("old direction:" + this.direction)
                 if (this.direction == Shells.DIRECTION_NORTH) {
-                    println("直行")
+                    Log.println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    Log.println("拐弯了，拐弯前的方向是${this.direction}")
                     // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
                     if (this.direction == Shells.DIRECTION_WEST) {
                         adjustX()
@@ -234,7 +235,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 
                 row = y / SIZE_M
                 col = x / SIZE_M
-                println("move up row:$row, col:$col, x:$x, y:$y")
+                Log.println("move up row:$row, col:$col, x:$x, y:$y")
                 //没有抵达边界并且前方可通行
                 if (row > 0) {
                     if ((mapArray[row - 1][col].toInt() == 0
@@ -244,21 +245,21 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                                 || mapArray[row - 1][col + 1].toInt() == CP.TILE_GRASS
                                 || mapArray[row - 1][col + 1].toInt() == CP.TILE_SNOW)
                     ) {
-                        println("up222")
+                        Log.println("up222")
                         var yOffset = -times * speed
                         transfer(0, yOffset)
                     } else {
                         //逻辑不太好处理，需要多加一个网格的高度，务必注意，困扰我好久
                         north = (row - 1) * SIZE_M + SIZE_M
-                        println("发现障碍物row:${row-1}, north:$north")
+                        Log.println("发现障碍物row:${row-1}, north:$north")
                         if (y > north + (SIZE - TANK_SIZE) / 2) {
                             var yOffset = -times * speed
                             transfer(0, yOffset)
-                            println("1-1 y:$y")
+                            Log.println("1-1 y:$y")
                         } else {
                             y = north + (SIZE - TANK_SIZE) / 2
                             transfer(0, 0)
-                            println("1-2 y:$y")
+                            Log.println("1-2 y:$y")
                         }
                     }
                 } else if (row == 0) {
@@ -270,19 +271,19 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                         transfer(0, 0)
                     }
                 }
-                println("move over new x:$x, y:$y")
+                Log.println("move over new x:$x, y:$y")
                 //炮弹初始位置
                 shellsX = cx - shells.w / 2
                 shellsY = cy
             }
 
             KeyEvent.VK_DOWN -> {
-                println("old direction:" + this.direction)
+                Log.println("old direction:" + this.direction)
                 if (this.direction == Shells.DIRECTION_SOUTH) {
-                    println("直行")
+                    Log.println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    Log.println("拐弯了，拐弯前的方向是${this.direction}")
                     // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
                     if (this.direction == Shells.DIRECTION_WEST) {
                         adjustX()
@@ -295,7 +296,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                 this.direction = Shells.DIRECTION_SOUTH
                 row = y / SIZE_M
                 col = x / SIZE_M
-                println("move down row:$row, col:$col, x:$x, y:$y")
+                Log.println("move down row:$row, col:$col, x:$x, y:$y")
                 //没有抵达边界并且前方可通行
                 if (row < CP.R - 2) {
                     if ((mapArray[row + 2][col].toInt() == 0
@@ -332,12 +333,12 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
             }
 
             KeyEvent.VK_LEFT -> {
-                println("old direction:" + this.direction)
+                Log.println("old direction:" + this.direction)
                 if (this.direction == Shells.DIRECTION_WEST) {
-                    println("直行")
+                    Log.println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    Log.println("拐弯了，拐弯前的方向是${this.direction}")
                     // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
                     if (this.direction == Shells.DIRECTION_NORTH) {
                         adjustY()
@@ -351,7 +352,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 
                 row = y / SIZE_M
                 col = x / SIZE_M
-                println("move left row:$row, col:$col, x:$x, y:$y")
+                Log.println("move left row:$row, col:$col, x:$x, y:$y")
                 //没有抵达边界并且前方可通行
                 if (col > 0) {
                     if ((mapArray[row][col-1].toInt() == 0
@@ -382,7 +383,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                         transfer(0, 0)
                     }
                 }
-                println("move over new x:$x, y:$y")
+                Log.println("move over new x:$x, y:$y")
 
                 //炮弹初始位置
                 shellsX = cx
@@ -390,12 +391,12 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
             }
 
             KeyEvent.VK_RIGHT -> {
-                println("old direction:" + this.direction)
+                Log.println("old direction:" + this.direction)
                 if (this.direction == Shells.DIRECTION_EAST) {
-                    println("直行")
+                    Log.println("直行")
                 } else {
                     //拐弯就只改变一下方向，不需要移动
-                    println("拐弯了，拐弯前的方向是${this.direction}")
+                    Log.println("拐弯了，拐弯前的方向是${this.direction}")
                     // 如果是垂直方向的行驶拐弯，需要处理对齐网格线的问题
                     if (this.direction == Shells.DIRECTION_NORTH) {
                         adjustY()
@@ -409,7 +410,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 
                 row = y / SIZE_M
                 col = x / SIZE_M
-                println("move right row:$row, col:$col, x:$x, y:$y")
+                Log.println("move right row:$row, col:$col, x:$x, y:$y")
 
                 //没有抵达边界并且前方可通行
                 if (col < CP.C - 2) {
@@ -442,7 +443,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                         transfer(0, 0)
                     }
                 }
-                println("move over new x:$x, y:$y")
+                Log.println("move over new x:$x, y:$y")
                 //炮弹初始位置
                 shellsX = cx
                 shellsY = cy - shells.h / 2
@@ -468,7 +469,7 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         if (shells.isDestroyed) {
             val sh = shells
             sh.times = 6
-            sh.id = (CP.PLAYER shl 8 or id.toInt()).toLong()
+            sh.id = ID.ID_P1_SHELL
             sh.observer = observer
             sh.ground = ground
             sh.setPosition(shellsX, shellsY)

@@ -1,6 +1,5 @@
-package game.map
+package game.tile
 
-import game.GameObject
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.Image
@@ -13,7 +12,7 @@ import javax.imageio.ImageIO
  * @Date 2023/8/19 上午10:56
  * @Version 1.0
  */
-class Grass : GameObject() {
+class Grass : TileObject() {
     //1.实现草地绘制
     //2.确定全局地图的样貌
     //3.根据全局样貌进行地图初始化

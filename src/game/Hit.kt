@@ -29,7 +29,7 @@ class Hit : GameObject() {
         val path = javaClass.getResource("/game/image/hit.png")
         //println(path)
         hit = ImageIO.read(path)
-        id = System.currentTimeMillis()
+        id = ID.generateHitID()
     }
 
     override fun draw(g: Graphics?) {

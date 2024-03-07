@@ -22,6 +22,7 @@ class GameOver(ground: Ground) : GameObject() {
         h = img?.height!!
         x = (ground.width - w) / 2
         y = (ground.height - h) / 2
+        id = ID.ID_GAME_OVER
     }
 
     override fun draw(g: Graphics?) {

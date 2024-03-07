@@ -4,6 +4,7 @@ import game.CP
 import game.GOObserver
 import game.GameObject
 import game.Ground
+import game.lib.Log
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -39,7 +40,7 @@ class Producing(ground: Ground, position: Int) : GameObject() {
                 x = (CP.SIZE - CP.TANK_SIZE) / 2
                 y = (CP.SIZE - CP.TANK_SIZE) / 2
 
-                println("cx:$cx, cy:$cy")
+                Log.println("cx:$cx, cy:$cy")
             }
             CP.BORN_2 -> {
                 x = ground.width / 2 - CP.TANK_SIZE / 2
