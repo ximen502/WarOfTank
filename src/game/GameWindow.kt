@@ -126,6 +126,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             it.push("lv00.map")
             it.push("lv18.map")
             it.push("lv05.map")
+            it.push("lv03.map")
             it.push("lv02.map")
             //it.push("lv01.map")
         }
