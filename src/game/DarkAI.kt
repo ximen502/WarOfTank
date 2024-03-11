@@ -34,7 +34,7 @@ class DarkAI {
 
     companion object {
         const val WAITING = 120
-        const val TOTAL = 10
+        const val TOTAL = 20
         const val BEGIN_FPS = 90
         const val ENEMIES = 4
     }
@@ -94,6 +94,8 @@ class DarkAI {
             fps2Tank = 0
             dispatchMoreTank()
         }
+
+        saveTank()
     }
 
     /**
@@ -107,6 +109,37 @@ class DarkAI {
                 if (!diedList.contains(list[i])) {
                     diedList.add(list[i])
                 }
+            }
+            i++
+        }
+    }
+
+    /**
+     * 检查被挤到窗口外面的敌方坦克，如果有则将坦克重新就近安排到窗口内，
+     * 为了解决目前敌方坦克的碰撞处理不够完善，造成的坦克跑到窗口外，而不能被发现的bug。
+     */
+    private fun saveTank() {
+        var msg = ""
+        var i = 0
+        while (i < list.size) {
+            val e = list[i]
+            //左上角x方向出去的坦克
+            if (e.x < 0) {
+                e.x = (CP.SIZE - CP.FAST_S) / 2
+                //msg= "enemy left out, id:${e.id}, x=${e.x}, y=${e.y}"
+                //println(msg)
+            }
+            //顶部y方向出去的坦克
+            if (e.y < 0) {
+                e.y = (CP.SIZE - CP.FAST_B) / 2
+                //msg= "enemy top out, id:${e.id}, x=${e.x}, y=${e.y}"
+                //println(msg)
+            }
+            //右上角x方向出去的坦克
+            if (e.x >= e.ground.width) {
+                e.x = e.ground.width - CP.SIZE + (CP.SIZE - CP.FAST_S) / 2
+                //msg= "enemy right out, id:${e.id}, x=${e.x}, y=${e.y}"
+                //println(msg)
             }
             i++
         }
