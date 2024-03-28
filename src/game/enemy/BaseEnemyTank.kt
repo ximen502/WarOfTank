@@ -38,6 +38,9 @@ open class BaseEnemyTank :AbstractTank() {
 
     var rect: Rectangle = Rectangle(x, y, w, h)
 
+    //是否携带宝藏
+    var precious = false
+
     val KEY_LIST = arrayListOf(
         KeyEvent.VK_UP,
         KeyEvent.VK_DOWN,

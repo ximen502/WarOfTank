@@ -34,4 +34,9 @@ object AC {
     val PLAYBACK_FORMAT_GF = AudioFormat(8363f, 16, 1, true, false)
     var soundManagerGF: SoundManager? = null
     var gunfire: Sound? = null
+
+    // Peow.wav音频格式
+    val PLAYBACK_FORMAT_PEOW = AudioFormat(8402f, 16, 1, true, false)
+    var soundManagerPeow: SoundManager? = null
+    var peow: Sound? = null
 }

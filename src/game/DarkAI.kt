@@ -32,6 +32,8 @@ class DarkAI {
     private var baseId = ID.ID_ENEMY
     private var baseIdProduce = ID.ID_ENEMY_PRODUCE
 
+    var preciousIndex = 0;
+
     companion object {
         const val WAITING = 120
         const val TOTAL = 20
@@ -80,6 +82,14 @@ class DarkAI {
                     enemyTank.times = 1
                     enemyTank.id = baseId++
                     enemyTank.observer = go
+                    //每四个一组，第三个为携带道具的坦克
+                    preciousIndex++
+                    if (preciousIndex == 3) {
+                        enemyTank.precious = true
+                    }
+                    if (preciousIndex == 4) {
+                        preciousIndex = 0
+                    }
                     // 敌军坦克出现
                     go.born(enemyTank)
                     list.add(enemyTank)

@@ -3,6 +3,8 @@ package game
 import com.brackeen.sound.SoundManager
 import game.lib.Log
 import game.lib.findStr
+import game.prop.BaseGameObject
+import game.prop.Star
 import game.tile.*
 import java.applet.AudioClip
 import java.awt.Color
@@ -58,6 +60,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     private var stack: Deque<String>? = null
     private var wait2Next = CP.WAIT_FPS //下一关的等待时间
     private var nowStage = 0 // 关卡编号
+    private var random = Random()
+    private var propArray = arrayOfNulls<BaseGameObject>(6)
 
     init {
         this.w = width
@@ -84,6 +88,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         AC.playerdie = AC.soundManagerPD?.getSound("/game/sound/playerdie.wav")
         AC.soundManagerGF = SoundManager(AC.PLAYBACK_FORMAT_GF, 3)
         AC.gunfire = AC.soundManagerGF?.getSound("/game/sound/Gunfire.wav")
+        AC.soundManagerPeow = SoundManager(AC.PLAYBACK_FORMAT_PEOW, 2)
+        AC.peow = AC.soundManagerPeow?.getSound("/game/sound/Peow.wav")
 
         initMap("lv01.map")
 
@@ -126,6 +132,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             it.push("lv00.map")
             it.push("lv18.map")
             it.push("lv05.map")
+            it.push("lv04.map")
             it.push("lv03.map")
             it.push("lv02.map")
             //it.push("lv01.map")
@@ -165,6 +172,11 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         //4.玩家和敌军坦克
         //相关状态、数据重置或清除
         //(敌军坦克数量、关卡编号)
+        //5.prop array clear
+        for ((index, baseGameObject) in propArray.withIndex()) {
+            if (baseGameObject != null)
+                propArray[index] = null
+        }
     }
 
     private fun clearMap() {
@@ -447,6 +459,24 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                         //玩家的炮弹击中了敌军坦克
                         if (enemy.pickRect().intersects(ps.pickRect())) {
                             AC.soundManager?.play(AC.bang)
+                            if (enemy.precious) {
+                                //generate the star prop
+                                // in the future , will add more props
+                                val star = Star()
+                                star.id = ID.ID_STAR1// id maybe change also
+                                star.x = random.nextInt(ground.width - CP.SIZE)
+                                star.y = random.nextInt(ground.height - CP.SIZE * 2)
+                                star.w = CP.SIZE
+                                star.h = CP.SIZE
+                                // store it in array
+                                for ((index, gameObject) in propArray.withIndex()) {
+                                    if (propArray[index] == null) {
+                                        propArray[index] = star
+                                        break//找到空位，保存到数组后，break跳出循环，不然一个道具存6份
+                                    }
+                                }
+                            }
+
                             die(enemy)
                             die(ps)
                             boom(enemy)
@@ -501,6 +531,21 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     }
                 }
             }
+
+            // player tank collision with props
+            val player = lightAI?.player
+            player?.let {
+                for ((index, baseGameObject) in propArray.withIndex()) {
+                    var prop = propArray[index]
+                    prop?.let {
+                        if (player.pickRect().intersects(prop.pickRect())) {
+                            // player eat the prop
+                            AC.soundManagerPeow?.play(AC.peow)
+                            propArray[index] = null
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -550,6 +595,14 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         for (gameObject in grassList) {
             gameObject.draw(tempGraphics)
             gameObject.onTick()
+        }
+
+        // 6种道具绘制
+        for (gameObject in propArray) {
+            gameObject?.let {
+                it.draw(tempGraphics)
+                it.onTick()
+            }
         }
 
         //////////////////方便调试的网格线

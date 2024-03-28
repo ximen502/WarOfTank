@@ -4,6 +4,7 @@ import game.CP
 import game.Ground
 import game.Shells
 import game.lib.Log
+import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -17,6 +18,7 @@ import javax.imageio.ImageIO
  */
 class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
 
+    var fireCounter = 0
 
     init {
         this.position = position
@@ -64,18 +66,28 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
             g2.drawImage(imgS, x, y, null)
         }
         //g2.drawString("$id", x, cy)
-        //drawFrame(g2)
+        drawFrame(g2)
     }
 
     /**
      * 画一个外框，查看坦克的宽高是否正确
      */
     private fun drawFrame(g2: Graphics2D) {
-        var tmp: Color? = null
-        tmp = g2.color
-        g2.color = Color.RED
-        g2.drawRect(x, y, w, h)
-        g2.color = tmp
+        if (precious) {
+            var tmp: Color? = null
+            tmp = g2.color
+            g2.color = Color.RED
+            g2.stroke = BasicStroke(5F)
+            var tempX = x - 4
+            var tempY = y - 4
+            var tempWidth = w+8
+            var tempHeight = h+8
+            g2.drawRect(tempX, tempY, tempWidth, tempHeight)
+            g2.color = Color.YELLOW
+            g2.stroke = BasicStroke(1F)
+            g2.drawRect(tempX+1, tempY+1, tempWidth-2, tempHeight-2)
+            g2.color = tmp
+        }
     }
 
     override fun born() {
@@ -83,19 +95,23 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
     }
 
     override fun fire() {
-        // 简化炮弹是否可以发射的判断逻辑
-        if (shells.isDestroyed) {
-            val sh = shells
-            sh.id = id + 20//(CP.ENEMY shl 8 or id.toInt()).toLong()
-            sh.times = 3
-            sh.observer = observer
-            sh.ground = ground
-            sh.setPosition(shellsX, shellsY)
-            sh.direction = direction
-            sh.isDestroyed = false
-            observer?.born(sh)
-            //fireAC?.play()
+        if (fireCounter >= 25) {
+            // 简化炮弹是否可以发射的判断逻辑
+            if (shells.isDestroyed) {
+                val sh = shells
+                sh.id = id + 20//(CP.ENEMY shl 8 or id.toInt()).toLong()
+                sh.times = 3
+                sh.observer = observer
+                sh.ground = ground
+                sh.setPosition(shellsX, shellsY)
+                sh.direction = direction
+                sh.isDestroyed = false
+                observer?.born(sh)
+                //fireAC?.play()
+            }
+            fireCounter = 0
         }
+        fireCounter++;
     }
 
     override fun draw(g: Graphics?) {
