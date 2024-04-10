@@ -62,6 +62,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     private var nowStage = 0 // 关卡编号
     private var random = Random()
     private var propArray = arrayOfNulls<BaseGameObject>(6)
+    var mainWindow: MainWindow? = null
 
     init {
         this.w = width
@@ -498,10 +499,15 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 if (!enemy.shells.isDestroyed && !player.isDestroyed) {
                     //敌军的炮弹击中了玩家坦克
                     if (player.pickRect().intersects(enemy.shells.pickRect())) {
-                        AC.soundManagerPD?.play(AC.playerdie)
-                        die(player)
-                        die(enemy.shells)
-                        boom(player)
+                        //判断玩家是否处于无敌状态，如果是则玩家对炮弹免疫
+                        if (player.invincible) {
+                            die(enemy.shells)
+                        } else {//玩家处于普通状态
+                            AC.soundManagerPD?.play(AC.playerdie)
+                            die(player)
+                            die(enemy.shells)
+                            boom(player)
+                        }
                     }
                 }
             }
@@ -523,10 +529,15 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     }
                     //敌军最后一发炮弹击中了玩家坦克
                     if (player.pickRect().intersects(shell.pickRect())) {
-                        AC.soundManagerPD?.play(AC.playerdie)
-                        die(player)
-                        die(shell)
-                        boom(player)
+                        //判断玩家是否处于无敌状态，如果是则玩家对炮弹免疫
+                        if (player.invincible) {
+                            die(shell)
+                        } else {//玩家处于普通状态
+                            AC.soundManagerPD?.play(AC.playerdie)
+                            die(player)
+                            die(shell)
+                            boom(player)
+                        }
                         loneShell?.set(0, null)
                     }
                 }
@@ -698,6 +709,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 //1.2重置AI
                 darkAI?.reset()
                 lightAI?.reset()
+                mainWindow?.isVisible = true
             }
             override fun windowIconified(e: WindowEvent) {}
             override fun windowDeiconified(e: WindowEvent) {}

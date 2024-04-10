@@ -28,6 +28,8 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     var rect: Rectangle = Rectangle(x, y, w, h)
 
     var gameOver = false
+    //是否可以发射炮弹
+    var fireCounter = 0
 
     init {
         this.ground = ground
@@ -83,6 +85,12 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
             key = KeyEvent.VK_RIGHT
         }
         playerWalk(key)
+
+        invincibleCounter--
+        invincible = invincibleCounter > 0
+        if (invincibleCounter < 0) {
+            invincibleCounter = 0
+        }
     }
 
     override fun drawTank(g: Graphics?) {
@@ -96,6 +104,12 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
             g2.drawImage(imgN, x, y, null)
         } else if (direction == Shells.DIRECTION_SOUTH) {
             g2.drawImage(imgS, x, y, null)
+        }
+
+        if (invincible) {
+            g2.color = shieldColor
+            g2.stroke = BasicStroke(4F)
+            g2.drawOval(x - 6, y - 6, w + 12, h + 12)
         }
 
     }
@@ -467,16 +481,20 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     override fun fire() {
         // 简化炮弹是否可以发射的判断逻辑
         if (shells.isDestroyed) {
-            val sh = shells
-            sh.times = 6
-            sh.id = ID.ID_P1_SHELL
-            sh.observer = observer
-            sh.ground = ground
-            sh.setPosition(shellsX, shellsY)
-            sh.direction = direction
-            sh.isDestroyed = false
-            observer?.born(sh)
-            AC.soundManagerGF?.play(AC.gunfire)
+//            if (fireCounter % 15 == 0) {
+                val sh = shells
+                sh.times = 6
+                sh.id = ID.ID_P1_SHELL
+                sh.observer = observer
+                sh.ground = ground
+                sh.setPosition(shellsX, shellsY)
+                sh.direction = direction
+                sh.isDestroyed = false
+                observer?.born(sh)
+                AC.soundManagerGF?.play(AC.gunfire)
+                fireCounter = 0
+//            }
+//            fireCounter++
         }
     }
 

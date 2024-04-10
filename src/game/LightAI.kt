@@ -65,6 +65,8 @@ class LightAI {
                     tank.row = tank.x / CP.SIZE_M
                     tank.col = tank.y / CP.SIZE_M
                     tank.observer = go
+                    tank.invincible = true
+                    tank.invincibleCounter = 60 * 5//5 seconds, 60fps
                     input.moveListener = tank
                     //(go as GameWindow).player = tank
                     player = tank

@@ -93,6 +93,7 @@ class MainWindow : JFrame() {
         //contentPane.background = Color(0x51, 0x3E, 0x57)
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         setSize(875, 654)
+        setLocationRelativeTo(null)
         isResizable = false
         isVisible = true
 
@@ -100,6 +101,8 @@ class MainWindow : JFrame() {
         lbStart.addActionListener {
             val gameWindow = GameWindow(CP.C * CP.SIZE_M + CP.SIZE, CP.R * CP.SIZE_M, "坦克大战[ximen502]");
             gameWindow.showLine = false
+            this.isVisible = false
+            gameWindow.mainWindow = this
         }
 
         lbAbout.addActionListener {

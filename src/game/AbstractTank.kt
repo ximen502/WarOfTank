@@ -1,5 +1,6 @@
 package game
 
+import java.awt.Color
 import java.awt.Graphics
 
 import java.util.*
@@ -50,6 +51,12 @@ abstract class AbstractTank : GameObject() {
     var east = -1
     var north = -1
     var south = -1
+
+    // 是否无敌状态
+    var invincible = false
+    var invincibleCounter = 0
+
+    val shieldColor = Color(0x1c, 0x8a, 0xfe, 0x66)
 
     var observer: GOObserver? = null
 
