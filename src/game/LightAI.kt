@@ -23,6 +23,8 @@ class LightAI {
     private var active = 0
     // 创建好的玩家坦克
     var player: Tank? = null
+    // 过关的时候保留玩家火力
+    private var playerStars = 0
 
 
     companion object {
@@ -65,6 +67,7 @@ class LightAI {
                     tank.row = tank.x / CP.SIZE_M
                     tank.col = tank.y / CP.SIZE_M
                     tank.observer = go
+                    tank.hasStar = playerStars
                     tank.invincible = true
                     tank.invincibleCounter = 60 * 5//5 seconds, 60fps
                     input.moveListener = tank
@@ -84,6 +87,10 @@ class LightAI {
             }
         }
     }
+    // player die notification
+    fun diePlayer() {
+        playerStars = 0
+    }
 
     fun getActive(): Int = active
 
@@ -93,6 +100,7 @@ class LightAI {
         gameStarted = 0
         ttlPro = 0
         player?.reset()
+        playerStars = player?.hasStar!!
     }
 
 }

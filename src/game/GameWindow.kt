@@ -4,6 +4,7 @@ import com.brackeen.sound.SoundManager
 import game.lib.Log
 import game.lib.findStr
 import game.prop.BaseGameObject
+import game.prop.Shield
 import game.prop.Star
 import game.tile.*
 import java.applet.AudioClip
@@ -461,21 +462,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                         if (enemy.pickRect().intersects(ps.pickRect())) {
                             AC.soundManager?.play(AC.bang)
                             if (enemy.precious) {
-                                //generate the star prop
-                                // in the future , will add more props
-                                val star = Star()
-                                star.id = ID.ID_STAR1// id maybe change also
-                                star.x = random.nextInt(ground.width - CP.SIZE)
-                                star.y = random.nextInt(ground.height - CP.SIZE * 2)
-                                star.w = CP.SIZE
-                                star.h = CP.SIZE
-                                // store it in array
-                                for ((index, gameObject) in propArray.withIndex()) {
-                                    if (propArray[index] == null) {
-                                        propArray[index] = star
-                                        break//找到空位，保存到数组后，break跳出循环，不然一个道具存6份
-                                    }
-                                }
+                                generateProps()
                             }
 
                             die(enemy)
@@ -507,6 +494,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                             die(player)
                             die(enemy.shells)
                             boom(player)
+                            lightAI?.diePlayer()
                         }
                     }
                 }
@@ -537,6 +525,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                             die(player)
                             die(shell)
                             boom(player)
+                            lightAI?.diePlayer()
                         }
                         loneShell?.set(0, null)
                     }
@@ -553,6 +542,12 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                             // player eat the prop
                             AC.soundManagerPeow?.play(AC.peow)
                             propArray[index] = null
+                            if (prop is Star) {
+                                player.hasStar++
+                            } else if (prop is Shield) {
+                                player.invincible = true
+                                player.invincibleCounter = 60 * 30//30 seconds
+                            }
                         }
                     }
                 }
@@ -694,6 +689,52 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 //break
             }
         }
+    }
+
+    //生成道具
+    private fun generateProps() {
+        random.setSeed(System.currentTimeMillis())
+        //generate the star prop
+        // in the future , will add more props
+        val num = random.nextInt(120) + 1
+        var bgo : BaseGameObject? = null
+        when(num) {
+            in 1..20 -> bgo = Star()
+            in 21..40 -> bgo = Star()
+            in 41..60 -> bgo = Star()
+            in 61..80 -> bgo = Shield()
+            in 81..100 -> bgo = Shield()
+            in 101..120 -> bgo = Shield()
+        }
+//        bgo = Shield()
+        bgo?.let {
+            it.id = ID.generatePropID()
+            it.x = random.nextInt(ground.width - CP.SIZE)
+            it.y = random.nextInt(ground.height - CP.SIZE * 2)
+            it.w = CP.SIZE
+            it.h = CP.SIZE
+            // store it in array
+            for ((index, gameObject) in propArray.withIndex()) {
+                if (propArray[index] == null) {
+                    propArray[index] = it
+                    break//找到空位，保存到数组后，break跳出循环，不然一个道具存6份
+                }
+            }
+        }
+
+//        val star = Shield()//Star()
+//        star.id = ID.ID_PROP_BEGIN// id maybe change also
+//        star.x = random.nextInt(ground.width - CP.SIZE)
+//        star.y = random.nextInt(ground.height - CP.SIZE * 2)
+//        star.w = CP.SIZE
+//        star.h = CP.SIZE
+//        // store it in array
+//        for ((index, gameObject) in propArray.withIndex()) {
+//            if (propArray[index] == null) {
+//                propArray[index] = star
+//                break//找到空位，保存到数组后，break跳出循环，不然一个道具存6份
+//            }
+//        }
     }
 
     private fun listenClose() {

@@ -62,16 +62,16 @@ object ID {
     const val ID_GAME_DATA = 1341L
     const val ID_GAME_OVER = 1342L
     // prop ids
-    const val ID_STAR1 = 1350L
-    const val ID_STAR2 = 1351L
-    const val ID_CLOCK1 = 1352L
-    const val ID_CLOCK2 = 1353L
-    const val ID_SHIELD1 = 1354L
-    const val ID_SHIELD2 = 1355L
-    const val ID_TANK1 = 1356L
-    const val ID_TANK2 = 1357L
-    const val ID_BOMB1 = 1358L
-    const val ID_BOMB2 = 1359L
-    const val ID_CASTLE1 = 1360L
-    const val ID_CASTLE2 = 1361L
+    private const val ID_PROP_BEGIN = 1350L
+    private const val ID_PROP_END = 1361L
+    private var baseIdProp = ID_PROP_BEGIN
+
+    fun generatePropID(): Long {
+        if (baseIdProp >= ID_PROP_END) {
+            baseIdProp = ID_PROP_BEGIN
+        } else {
+            baseIdProp++
+        }
+        return baseIdProp
+    }
 }

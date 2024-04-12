@@ -29,7 +29,10 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
 
     var gameOver = false
     //是否可以发射炮弹
-    var fireCounter = 0
+    private var fireCounter = 0
+    // 吃了多少个星星,对应于火力级别、外观、移动速度
+    var hasStar = 0
+    private var fireLevel = Shells.LEVEL0
 
     init {
         this.ground = ground
@@ -67,6 +70,14 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     override fun onTick() {
         if (gameOver)
             return
+        //with stars, fire get more powerful
+        if (hasStar == 1) {
+            fireLevel = Shells.LEVEL1
+        } else if (hasStar == 2) {
+            fireLevel = Shells.LEVEL2
+        } else if (hasStar >= 3) {
+            fireLevel = Shells.LEVEL3
+        }
         //shells born
         if (input.getKeyDown(KeyEvent.VK_CONTROL) == true) {
             Log.println("control is pressed, fire in the hole")
@@ -112,6 +123,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
             g2.drawOval(x - 6, y - 6, w + 12, h + 12)
         }
 
+        //debug
+        //g2.color = Color.WHITE
+        //g2.drawString("hasStar:$hasStar", 48, 300)
     }
 
     /**
@@ -482,17 +496,18 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         // 简化炮弹是否可以发射的判断逻辑
         if (shells.isDestroyed) {
 //            if (fireCounter % 15 == 0) {
-                val sh = shells
-                sh.times = 6
-                sh.id = ID.ID_P1_SHELL
-                sh.observer = observer
-                sh.ground = ground
-                sh.setPosition(shellsX, shellsY)
-                sh.direction = direction
-                sh.isDestroyed = false
-                observer?.born(sh)
-                AC.soundManagerGF?.play(AC.gunfire)
-                fireCounter = 0
+            val sh = shells
+            sh.times = 6
+            sh.level = fireLevel
+            sh.id = ID.ID_P1_SHELL
+            sh.observer = observer
+            sh.ground = ground
+            sh.setPosition(shellsX, shellsY)
+            sh.direction = direction
+            sh.isDestroyed = false
+            observer?.born(sh)
+            AC.soundManagerGF?.play(AC.gunfire)
+            fireCounter = 0
 //            }
 //            fireCounter++
         }
