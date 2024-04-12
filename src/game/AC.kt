@@ -39,4 +39,9 @@ object AC {
     val PLAYBACK_FORMAT_PEOW = AudioFormat(8402f, 16, 1, true, false)
     var soundManagerPeow: SoundManager? = null
     var peow: Sound? = null
+
+    // Fanfare.wav音频格式
+    val PLAYBACK_FORMAT_FANFARE = AudioFormat(5500f, 16, 1, true, false)
+    var soundManagerFanfare: SoundManager? = null
+    var fanfare: Sound? = null
 }

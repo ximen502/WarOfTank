@@ -92,6 +92,10 @@ class LightAI {
         playerStars = 0
     }
 
+    fun addLife(count: Int) {
+        life += count
+    }
+
     fun getActive(): Int = active
 
     fun reset() {

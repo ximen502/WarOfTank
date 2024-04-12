@@ -4,6 +4,7 @@ import com.brackeen.sound.SoundManager
 import game.lib.Log
 import game.lib.findStr
 import game.prop.BaseGameObject
+import game.prop.PropTank
 import game.prop.Shield
 import game.prop.Star
 import game.tile.*
@@ -92,6 +93,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         AC.gunfire = AC.soundManagerGF?.getSound("/game/sound/Gunfire.wav")
         AC.soundManagerPeow = SoundManager(AC.PLAYBACK_FORMAT_PEOW, 2)
         AC.peow = AC.soundManagerPeow?.getSound("/game/sound/Peow.wav")
+        AC.soundManagerFanfare = SoundManager(AC.PLAYBACK_FORMAT_FANFARE, 1)
+        AC.fanfare = AC.soundManagerFanfare?.getSound("/game/sound/Fanfare.wav")
 
         initMap("lv01.map")
 
@@ -540,13 +543,19 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     prop?.let {
                         if (player.pickRect().intersects(prop.pickRect())) {
                             // player eat the prop
-                            AC.soundManagerPeow?.play(AC.peow)
+                            if (prop is PropTank) {//增加生命的音效区别于其他道具音效
+                                AC.soundManagerFanfare?.play(AC.fanfare)
+                            } else {
+                                AC.soundManagerPeow?.play(AC.peow)
+                            }
                             propArray[index] = null
                             if (prop is Star) {
                                 player.hasStar++
                             } else if (prop is Shield) {
                                 player.invincible = true
                                 player.invincibleCounter = 60 * 30//30 seconds
+                            } else if (prop is PropTank) {
+                                lightAI?.addLife(1)
                             }
                         }
                     }
@@ -701,12 +710,11 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         when(num) {
             in 1..20 -> bgo = Star()
             in 21..40 -> bgo = Star()
-            in 41..60 -> bgo = Star()
-            in 61..80 -> bgo = Shield()
+            in 41..60 -> bgo = PropTank()
+            in 61..80 -> bgo = PropTank()
             in 81..100 -> bgo = Shield()
             in 101..120 -> bgo = Shield()
         }
-//        bgo = Shield()
         bgo?.let {
             it.id = ID.generatePropID()
             it.x = random.nextInt(ground.width - CP.SIZE)
