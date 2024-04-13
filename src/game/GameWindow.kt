@@ -3,10 +3,7 @@ package game
 import com.brackeen.sound.SoundManager
 import game.lib.Log
 import game.lib.findStr
-import game.prop.BaseGameObject
-import game.prop.PropTank
-import game.prop.Shield
-import game.prop.Star
+import game.prop.*
 import game.tile.*
 import java.applet.AudioClip
 import java.awt.Color
@@ -535,7 +532,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 }
             }
 
-            // player tank collision with props
+            // player tank collision with props吃道具
             val player = lightAI?.player
             player?.let {
                 for ((index, baseGameObject) in propArray.withIndex()) {
@@ -556,6 +553,21 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                                 player.invincibleCounter = 60 * 30//30 seconds
                             } else if (prop is PropTank) {
                                 lightAI?.addLife(1)
+                            } else if (prop is Bomb) {
+                                darkAI?.let { dai ->
+                                    //消灭地图上的所有敌军坦克，然后播放一次爆炸音效
+                                    var enemyDie = false
+                                    for (enemy in dai.list) {
+                                        if (!enemy.shells.isDestroyed) {
+                                            die(enemy)
+                                            boom(enemy)
+                                            enemyDie = true
+                                        }
+                                    }
+                                    if (enemyDie) {
+                                        AC.soundManager?.play(AC.bang)
+                                    }
+                                }
                             }
                         }
                     }
@@ -711,8 +723,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             in 1..20 -> bgo = Star()
             in 21..40 -> bgo = Star()
             in 41..60 -> bgo = PropTank()
-            in 61..80 -> bgo = PropTank()
-            in 81..100 -> bgo = Shield()
+            in 61..80 -> bgo = Bomb()
+            in 81..100 -> bgo = Bomb()
             in 101..120 -> bgo = Shield()
         }
         bgo?.let {
@@ -729,20 +741,6 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 }
             }
         }
-
-//        val star = Shield()//Star()
-//        star.id = ID.ID_PROP_BEGIN// id maybe change also
-//        star.x = random.nextInt(ground.width - CP.SIZE)
-//        star.y = random.nextInt(ground.height - CP.SIZE * 2)
-//        star.w = CP.SIZE
-//        star.h = CP.SIZE
-//        // store it in array
-//        for ((index, gameObject) in propArray.withIndex()) {
-//            if (propArray[index] == null) {
-//                propArray[index] = star
-//                break//找到空位，保存到数组后，break跳出循环，不然一个道具存6份
-//            }
-//        }
     }
 
     private fun listenClose() {
