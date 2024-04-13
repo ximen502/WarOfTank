@@ -573,21 +573,21 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
             // 兜底解决玩家偶尔无法发射炮弹的问题
             if (shells.x < 0 - shells.w) {
                 shells.isDestroyed = true
-                println("shells position: x:${shells.x}, y:${shells.y}")
+                Log.println("shells position: x:${shells.x}, y:${shells.y}")
             }
             if (shells.x > ground.width + shells.w) {
                 shells.isDestroyed = true
-                println("shells position: x:${shells.x}, y:${shells.y}")
+                Log.println("shells position: x:${shells.x}, y:${shells.y}")
             }
 
             if (shells.y < 0 - shells.h) {
                 shells.isDestroyed = true
-                println("shells position: x:${shells.x}, y:${shells.y}")
+                Log.println("shells position: x:${shells.x}, y:${shells.y}")
             }
 
             if (shells.y > ground.height + shells.h) {
                 shells.isDestroyed = true
-                println("shells position: x:${shells.x}, y:${shells.y}")
+                Log.println("shells position: x:${shells.x}, y:${shells.y}")
             }
         }
     }

@@ -556,17 +556,17 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                             } else if (prop is Bomb) {
                                 darkAI?.let { dai ->
                                     //消灭地图上的所有敌军坦克，然后播放一次爆炸音效
-                                    var enemyDie = false
                                     for (enemy in dai.list) {
-                                        if (!enemy.shells.isDestroyed) {
-                                            die(enemy)
-                                            boom(enemy)
-                                            enemyDie = true
-                                        }
+                                        // 如果不去掉这个isDestroyed if判断将会出现bug，
+                                        // 有时候只有一部分坦克会被消灭
+                                        // *********************************************************************
+                                        //虽然这样做，解决了bug，但是为什么呢？总觉得没有找到根本原因。莫非是多线程造成的吗？
+                                        // 有待研究。
+                                        // *********************************************************************
+                                        die(enemy)
+                                        boom(enemy)
                                     }
-                                    if (enemyDie) {
-                                        AC.soundManager?.play(AC.bang)
-                                    }
+                                    AC.soundManager?.play(AC.bang)
                                 }
                             }
                         }

@@ -65,6 +65,7 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
         } else if (direction == Shells.DIRECTION_SOUTH) {
             g2.drawImage(imgS, x, y, null)
         }
+        //g2.color = Color.YELLOW
         //g2.drawString("$id", x, cy)
         drawFrame(g2)
     }
@@ -78,10 +79,10 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
             tmp = g2.color
             g2.color = Color.RED
             g2.stroke = BasicStroke(5F)
-            var tempX = x - 4
-            var tempY = y - 4
-            var tempWidth = w+8
-            var tempHeight = h+8
+            val tempX = x - 4
+            val tempY = y - 4
+            val tempWidth = w+8
+            val tempHeight = h+8
             g2.drawRect(tempX, tempY, tempWidth, tempHeight)
             g2.color = Color.YELLOW
             g2.stroke = BasicStroke(1F)

@@ -13,6 +13,7 @@ import kotlin.math.ceil
  */
 class DarkAI {
     private var diedList = mutableListOf<BaseEnemyTank>()
+    // 被派遣到地图上活跃状态的坦克容器
     var list = mutableListOf<BaseEnemyTank>()
     var total = TOTAL
     // 已经创建的坦克数量
