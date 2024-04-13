@@ -126,6 +126,65 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         //debug
         //g2.color = Color.WHITE
         //g2.drawString("hasStar:$hasStar", 48, 300)
+
+        // star show
+        drawStars(g2)
+    }
+
+    private fun drawStars(g2: Graphics2D) {
+        var tempX = x
+        var tempY = y
+        var i = 0
+        if (direction == Shells.DIRECTION_WEST) {
+            tempX = x + 30
+            tempY = y + 6
+            while (i < hasStar) {
+                g2.color = Color.YELLOW
+                g2.fillOval(tempX, tempY, 6, 6)
+                tempY+=(5+6)
+                i++
+                if (i == 3) {//最多三颗星
+                    break
+                }
+            }
+        } else if (direction == Shells.DIRECTION_EAST) {
+            tempX = x + 6
+            tempY = y + 6
+            while (i < hasStar) {
+                g2.color = Color.YELLOW
+                g2.fillOval(tempX, tempY, 6, 6)
+                tempY+=(5+6)
+                i++
+                if (i == 3) {//最多三颗星
+                    break
+                }
+            }
+        } else if (direction == Shells.DIRECTION_NORTH) {
+            tempX = x + 6
+            tempY = y + 30
+            while (i < hasStar) {
+                g2.color = Color.YELLOW
+                g2.fillOval(tempX, tempY, 6, 6)
+                tempX+=(5+6)
+                i++
+                if (i == 3) {//最多三颗星
+                    break
+                }
+            }
+        } else if (direction == Shells.DIRECTION_SOUTH) {
+            tempX = x + 6
+            tempY = y
+            while (i < hasStar) {
+                g2.color = Color.YELLOW
+                g2.fillOval(tempX, tempY, 6, 6)
+                tempX+=(5+6)
+                i++
+                if (i == 3) {//最多三颗星
+                    break
+                }
+            }
+        }
+
     }
 
     /**
