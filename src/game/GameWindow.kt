@@ -35,15 +35,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     var showLine = true //
 
-    var hitAC: AudioClip? = null
-
     //    var list = mutableListOf<GameObject>()
     //为解决ConcurrentModificationException，使用了如下的线程安全的容器类
     private var list = CopyOnWriteArrayList<GameObject>()
     private var grassList = mutableListOf<GameObject>()
-
-    // 瓦片地图容器
-    var tileList = mutableListOf<GameObject>()
 
     // 敌军坦克已经被摧毁，发射的炮弹还在前进
     private var loneShell: Array<Shells?>? = arrayOfNulls(2)
@@ -62,6 +57,12 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     private var random = Random()
     private var propArray = arrayOfNulls<BaseGameObject>(6)
     var mainWindow: MainWindow? = null
+
+    // castle prop, 8 tiles around the eagle
+    private var ironArray = arrayOfNulls<Iron>(8)
+    private var brickArray = arrayOfNulls<Brick>(8)
+    private val protectTime = 20
+    private var protectFps = 0
 
     init {
         this.w = width
@@ -192,7 +193,6 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         }
         list.clear()
         grassList.clear()
-        tileList.clear()
     }
 
     private fun initGameData() {
@@ -232,7 +232,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 if (tile == CP.TILE_BRICK) {
                     var brick = Brick()
                     brick.id = baseId++
-                    Log.println("brick id：${brick.id}")
+                    //Log.println("brick id：${brick.id}, row:$i, col:$j")
                     brick.row = i
                     brick.col = j
                     brick.x = SIZE_M * j
@@ -242,8 +242,9 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     brick.ground = ground
                     brick.observer = this
                     list.add(brick)
-                    tileList.add(brick)
                     tileArray[i][j] = brick
+
+                    rememberTilesAroundEagle(brick, i, j)
                 } else if (tile == CP.TILE_IRON) {
                     var iron = Iron()
                     iron.id = baseId++
@@ -257,7 +258,6 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     iron.ground = ground
                     iron.observer = this
                     list.add(iron)
-                    tileList.add(iron)
                     tileArray[i][j] = iron
                 } else if (tile == CP.TILE_RIVER) {
                     val rowCol = i shl 8 or j
@@ -274,7 +274,6 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     river.h = SIZE_M
                     river.ground = ground
                     list.add(river)
-                    tileList.add(river)
                     tileArray[i][j] = river
 
                     four2One(four, rowCol, mapArray, i, j, CP.TILE_RIVER)
@@ -295,7 +294,6 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     grass.ground = ground
                     //list.add(grass)
                     grassList.add(grass)
-                    tileList.add(grass)
                     tileArray[i][j] = grass
 
                     four2One(four, rowCol, mapArray, i, j, CP.TILE_GRASS)
@@ -315,7 +313,6 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     eagle.h = SIZE
                     eagle.ground = ground
                     list.add(eagle)
-                    tileList.add(eagle)
                     tileArray[i][j] = eagle
 
                     four2One(four, rowCol, mapArray, i, j, CP.TILE_EAGLE)
@@ -440,6 +437,94 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         gameData?.stage = nowStage.toString()
     }
 
+    private fun recoverIronToBrick(g:Graphics?) {
+        if (protectFps > 0) {
+            protectFps--
+            if (protectFps <= 0) {
+                protectFps = 0
+                //recover irons around eagle to bricks
+                for (brick in brickArray) {
+                    for ((index1, gameObject) in list.withIndex()) {
+                        if (brick?.id == gameObject.id) {
+                            CP.tileArray[brick.row][brick.col] = brick
+                            CP.mapArray[brick.row][brick.col] = CP.TILE_BRICK.toByte()
+                            list[index1] = brick
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // 记住基地老鹰周围的砖头、生成冗余的备用钢铁
+    private fun rememberTilesAroundEagle(brick: Brick, i: Int, j: Int) {
+        // remember 8 bricks id around the eagle
+        if (i >= 27) {
+            when (i) {
+                27 -> {
+                    when (j) {
+                        17 -> {
+                            brickArray[0] = brick
+                            ironArray[0] = makeRedundantIrons(brick.id, i, j)
+                        }
+
+                        18 -> {
+                            brickArray[1] = brick
+                            ironArray[1] = makeRedundantIrons(brick.id, i, j)
+                        }
+
+                        19 -> {
+                            brickArray[2] = brick
+                            ironArray[2] = makeRedundantIrons(brick.id, i, j)
+                        }
+
+                        20 -> {
+                            brickArray[3] = brick
+                            ironArray[3] = makeRedundantIrons(brick.id, i, j)
+                        }
+                    }
+                }
+                28 -> {
+                    when(j) {
+                        17 ->{
+                            brickArray[4] = brick
+                            ironArray[4] = makeRedundantIrons(brick.id, i, j)
+                        }
+                        20 ->{
+                            brickArray[5] = brick
+                            ironArray[5] = makeRedundantIrons(brick.id, i, j)
+                        }
+                    }
+                }
+                29 -> {
+                    when(j) {
+                        17 ->{
+                            brickArray[6] = brick
+                            ironArray[6] = makeRedundantIrons(brick.id, i, j)
+                        }
+                        20 ->{
+                            brickArray[7] = brick
+                            ironArray[7] = makeRedundantIrons(brick.id, i, j)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun makeRedundantIrons(id: Long, i: Int, j: Int) : Iron{
+        val iron = Iron()
+        iron.id = id
+        iron.row = i
+        iron.col = j
+        iron.x = SIZE_M * j
+        iron.y = SIZE_M * i
+        iron.w = SIZE_M
+        iron.h = SIZE_M
+        iron.ground = ground
+        iron.observer = this
+        return iron
+    }
+
     private fun detectCollision() {
         /***************************************************************************************
          * (1)玩家坦克炮弹拿到敌军坦克发射的炮弹的引用，然后进行碰撞检测，如果发生碰撞则相互抵消
@@ -533,46 +618,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             }
 
             // player tank collision with props吃道具
-            val player = lightAI?.player
-            player?.let {
-                for ((index, baseGameObject) in propArray.withIndex()) {
-                    var prop = propArray[index]
-                    prop?.let {
-                        if (player.pickRect().intersects(prop.pickRect())) {
-                            // player eat the prop
-                            if (prop is PropTank) {//增加生命的音效区别于其他道具音效
-                                AC.soundManagerFanfare?.play(AC.fanfare)
-                            } else {
-                                AC.soundManagerPeow?.play(AC.peow)
-                            }
-                            propArray[index] = null
-                            if (prop is Star) {
-                                player.hasStar++
-                            } else if (prop is Shield) {
-                                player.invincible = true
-                                player.invincibleCounter = 60 * 30//30 seconds
-                            } else if (prop is PropTank) {
-                                lightAI?.addLife(1)
-                            } else if (prop is Bomb) {
-                                darkAI?.let { dai ->
-                                    //消灭地图上的所有敌军坦克，然后播放一次爆炸音效
-                                    for (enemy in dai.list) {
-                                        // 如果不去掉这个isDestroyed if判断将会出现bug，
-                                        // 有时候只有一部分坦克会被消灭
-                                        // *********************************************************************
-                                        //虽然这样做，解决了bug，但是为什么呢？总觉得没有找到根本原因。莫非是多线程造成的吗？
-                                        // 有待研究。
-                                        // *********************************************************************
-                                        die(enemy)
-                                        boom(enemy)
-                                    }
-                                    AC.soundManager?.play(AC.bang)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            eatProp()
         }
     }
 
@@ -612,9 +658,6 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         tempGraphics?.drawImage(bg, 0, 0, null)
         for (gameObject in list) {
-//            if (gameObject.isDestroyed) {
-//                continue
-//            }
             gameObject.draw(tempGraphics)
             gameObject.onTick()
         }
@@ -672,6 +715,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         isGameOverOrCompleteLevel()
 
         statistics()
+
+        recoverIronToBrick(g)
     }
 
     override fun born(go: GameObject?) {
@@ -721,7 +766,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         var bgo : BaseGameObject? = null
         when(num) {
             in 1..20 -> bgo = Star()
-            in 21..40 -> bgo = Star()
+            in 21..40 -> bgo = Castle()
             in 41..60 -> bgo = PropTank()
             in 61..80 -> bgo = Bomb()
             in 81..100 -> bgo = Bomb()
@@ -738,6 +783,61 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 if (propArray[index] == null) {
                     propArray[index] = it
                     break//找到空位，保存到数组后，break跳出循环，不然一个道具存6份
+                }
+            }
+        }
+    }
+
+    //吃道具
+    private fun eatProp() {
+        val player = lightAI?.player
+        player?.let {
+            for ((index, baseGameObject) in propArray.withIndex()) {
+                var prop = propArray[index]
+                prop?.let {
+                    if (player.pickRect().intersects(prop.pickRect())) {
+                        // player eat the prop
+                        if (prop is PropTank) {//增加生命的音效区别于其他道具音效
+                            AC.soundManagerFanfare?.play(AC.fanfare)
+                        } else {
+                            AC.soundManagerPeow?.play(AC.peow)
+                        }
+                        propArray[index] = null
+                        if (prop is Star) {
+                            player.hasStar++
+                        } else if (prop is Shield) {
+                            player.invincible = true
+                            player.invincibleCounter = 60 * 30//30 seconds
+                        } else if (prop is PropTank) {
+                            lightAI?.addLife(1)
+                        } else if (prop is Bomb) {
+                            darkAI?.let { dai ->
+                                //消灭地图上的所有敌军坦克，然后播放一次爆炸音效
+                                for (enemy in dai.list) {
+                                    // 如果不去掉这个isDestroyed if判断将会出现bug，
+                                    // 有时候只有一部分坦克会被消灭
+                                    // *********************************************************************
+                                    //虽然这样做，解决了bug，但是为什么呢？总觉得没有找到根本原因。莫非是多线程造成的吗？
+                                    // 有待研究。
+                                    // *********************************************************************
+                                    die(enemy)
+                                    boom(enemy)
+                                }
+                                AC.soundManager?.play(AC.bang)
+                            }
+                        } else if (prop is Castle) {// 城堡道具类，用钢铁代替砖头保护老家20秒
+                            for (iron in ironArray) {
+                                for ((index1, gameObject) in list.withIndex()) {
+                                    if (iron?.id == gameObject.id) {
+                                        CP.tileArray[iron.row][iron.col] = iron
+                                        CP.mapArray[iron.row][iron.col] = CP.TILE_IRON.toByte()
+                                        list[index1] = iron
+                                    }
+                                }
+                            }
+                            protectFps = protectTime * getFps()
+                        }
+                    }
                 }
             }
         }

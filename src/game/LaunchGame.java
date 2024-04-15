@@ -1,7 +1,6 @@
 package game;
 
 import javax.swing.SwingUtilities;
-import java.util.ArrayList;
 
 
 public class LaunchGame {
@@ -36,10 +35,5 @@ public class LaunchGame {
 //                tile[i][j] = null;
 //            }
 //        }
-
-        java.util.List<Integer> four = new ArrayList<>();
-        for (int i = 0; i < four.size(); i++) {
-            four.set(i, -1);
-        }
     }
 }

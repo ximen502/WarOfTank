@@ -21,7 +21,6 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
     override fun run() {
         Log.println("start rendering")
         bgMusic()
-        initAudioResource()
         while (!exited){
             _gameWindow?.repaint()
             sleep(interval)
@@ -65,16 +64,4 @@ class RenderThread(gameWindow: GameWindow) : Runnable {
         AC.midiPlayer?.stop()
     }
 
-    /**
-     * 初始化音频资源，方便主线程调用
-     */
-    private fun initAudioResource() {
-        Thread() {
-            run() {
-                val resHit = this@RenderThread.javaClass.getResource("/game/sound/hit.wav")
-                _gameWindow?.hitAC = Applet.newAudioClip(resHit)
-                AC.hitAC = _gameWindow?.hitAC
-            }
-        }.start()
-    }
 }
