@@ -12,7 +12,7 @@ import javax.imageio.ImageIO
  * @Date 2023/12/28 上午11:13
  * @Version 1.0
  */
-class Star : BaseGameObject() {
+class Star : PropObject() {
     private var image: BufferedImage
     private var counter = 0
     var images = arrayOfNulls<BufferedImage>(4)
@@ -36,6 +36,7 @@ class Star : BaseGameObject() {
     }
 
     override fun onTick() {
+        super.onTick()
         image = images[index]!!
         if (counter >= 20) {
             index++

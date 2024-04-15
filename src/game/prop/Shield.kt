@@ -12,7 +12,7 @@ import javax.imageio.ImageIO
  * @Date 2024/4/10 下午10:12
  * @Version 1.0
  */
-class Shield : BaseGameObject() {
+class Shield : PropObject() {
     private var image: BufferedImage
     private var counter = 0
     private var imageArray = arrayOfNulls<BufferedImage>(3)
@@ -34,6 +34,7 @@ class Shield : BaseGameObject() {
     }
 
     override fun onTick() {
+        super.onTick()
         image = imageArray[index]!!
         if (counter >= 20) {
             index++

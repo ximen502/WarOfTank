@@ -5,7 +5,6 @@ import game.lib.Log
 import game.lib.findStr
 import game.prop.*
 import game.tile.*
-import java.applet.AudioClip
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Image
@@ -55,7 +54,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     private var wait2Next = CP.WAIT_FPS //下一关的等待时间
     private var nowStage = 0 // 关卡编号
     private var random = Random()
-    private var propArray = arrayOfNulls<BaseGameObject>(6)
+    private var propArray = arrayOfNulls<PropObject>(6)
     var mainWindow: MainWindow? = null
 
     // castle prop, 8 tiles around the eagle
@@ -668,10 +667,17 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         }
 
         // 6种道具绘制
-        for (gameObject in propArray) {
-            gameObject?.let {
-                it.draw(tempGraphics)
-                it.onTick()
+        for ((index, propObject) in propArray.withIndex()) {
+            propObject?.let { po ->
+                if (po.disappear) {
+                    propArray[index] = null
+                } else {
+                    // DEBUG
+                    //tempGraphics?.
+                    //drawString("showCounter:${propObject.showCounter}", 100, 350)
+                    po.draw(tempGraphics)
+                    po.onTick()
+                }
             }
         }
 
@@ -763,7 +769,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         //generate the star prop
         // in the future , will add more props
         val num = random.nextInt(120) + 1
-        var bgo : BaseGameObject? = null
+        var bgo : PropObject? = null
         when(num) {
             in 1..20 -> bgo = Star()
             in 21..40 -> bgo = Castle()

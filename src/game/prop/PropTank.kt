@@ -12,7 +12,7 @@ import javax.imageio.ImageIO
  * @Date 2024/4/12 上午10:38
  * @Version 1.0
  */
-class PropTank : BaseGameObject() {
+class PropTank : PropObject() {
     private var image: BufferedImage
     private var counter = 0
     private var imageArray = arrayOfNulls<BufferedImage>(4)
@@ -36,6 +36,7 @@ class PropTank : BaseGameObject() {
     }
 
     override fun onTick() {
+        super.onTick()
         image = imageArray[index]!!
         if (counter >= 20) {
             index++

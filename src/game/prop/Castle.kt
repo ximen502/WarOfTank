@@ -12,7 +12,7 @@ import javax.imageio.ImageIO
  * @Date 2024/4/14 下午2:41
  * @Version 1.0
  */
-class Castle : BaseGameObject(){
+class Castle : PropObject(){
     private var image: BufferedImage
     private var counter = 0
     private var imageArray = arrayOfNulls<BufferedImage>(3)
@@ -34,6 +34,7 @@ class Castle : BaseGameObject(){
     }
 
     override fun onTick() {
+        super.onTick()
         image = imageArray[index]!!
         if (counter >= 20) {
             index++
