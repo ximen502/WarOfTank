@@ -1,4 +1,7 @@
-<h3 align="center">简体中文 | <a href="README-en.md">English</a></h3>
+<div align="center">
+<h3>简体中文 | <a href="README-en.md">English</a></h3>
+</div>
+
 # 前言
 使用Java语言和Java提供的图形、音频等API，模仿实现类似小霸王插卡游戏机或学习机的小游戏。
 

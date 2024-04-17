@@ -1,4 +1,7 @@
-<h3 align="center">English | <a href="README.md">简体中文</a></h3>
+<div align="center">
+<h3>English | <a href="README.md">简体中文</a></h3>
+</div>
+
 # Preface
 Use the Java language and the graphics, audio and other APIs provided by Java to imitate small games similar to the Xiaobawang plug-in game console or learning machine.
 
