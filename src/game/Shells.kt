@@ -429,25 +429,27 @@ class Shells : GameObject() {
 
         when(tilePairFlag) {
             BB -> {
-                val brick0 = tile0 as Brick
-                val brick1 = tile1 as Brick
-                val bcx = brick0.cx
-                val bcy = brick0.cy
-                val wOf2 = (w + brick0.w) / 2
-                val hOf2 = (h + brick0.h) / 2
-                //println("炮弹x:$x, y:$y, $w, $h")
-                //println("brick x:${brick.x}, y:${brick.y}, w:${brick.w}, h:${brick.h}brickCX:$bcx, brickCY:$bcy")
                 // (1)2个砖块，如果炮弹击中了一个砖块，那么另一个砖块肯定也碰撞了，直接处理碰撞逻辑即可
                 // 如上(1)所述，这样是不够严谨的，有bug。
                 // 2个障碍物的情况，要分别处理碰撞逻辑，而且必须讲究先后顺序，距离近的优先处理
-                if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
-                    hitEffect()
+                ////////////2024-04-18
+                // 上述bug终于得到了解决，主要是先前考虑不完善。分别处理碰撞即可解决此问题.可以参考bi方法注释
+                var hit0 = false
+                var hit1 = false
 
-                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
-                    //通知砖块碰撞消息
+                val brick0 = tile0 as Brick
+                val brick1 = tile1 as Brick
+                if (brick0.pickRect().intersects(pickRect())) {
                     brick0.shells = this
+                    hit0 = true
+                }
+                if (brick1.pickRect().intersects(pickRect())) {
                     brick1.shells = this
+                    hit1 = true
+                }
 
+                if (hit0 || hit1) {
+                    hitEffect()
                     reset()
                 } else {
                     move()
