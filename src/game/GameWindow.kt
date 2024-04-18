@@ -5,8 +5,10 @@ import game.lib.Log
 import game.lib.findStr
 import game.prop.*
 import game.tile.*
+import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Graphics
+import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.event.WindowEvent
 import java.awt.event.WindowListener
@@ -63,6 +65,10 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     private val protectTime = 20
     private var protectFps = 0
 
+    // clock prop
+    private val freezeTime = 20
+    var freezeFps = 0
+
     init {
         this.w = width
         this.h = height
@@ -78,8 +84,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         initStage()
 
-        input = Input()
-        input.frame = this@GameWindow
+        input = Input(this)
         addKeyListener(input)
 
         AC.soundManager = SoundManager(AC.PLAYBACK_FORMAT, 3)
@@ -95,7 +100,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
         initMap("lv01.map")
 
-        darkAI = DarkAI()
+        darkAI = DarkAI(this)
         lightAI = LightAI()
 
         gameOver = GameOver(ground)
@@ -153,6 +158,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         // river重置
         river = 0
         wait2Next = CP.WAIT_FPS
+        protectFps = 0
+        freezeFps = 0
         //1.准备好关卡数据
         stack?.let {
             while (it.isNotEmpty()) {
@@ -524,6 +531,21 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         return iron
     }
 
+    //when clock prop time ends, call this
+    private fun activeEnemies() {
+        if (freezeFps > 0) {
+            freezeFps--
+            if (freezeFps <= 0) {
+                darkAI?.let {dai ->
+                    for (baseEnemyTank in dai.list) {
+                        baseEnemyTank.freeze = false
+                    }
+                }
+                freezeFps = 0
+            }
+        }
+    }
+
     private fun detectCollision() {
         /***************************************************************************************
          * (1)玩家坦克炮弹拿到敌军坦克发射的炮弹的引用，然后进行碰撞检测，如果发生碰撞则相互抵消
@@ -621,6 +643,49 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         }
     }
 
+    private fun showDebug() {
+        //////////////////方便调试的网格线
+        if (showLine) {
+            val g2 = tempGraphics as Graphics2D
+            val color = g2.color
+            g2.color = Color.GRAY
+            g2.stroke = BasicStroke(0.5F)
+            for (i in 0 until CP.R * 2) {
+                g2.color = Color.GRAY
+                g2.drawLine(0, CP.SIZE_M * i, w, CP.SIZE_M * i)
+            }
+            for (j in 0 until CP.C * 2) {
+                g2.color = Color.GRAY
+                g2.drawLine(CP.SIZE_M * j, 0, CP.SIZE_M * j, h)
+            }
+
+            //行列指示器
+//        g2.color = Color.ORANGE
+//        for (i in 0 until CP.R) {
+//            for (j in 0 until CP.C) {
+//                if (j == 0) {
+//                    g2.drawString("$i", 0, SIZE * i + 35)
+//                }
+//                if (i == 0) {
+//                    g2.drawString("$j", SIZE * j,  50)
+//                }
+//            }
+//        }
+            g2.color = color
+        }
+        ///////////////////end方便调试的网格线
+        // DEBUG
+        if (input.debug) {
+            val g2 = tempGraphics as Graphics2D
+            g2.color = Color.WHITE
+            val tx = 50
+            var ty = h / 3
+            g2.drawString("钟表: $freezeFps", tx, ty)
+            ty += 30
+            g2.drawString("城堡: $protectFps", tx, ty)
+        }
+    }
+
     private fun createWindow() {
         setSize(w, h)
         title = t
@@ -681,34 +746,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             }
         }
 
-        //////////////////方便调试的网格线
-        if (showLine) {
-            var color = tempGraphics?.color
-            tempGraphics?.color = Color.GRAY
-            for (i in 0 until CP.R * 2) {
-                tempGraphics?.color = Color.GRAY
-                tempGraphics?.drawLine(0, CP.SIZE_M * i, w, CP.SIZE_M * i)
-            }
-            for (j in 0 until CP.C * 2) {
-                tempGraphics?.color = Color.GRAY
-                tempGraphics?.drawLine(CP.SIZE_M * j, 0, CP.SIZE_M * j, h)
-            }
-
-            //行列指示器
-//        tempGraphics?.color = Color.ORANGE
-//        for (i in 0 until CP.R) {
-//            for (j in 0 until CP.C) {
-//                if (j == 0) {
-//                    tempGraphics?.drawString("$i", 0, SIZE * i + 35)
-//                }
-//                if (i == 0) {
-//                    tempGraphics?.drawString("$j", SIZE * j,  50)
-//                }
-//            }
-//        }
-            tempGraphics?.color = color
-        }
-        ///////////////////end方便调试的网格线
+        showDebug()
         g?.drawImage(tempImage, 0, 0, null)
 
         darkAI?.pushTank(ground, this)
@@ -723,6 +761,8 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         statistics()
 
         recoverIronToBrick(g)
+
+        activeEnemies()
     }
 
     override fun born(go: GameObject?) {
@@ -775,7 +815,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             in 21..40 -> bgo = Castle()
             in 41..60 -> bgo = PropTank()
             in 61..80 -> bgo = Bomb()
-            in 81..100 -> bgo = Bomb()
+            in 81..100 -> bgo = Clock()
             in 101..120 -> bgo = Shield()
         }
         bgo?.let {
@@ -842,6 +882,13 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                                 }
                             }
                             protectFps = protectTime * getFps()
+                        } else if (prop is Clock) { //钟表道具定住敌军，效果持续20秒
+                            darkAI?.let {dai ->
+                                for (baseEnemyTank in dai.list) {
+                                    baseEnemyTank.freeze = true
+                                }
+                            }
+                            freezeFps = freezeTime * getFps()
                         }
                     }
                 }

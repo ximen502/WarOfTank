@@ -1,5 +1,8 @@
 package game.prop
 
+import game.GameObject
+import java.awt.Graphics
+
 /**
  * @Class PropObject
  * @Description 道具类的父类，拥有道具的公共属性和行为
@@ -7,7 +10,7 @@ package game.prop
  * @Date 2024/4/14 下午2:43
  * @Version 1.0
  */
-open class PropObject : BaseGameObject() {
+open class PropObject : GameObject() {
     private var showCounter = 0
     var disappear = false
 
@@ -22,6 +25,10 @@ open class PropObject : BaseGameObject() {
                 disappear = true
             }
         }
+    }
+
+    override fun draw(g: Graphics?) {
+
     }
 
     fun getShowCounter() : Int {

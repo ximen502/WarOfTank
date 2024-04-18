@@ -67,6 +67,7 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
         }
         //g2.color = Color.YELLOW
         //g2.drawString("$id", x, cy)
+        //g2.drawString("${shells.x},${shells.y}", x, cy)
         drawFrame(g2)
     }
 
@@ -120,8 +121,10 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
     }
 
     override fun onTick() {
-        walk()
-        fire()
+        if (!freeze) {
+            walk()
+            fire()
+        }
     }
 
     override fun walk() {

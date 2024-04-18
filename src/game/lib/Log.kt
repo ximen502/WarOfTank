@@ -10,4 +10,7 @@ object Log {
         if (debug)
             System.out.println(message)
     }
+    fun setDebug(d: Boolean) {
+        debug = d
+    }
 }

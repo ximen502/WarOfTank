@@ -11,7 +11,7 @@ import kotlin.math.ceil
  * 负责敌军坦克的生成和移动、发射炮弹、判断当前关卡是否结束
  * （玩家被消灭、基地被摧毁）
  */
-class DarkAI {
+class DarkAI(private var gw: GameWindow) {
     private var diedList = mutableListOf<BaseEnemyTank>()
     // 被派遣到地图上活跃状态的坦克容器
     var list = mutableListOf<BaseEnemyTank>()
@@ -91,6 +91,7 @@ class DarkAI {
                     if (preciousIndex == 4) {
                         preciousIndex = 0
                     }
+                    enemyTank.freeze = gw.freezeFps > 0
                     // 敌军坦克出现
                     go.born(enemyTank)
                     list.add(enemyTank)

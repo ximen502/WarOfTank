@@ -275,17 +275,6 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         shellsY = cy - shells.h / 2
     }
 
-    /**
-     * 替代get方法
-     */
-    fun pickRect(): Rectangle {
-        rect.x = x
-        rect.y = y
-        rect.width = w
-        rect.height = h
-        return rect
-    }
-
     override fun born() {
 
     }
@@ -554,21 +543,21 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     override fun fire() {
         // 简化炮弹是否可以发射的判断逻辑
         if (shells.isDestroyed) {
-//            if (fireCounter % 15 == 0) {
-            val sh = shells
-            sh.times = 6
-            sh.level = fireLevel
-            sh.id = ID.ID_P1_SHELL
-            sh.observer = observer
-            sh.ground = ground
-            sh.setPosition(shellsX, shellsY)
-            sh.direction = direction
-            sh.isDestroyed = false
-            observer?.born(sh)
-            AC.soundManagerGF?.play(AC.gunfire)
-            fireCounter = 0
-//            }
-//            fireCounter++
+            if (fireCounter % 12 == 0) {
+                val sh = shells
+                sh.times = 6
+                sh.level = fireLevel
+                sh.id = ID.ID_P1_SHELL
+                sh.observer = observer
+                sh.ground = ground
+                sh.setPosition(shellsX, shellsY)
+                sh.direction = direction
+                sh.isDestroyed = false
+                observer?.born(sh)
+                AC.soundManagerGF?.play(AC.gunfire)
+                fireCounter = 0
+            }
+            fireCounter++
         } else {
             // 兜底解决玩家偶尔无法发射炮弹的问题
             if (shells.x < 0 - shells.w) {
