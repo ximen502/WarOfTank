@@ -1,6 +1,7 @@
 package game
 
 import java.awt.Graphics
+import java.awt.Rectangle
 
 /**
  * 游戏基类
@@ -34,6 +35,8 @@ abstract class GameObject {
 
     open var ground: Ground = Ground(0, 0)
 
+    private var rect: Rectangle = Rectangle(x, y, w, h)
+
     fun setPosition(x: Int, y: Int) {
         this.x = x
         this.y = y
@@ -42,6 +45,17 @@ abstract class GameObject {
     fun transfer(xOffset: Int, yOffset: Int) {
         this.x += xOffset
         this.y += yOffset
+    }
+
+    /**
+     * 替代get方法
+     */
+    open fun pickRect(): Rectangle {
+        rect.x = x
+        rect.y = y
+        rect.width = w
+        rect.height = h
+        return rect
     }
 
     abstract fun draw(g: Graphics?)

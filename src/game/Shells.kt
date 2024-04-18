@@ -454,27 +454,7 @@ class Shells : GameObject() {
                 }
             }
             BI -> {
-                val brick0 = tile0 as Brick
-                val iron1 = tile1 as Iron
-                val bcx = brick0.cx
-                val bcy = brick0.cy
-                val wOf2 = (w + brick0.w) / 2
-                val hOf2 = (h + brick0.h) / 2
-                //println("炮弹x:$x, y:$y, $w, $h")
-                //println("brick x:${brick.x}, y:${brick.y}, w:${brick.w}, h:${brick.h}brickCX:$bcx, brickCY:$bcy")
-                // 2个砖块，如果炮弹击中了一个砖块，那么另一个砖块肯定也碰撞了，直接处理碰撞逻辑即可
-                if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
-                    hitEffect()
-
-                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${brick0.id} brickCX:$bcx, brickCY:$bcy")
-                    //通知砖块碰撞消息
-                    brick0.shells = this
-                    iron1.shells = this
-
-                    reset()
-                } else {
-                    move()
-                }
+                bi(tile0, tile1)
             }
             BE -> {
                 val brick0 = tile0 as Brick
@@ -517,27 +497,7 @@ class Shells : GameObject() {
                 }
             }
             IB -> {
-                val iron0 = tile0 as Iron
-                val brick1 = tile1 as Brick
-                val bcx = iron0.cx
-                val bcy = iron0.cy
-                val wOf2 = (w + iron0.w) / 2
-                val hOf2 = (h + iron0.h) / 2
-                //println("炮弹x:$x, y:$y, $w, $h")
-                //println("brick x:${brick.x}, y:${brick.y}, w:${brick.w}, h:${brick.h}brickCX:$bcx, brickCY:$bcy")
-                // 2个砖块，如果炮弹击中了一个砖块，那么另一个砖块肯定也碰撞了，直接处理碰撞逻辑即可
-                if (abs(cx - bcx) <= wOf2 && abs(cy - bcy) <= hOf2) {
-                    hitEffect()
-
-                    //println("--碰撞--炮弹击中了砖块 炮弹x:$x, y:$y, brickID: ${iron0.id} brickCX:$bcx, brickCY:$bcy")
-                    //通知砖块碰撞消息
-                    iron0.shells = this
-                    brick1.shells = this
-
-                    reset()
-                } else {
-                    move()
-                }
+                bi(tile1, tile0)
             }
             II -> {
                 val iron0 = tile0 as Iron
@@ -847,17 +807,6 @@ class Shells : GameObject() {
     }
 
     /**
-     * 替代get方法
-     */
-    fun pickRect(): Rectangle {
-        rect.x = x
-        rect.y = y
-        rect.width = w
-        rect.height = h
-        return rect
-    }
-
-    /**
      * 检测炮弹和基地的碰撞
      */
     private fun checkEagle(): Boolean {
@@ -882,6 +831,38 @@ class Shells : GameObject() {
             AC.soundManager?.play(AC.bang)
         }
         return hit
+    }
+
+    // BI or IB (brick|iron, iron|brick)
+    private fun bi(tileBrick: GameObject?, tileIron: GameObject?){
+        /***
+         * ***************************************************************************
+         * 实践证明砖头和铁的碰撞处理顺序调整，对逻辑并没有影响，由于炮弹一边前进，一边判断碰撞，
+         * 在2D画面中早一点碰到谁，就会先处理谁，比如炮弹无法消除钢铁的时候，砖头被打碎一块，钢铁
+         * 依然安然无恙，下次再发炮弹就先处理钢铁，破碎的砖块就不会得到处理了，这样是合理的。
+         * ***************************************************************************
+         * */
+        var hit0 = false
+        var hit1 = false
+
+        val brick = tileBrick as Brick
+        val iron = tileIron as Iron
+
+        if (brick.pickRect().intersects(pickRect())) {
+            brick.shells = this
+            hit0 = true
+        }
+        if (iron.pickRect().intersects(pickRect())) {
+            iron.shells = this
+            hit1 = true
+        }
+
+        if (hit0 || hit1) {
+            hitEffect()
+            reset()
+        } else {
+            move()
+        }
     }
 
 }
