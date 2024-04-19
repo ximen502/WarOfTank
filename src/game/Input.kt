@@ -34,7 +34,7 @@ class Input(private var gw: GameWindow) : KeyListener {
         } else if (e?.keyCode == KeyEvent.VK_RIGHT) {
             moveListener?.begin(KeyEvent.VK_RIGHT)
         } else if (e?.keyCode == KeyEvent.VK_T) {
-            debug = !debug
+            debug = false//!debug
         }
     }
 
@@ -62,6 +62,8 @@ class Input(private var gw: GameWindow) : KeyListener {
             } else if (option == 1) { // no
                 // do nothing
             }
+        } else if (e?.keyCode == KeyEvent.VK_CONTROL) {
+            gw.lightAI.player?.fireCounter = 0
         }
         Log.println("key release:${e?.keyCode}-----------------------")//${e?.keyCode}
     }

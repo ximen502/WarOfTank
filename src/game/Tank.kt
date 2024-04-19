@@ -25,14 +25,22 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     //炮弹缓存
     val shells = Shells()
 
-    var rect: Rectangle = Rectangle(x, y, w, h)
-
     var gameOver = false
     //是否可以发射炮弹
-    private var fireCounter = 0
-    // 吃了多少个星星,对应于火力级别、外观、移动速度
+    var fireCounter = 0
+    //炮弹发射间隔时间
+    private var fireInterval = 0
+    // 吃了多少个星星,对应于火力级别、外观、移动速度、发射间隔
     var hasStar = 0
     private var fireLevel = Shells.LEVEL0
+    private var fireSpeed = Shells.MOVE_LV0
+
+    companion object {
+        const val MOVE_LV0 = 3
+        const val MOVE_LV1 = 4
+        const val INTERVAL_LV0 = 8
+        const val INTERVAL_LV1 = 6
+    }
 
     init {
         this.ground = ground
@@ -46,7 +54,12 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         direction = Shells.DIRECTION_NORTH
         Log.println("tank born position x:$x, y:$y, cx:$cx, cy:$cy, shells x:$shellsX, y:$shellsY")
         this.input = input
-        times = 4
+        times = MOVE_LV0
+        fireInterval = INTERVAL_LV0
+        //fire init:3,1star:4,2 or 3 star:6
+        //player move init:3, highest:4
+        //fire interval init:8, star>=2:6
+        //当吃掉2颗或更多星星的时候，发射速度是最快的，间隔时间是最短的
 //        println(javaClass.toString())
 //        var resource = javaClass.getResource("")
 //        println(resource)
@@ -124,8 +137,14 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
         }
 
         //debug
-        //g2.color = Color.WHITE
-        //g2.drawString("hasStar:$hasStar", 48, 300)
+        if (input.debug) {
+            g2.color = Color.WHITE
+            g2.drawString("hasStar:$hasStar", 48, 400)
+            g2.drawString("times:$times", 48, 400+30)
+            g2.drawString("fireTimes:$fireSpeed", 48, 400+60)
+            g2.drawString("fireCounter:${fireCounter}", 48, 400+90)
+            g2.drawString("invincibleCounter:$invincibleCounter", 48, 400+120)
+        }
 
         // star show
         drawStars(g2)
@@ -543,9 +562,9 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
     override fun fire() {
         // 简化炮弹是否可以发射的判断逻辑
         if (shells.isDestroyed) {
-            if (fireCounter % 12 == 0) {
+            if (fireCounter % fireInterval == 0) {
                 val sh = shells
-                sh.times = 6
+                sh.times = fireSpeed
                 sh.level = fireLevel
                 sh.id = ID.ID_P1_SHELL
                 sh.observer = observer
@@ -579,6 +598,27 @@ class Tank(input: Input, ground: Ground) : AbstractTank(), MoveListener {
                 Log.println("shells position: x:${shells.x}, y:${shells.y}")
             }
         }
+    }
+
+    fun initSpeed() {
+        //fire interval
+        fireInterval = INTERVAL_LV0
+        //speed up tank move
+        if (hasStar > 0) {
+            times = MOVE_LV1
+        }
+        //speed up fire shells move
+        if (hasStar == 1) {
+            fireSpeed = Shells.MOVE_LV1
+        } else if (hasStar >= 2) {
+            fireSpeed = Shells.MOVE_LV2
+            fireInterval = INTERVAL_LV1
+        }
+    }
+
+    fun eatStar() {
+        hasStar++
+        initSpeed()
     }
 
 }

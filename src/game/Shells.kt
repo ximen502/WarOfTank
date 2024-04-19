@@ -69,6 +69,10 @@ class Shells : GameObject() {
         const val LEVEL2 = 2
         const val LEVEL3 = 3
 
+        const val MOVE_LV0 = 3
+        const val MOVE_LV1 = 4
+        const val MOVE_LV2 = 6
+
         //brick, iron, empty,两两组合(9-1=8)，还要加一个基地老鹰eagle(A)
         const val BB = 'B'.code shl 8 or 'B'.code
         const val BI = 'B'.code shl 8 or 'I'.code

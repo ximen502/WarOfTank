@@ -71,6 +71,7 @@ class LightAI {
                     tank.invincible = true
                     tank.invincibleCounter = 60 * 5//5 seconds, 60fps
                     input.moveListener = tank
+                    tank.initSpeed()
                     //(go as GameWindow).player = tank
                     player = tank
                     go.born(tank)

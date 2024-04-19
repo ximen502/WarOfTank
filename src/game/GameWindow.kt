@@ -30,7 +30,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
     private var renderThread: RenderThread? = null
 
     private var darkAI: DarkAI? = null
-    private var lightAI: LightAI? = null
+    var lightAI: LightAI
 
     private var ground: Ground//? = null
 
@@ -168,7 +168,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 clearMap()
                 //1.2重置AI
                 darkAI?.reset()
-                lightAI?.reset()
+                lightAI.reset()
                 //2.地图重新load
                 initMap(stage)
                 break//选择下一关后，跳出循环
@@ -404,7 +404,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             }
 
             //玩家生命值为0
-            lightAI?.let {
+            lightAI.let {
                 if (it.life == 0 && it.getActive() == 0) {
                     //println("...GAME OVER")
                     over = true
@@ -416,7 +416,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                     born(gameOver)
                     gameOver.showing = true
                     //input.moveListener = null
-                    lightAI?.player?.gameOver = true
+                    lightAI.player?.gameOver = true
                     renderThread?.stopBgMusic()
                 }
             } else {
@@ -437,7 +437,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
             val num = it.getLiveEnemies()
             gameData?.enemies = num.toString()
         }
-        lightAI?.let {
+        lightAI.let {
             gameData?.p1 = (it.life + it.getActive()).toString()
         }
         gameData?.stage = nowStage.toString()
@@ -552,7 +552,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
          * (2)玩家坦克炮弹拿到敌军坦克的引用，然后进行碰撞检测，如果发生碰撞则敌军坦克发生爆炸被摧毁，炮弹消失
          * (3)敌军坦克炮弹拿到玩家坦克的引用，然后进行碰撞检测，如果发生碰撞则玩家坦克发生爆炸被摧毁，炮弹消失
          * *************************************************************************************/
-        val ps = lightAI?.player?.shells
+        val ps = lightAI.player?.shells
         if (ps?.isDestroyed == false) {
             darkAI?.let {
                 for (enemy in it.list) {
@@ -588,7 +588,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 if (enemy.isDestroyed) {
                     loneShell?.set(0, enemy.shells)
                 }
-                val player = lightAI?.player ?: break
+                val player = lightAI.player ?: break
                 if (!enemy.shells.isDestroyed && !player.isDestroyed) {
                     //敌军的炮弹击中了玩家坦克
                     if (player.pickRect().intersects(enemy.shells.pickRect())) {
@@ -600,7 +600,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                             die(player)
                             die(enemy.shells)
                             boom(player)
-                            lightAI?.diePlayer()
+                            lightAI.diePlayer()
                         }
                     }
                 }
@@ -612,7 +612,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 //                println("****************************************************************")
 //                println("shell id:"+Integer.toHexString(shell?.id!!.toInt())+" isDestroy:${shell?.isDestroyed}")
 //                println("****************************************************************")
-                val player = lightAI?.player!!
+                val player = lightAI.player!!
                 if (!shell.isDestroyed && !player.isDestroyed) {
                     val ps = player.shells
                     //敌军最后一发炮弹击中了玩家坦克的炮弹
@@ -631,7 +631,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                             die(player)
                             die(shell)
                             boom(player)
-                            lightAI?.diePlayer()
+                            lightAI.diePlayer()
                         }
                         loneShell?.set(0, null)
                     }
@@ -752,7 +752,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
         darkAI?.pushTank(ground, this)
         darkAI?.checkCollision()
 
-        lightAI?.dispatchPlayer(ground, this, input)
+        lightAI.dispatchPlayer(ground, this, input)
 
         detectCollision()
 
@@ -836,7 +836,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
 
     //吃道具
     private fun eatProp() {
-        val player = lightAI?.player
+        val player = lightAI.player
         player?.let {
             for ((index, baseGameObject) in propArray.withIndex()) {
                 var prop = propArray[index]
@@ -849,13 +849,13 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                             AC.soundManagerPeow?.play(AC.peow)
                         }
                         propArray[index] = null
-                        if (prop is Star) {
-                            player.hasStar++
+                        if (prop is Star) {// STAR:tank move faster, shells move faster
+                            player.eatStar()
                         } else if (prop is Shield) {
                             player.invincible = true
                             player.invincibleCounter = 60 * 30//30 seconds
                         } else if (prop is PropTank) {
-                            lightAI?.addLife(1)
+                            lightAI.addLife(1)
                         } else if (prop is Bomb) {
                             darkAI?.let { dai ->
                                 //消灭地图上的所有敌军坦克，然后播放一次爆炸音效
@@ -908,7 +908,7 @@ class GameWindow(width: Int, height: Int, windowTitle: String) : JFrame(), GOObs
                 clearMap()
                 //1.2重置AI
                 darkAI?.reset()
-                lightAI?.reset()
+                lightAI.reset()
                 mainWindow?.isVisible = true
             }
             override fun windowIconified(e: WindowEvent) {}
