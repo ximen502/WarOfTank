@@ -110,6 +110,30 @@ class TireTank(ground: Ground, position: Int) : BaseEnemyTank() {
                 sh.isDestroyed = false
                 observer?.born(sh)
                 //fireAC?.play()
+            } else {
+                // 兜底解决玩家偶尔无法发射炮弹的问题
+                if (shells.x < 0 - shells.w) {
+                    shells.isDestroyed = true
+                    shells.doCollision = false
+                    Log.println("shells position: x:${shells.x}, y:${shells.y}")
+                }
+                if (shells.x > ground.width + shells.w) {
+                    shells.isDestroyed = true
+                    shells.doCollision = false
+                    Log.println("shells position: x:${shells.x}, y:${shells.y}")
+                }
+
+                if (shells.y < 0 - shells.h) {
+                    shells.isDestroyed = true
+                    shells.doCollision = false
+                    Log.println("shells position: x:${shells.x}, y:${shells.y}")
+                }
+
+                if (shells.y > ground.height + shells.h) {
+                    shells.isDestroyed = true
+                    shells.doCollision = false
+                    Log.println("shells position: x:${shells.x}, y:${shells.y}")
+                }
             }
             fireCounter = 0
         }
