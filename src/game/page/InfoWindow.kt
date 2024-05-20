@@ -37,6 +37,7 @@ class InfoWindow : JFrame() {
         setSize(875, 654)
         isVisible = true
         contentPane.background = Color.WHITE//
+        setLocationRelativeTo(null)
         add(jpWord, BorderLayout.SOUTH)
 
         val author = "一个程序员，偶尔使用古老技术实现一些需求，做点个人感兴趣的事情"

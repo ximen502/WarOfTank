@@ -32,6 +32,7 @@ class KeySetWindow : JFrame() {
         lb.font = Font("宋体", Font.PLAIN, 24)
 //        lb.foreground = Color(0xf4, 0x60, 0x6c)
         lb.foreground = Color(0xD1,0xBA,0x74)
+        setLocationRelativeTo(null)
         var jp = JPanel(FlowLayout())
         jp.add(lb)
         add(jp, BorderLayout.NORTH)
